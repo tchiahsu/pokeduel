@@ -54,23 +54,6 @@
    > src/data
    > ```
 
-## Customization
-
-### Using Your Own Images
-To add custom images for graphical mode:
-1. Place your images inside:
-   ```
-   src/data/Resources/
-   ```
-   
-2. Update the corresponding JSON game file with your image file names.
-
-3. **Rebuild the JAR** (see next section).
-
-### Rebuilding the JAR
-If you modify any resources or code, in IntelliJ, go to:
-`Build > Build Artifacts > Adventure_Game_5004.jar > Rebuild`
-
 ## Project Structure
 ```
 Adventure_Game/
