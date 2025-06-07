@@ -40,7 +40,7 @@
 ## Backend
 | Component           | Tech               |
 |---------------------|--------------------|
-| Framework           | Node.ks + Express  |
+| Framework           | Node.js + Express  |
 | Real-Time           | Tailwind CSS       |
 | REST API            | Socket.IO          |
 | Database Management | PostgreSQL         |
