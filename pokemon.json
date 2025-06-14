@@ -1,0 +1,134 @@
+{
+  "Venusaur": {
+    "name": "Venusaur",
+    "types": ["Grass", "Poison"],
+    "hp": 80,
+    "attack": 82,
+    "defense": 83,
+    "spAtk": 100,
+    "spDef": 100,
+    "speed": 80,
+    "moves": ["Solar Beam", "Sludge Bomb", "Sleep Powder", "Earthquake"]
+  },
+  "Charizard": {
+    "name": "Charizard",
+    "types": ["Fire", "Flying"],
+    "hp": 78,
+    "attack": 84,
+    "defense": 78,
+    "spAtk": 109,
+    "spDef": 85,
+    "speed": 100,
+    "moves": ["Flamethrower", "Air Slash", "Dragon Claw", "Earthquake"]
+  },
+  "Blastoise": {
+    "name": "Blastoise",
+    "types": ["Water"],
+    "hp": 79,
+    "attack": 83,
+    "defense": 100,
+    "spAtk": 85,
+    "spDef": 105,
+    "speed": 78,
+    "moves": ["Hydro Pump", "Ice Beam", "Surf", "Bite"]
+  },
+  "Alakazam": {
+    "name": "Alakazam",
+    "types": ["Psychic"],
+    "hp": 55,
+    "attack": 50,
+    "defense": 45,
+    "spAtk": 135,
+    "spDef": 95,
+    "speed": 120,
+    "moves": ["Psychic", "Shadow Ball", "Recover", "Calm Mind"]
+  },
+  "Machamp": {
+    "name": "Machamp",
+    "types": ["Fighting"],
+    "hp": 90,
+    "attack": 130,
+    "defense": 80,
+    "spAtk": 65,
+    "spDef": 85,
+    "speed": 55,
+    "moves": ["Dynamic Punch", "Earthquake", "Stone Edge", "Bulk Up"]
+  },
+  "Gengar": {
+    "name": "Gengar",
+    "types": ["Ghost", "Poison"],
+    "hp": 60,
+    "attack": 65,
+    "defense": 60,
+    "spAtk": 130,
+    "spDef": 75,
+    "speed": 110,
+    "moves": ["Shadow Ball", "Sludge Bomb", "Thunderbolt", "Hypnosis"]
+  },
+  "Golem": {
+    "name": "Golem",
+    "types": ["Rock", "Ground"],
+    "hp": 80,
+    "attack": 120,
+    "defense": 130,
+    "spAtk": 55,
+    "spDef": 65,
+    "speed": 45,
+    "moves": ["Earthquake", "Stone Edge", "Explosion", "Protect"]
+  },
+  "Dragonite": {
+    "name": "Dragonite",
+    "types": ["Dragon", "Flying"],
+    "hp": 91,
+    "attack": 134,
+    "defense": 95,
+    "spAtk": 100,
+    "spDef": 100,
+    "speed": 80,
+    "moves": ["Dragon Claw", "Thunder Punch", "Fly", "Ice Beam"]
+  },
+  "Arcanine": {
+    "name": "Arcanine",
+    "types": ["Fire"],
+    "hp": 90,
+    "attack": 110,
+    "defense": 80,
+    "spAtk": 100,
+    "spDef": 80,
+    "speed": 95,
+    "moves": ["Flare Blitz", "Extreme Speed", "Crunch", "Roar"]
+  },
+  "Exeggutor": {
+    "name": "Exeggutor",
+    "types": ["Grass", "Psychic"],
+    "hp": 95,
+    "attack": 95,
+    "defense": 85,
+    "spAtk": 125,
+    "spDef": 65,
+    "speed": 55,
+    "moves": ["Psychic", "Solar Beam", "Sleep Powder", "Leech Seed"]
+  },
+  "Rhydon": {
+    "name": "Rhydon",
+    "types": ["Ground", "Rock"],
+    "hp": 105,
+    "attack": 130,
+    "defense": 120,
+    "spAtk": 45,
+    "spDef": 45,
+    "speed": 40,
+    "moves": ["Earthquake", "Rock Slide", "Horn Drill", "Thunderbolt"]
+  },
+  "Nidoking": {
+    "name": "Nidoking",
+    "types": ["Poison", "Ground"],
+    "hp": 81,
+    "attack": 102,
+    "defense": 77,
+    "spAtk": 85,
+    "spDef": 75,
+    "speed": 85,
+    "moves": ["Sludge Bomb", "Earthquake", "Ice Beam", "Thunderbolt"]
+  }
+}
