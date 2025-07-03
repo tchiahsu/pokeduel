@@ -13,9 +13,12 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/tchiahsu/pokemon_monarch/issues"
   },
-  "homepage": "https://github.com/tchiahsu/pokemon_monarch#readme"
+  "homepage": "https://github.com/tchiahsu/pokemon_monarch#readme",
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
 }
