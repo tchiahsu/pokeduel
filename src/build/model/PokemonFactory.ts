@@ -1,27 +1,62 @@
 import Pokemon from "./Pokemon.js";
+import Move from "./Move.js";
 import pokemonData from "./pokemon.json" with { "type": "json"};
+import moveData from "./moves.json" with {"type": "json"};
 
 /**
- * A class for creating a team of Pokemon from just their name.
+ * Class for creating a team of Pokemon from just their name.
  */
 class PokemonFactory {
 
-  createTeam(pokemonNames) {
+  /**
+   * Creates a team of Pokemon objects from an array of Pokemon names.
+   * @param pokemonNames an array of strings representing the names of the Pokemon to create.
+   * @returns an array of Pokemon objects.
+   */
+  createTeam(pokemonNames: string[]) {
     let team = pokemonNames.map((pokemonName) => this.createPokemon(pokemonName));
     return team;
   }
 
-  createPokemon(pokemonName) {
-    let pokemon = new Pokemon(pokemonData[pokemonName]);
+  /**
+   * Creates a single Pokemon object from its name by retrieving its stats and moves from the dataset.
+   * @param pokemonName the name of the Pokemon to create.
+   * @returns a Pokemon object with stats and moves initialized.
+   */
+  createPokemon(pokemonName: string) {
+    const data = pokemonData[pokemonName as keyof typeof pokemonData]
+    const moves = data.moves.map((moveName: string) => this.createMove(moveName));
+    let pokemon = new Pokemon(
+      data.name, 
+      data.types, 
+      data.hp, 
+      data.attack, 
+      data.defense, 
+      data.spAtk, 
+      data.spDef, 
+      data.speed, 
+      moves // Move[]
+    );
     return pokemon;
+  }
+
+  /**
+   * Creates a Move object from its name by retrieving its details from the move dataset.
+   * @param currentMove the name of the move to create.
+   * @returns a Move object with its properties initialized.
+   */
+  createMove(currentMove: string) {
+    const data = moveData[currentMove as keyof typeof moveData];
+    let move = new Move(data.type, data.category, data.power, data.accuracy, data.pp);
+    return move;
   }
 }
 
 // For testing
-let pf = new PokemonFactory();
-let team = pf.createTeam(["Venusaur", "Charizard", "Blastoise", "Alakazam", "Machamp", "Gengar"]);
-console.log(team);
+// let pf = new PokemonFactory();
+// let team = pf.createTeam(["Venusaur", "Charizard", "Blastoise", "Alakazam", "Machamp", "Gengar"]);
+// console.log(team);
 
-console.log(`Blastoise health: ${team[2].getStat("hp")}`);
-team[2].takeDamage(9);
-console.log(`Blastoise health: ${team[2].getStat("hp")}`);
+// console.log(`Blastoise moves: ${team[2].raiseStat("atk", 7)}`);
+// team[2].takeDamage(9);
+// console.log(`Blastoise health: ${team[2].getHp()}`);
