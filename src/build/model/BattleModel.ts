@@ -1,5 +1,7 @@
-import BattleUtils from "./BattleUtils";
-
+import BattleUtils from "./BattleUtils.js";
+import Player from "./Player.js";
+import Pokemon from "./Pokemon.js";
+import PokemonFactory from "./PokemonFactory.js";
 
 /**
  * An interface representing the player's move.
@@ -28,8 +30,8 @@ class BattleModel {
    * @param player1Team Contains the player's pokemon team selection.
    */
   public setPlayer1(name: string, player1Team: string[]): void {
-    player1Team = PokemonFactory.createTeam(player1Team);
-    this.player1 = new Player(name, player1Team);
+    let pokemonTeam: Pokemon[] = PokemonFactory.createTeam(player1Team);
+    this.player1 = new Player(name, pokemonTeam);
   }
 
   /**
@@ -39,8 +41,8 @@ class BattleModel {
    * @param player2Team Contains the player's pokemon team selection.
    */
   public setPlayer2(name: string, player2Team: string[]): void {
-    player2Team = PokemonFactory.createTeam(player2Team);
-    this.player2 = new Player(name, player2Team);
+    let pokemonTeam: Pokemon[] = PokemonFactory.createTeam(player2Team);
+    this.player2 = new Player(name, pokemonTeam);
   }
 
   /**
