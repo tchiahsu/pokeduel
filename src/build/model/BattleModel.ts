@@ -2,6 +2,7 @@ import BattleUtils from "./BattleUtils.js";
 import Player from "./Player.js";
 import Pokemon from "./Pokemon.js";
 import PokemonFactory from "./PokemonFactory.js";
+import pokemonData from "./pokemon.json" with {"type": "json"};
 
 /**
  * An interface representing the player's move.
@@ -191,5 +192,23 @@ export default class BattleModel {
     let otherPlayer: Player = faintedPlayer === this.player1 ? this.player2 : this.player1;
     
     return `${faintedPlayer} is out of Pokemon! ${otherPlayer} wins!\n`
+  }
+
+  /**
+   * Returns all the pokemon that can be used in the game.
+   * 
+   * @returns All the pokemon that can be used in the game.
+   */
+  public getAllPokemon(): string {
+    let allPokemon: string = "";
+
+    Object.keys(pokemonData).forEach((key, index) => {
+      allPokemon += key;
+      if ((index + 1) % 5 === 0) {
+        allPokemon += "\n";
+      }
+    });
+
+    return allPokemon;
   }
 }
