@@ -29,23 +29,29 @@ export default class BattleController {
         while (!this.model.isGameOver()) {
             const playerOptions = this.model.getPlayerOptions();
             // this.view.display(playerOptions);
-            console.log("Available options:");
-            console.log(playerOptions);
-
+            console.log(playerOptions[0]);
             const p1Move = await this.inputReader.getMove();
+
+            console.log(playerOptions[1]);
             const p2Move = await this.inputReader.getMove();
-            this.model.handleTurn(p1Move, p2Move);
+
+            // Convert Attach option to object {action: <action>, index: <index>}
+            const p1ParseMove = p1Move.split(" ");
+            const p2ParseMove = p2Move.split(" ");
+            const p1FormattedMove = {action: p1ParseMove[0], index: parseInt(p1ParseMove[1])-1}
+            const p2FormattedMove = {action: p2ParseMove[0], index: parseInt(p2ParseMove[1])-1}
+            this.model.handleTurn(p1FormattedMove, p2FormattedMove);
 
             const messages = this.model.getMessages();
             // this.view.display(messages);
             console.log("Turn results:");
-            console.log(messages);
+            console.log(messages[0]);
 
             if (this.model.aPokemonHasFainted() && !this.model.isGameOver()) {
                 const remainingPokemon = this.model.getRemainingPokemon();
                 // this.view.display(remainingPokemon);
                 console.log("Choose a replacement Pokemon:");
-                console.log("remainingPokemon");
+                console.log("remaining Pokemon: ");
 
                 const switchMove = await this.inputReader.getMove() // Index of pokemon they want
                 const switchMessage = this.model.handleFaintedPokemon(switchMove);

@@ -203,7 +203,7 @@ export default class BattleModel {
     let allPokemon: string = "";
 
     Object.keys(pokemonData).forEach((key, index) => {
-      allPokemon += key;
+      allPokemon += key + " ";
       if ((index + 1) % 5 === 0) {
         allPokemon += "\n";
       }

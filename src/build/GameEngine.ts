@@ -7,3 +7,5 @@ async function main() {
     await controller.go();
     process.exit(0);
 }
+
+main()
