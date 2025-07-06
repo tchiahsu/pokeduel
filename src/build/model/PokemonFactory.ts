@@ -47,7 +47,7 @@ export default class PokemonFactory {
    */
   static createMove(currentMove: string) {
     const data = moveData[currentMove as keyof typeof moveData];
-    let move = new Move(data.type, data.category, data.power, data.accuracy, data.pp);
+    let move = new Move(data.name, data.type, data.category, data.power, data.accuracy, data.pp);
     return move;
   }
 }

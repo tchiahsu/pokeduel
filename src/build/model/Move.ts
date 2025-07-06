@@ -4,6 +4,7 @@ import movesData from "./moves.json" with {"type": "json"};
  * Creates a Move with the passed in stats.
  */
 export default class Move {
+    private name: string;
     private type: string;
     private category: string;
     private power: number; 
@@ -18,12 +19,21 @@ export default class Move {
      * @param accuracy - The accuracy percentage of the move
      * @param pp - The number of times the move can be used (Power Points)
      */
-    constructor(type: string, category: string, power: number, accuracy: number, pp: number) {
+    constructor(name: string, type: string, category: string, power: number, accuracy: number, pp: number) {
+        this.name = name;
         this.type = type;
         this.category = category;
         this.power = power;
         this.accuracy = accuracy;
         this.pp = pp;
+    }
+
+    /**
+     * Gets the name of the move.
+     * @returns The name as a string.
+     */
+    public getName(): string {
+        return this.name;
     }
 
     /**
