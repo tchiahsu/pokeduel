@@ -106,7 +106,11 @@ class BattleModel {
   }
   
   private processAttack(player: Player, attackIndex: number): void {
-
+    let attacker: Pokemon = player.getCurrentPokemon();
+    let defender: Pokemon = player === this.player1 ? this.player2.getCurrentPokemon() : this.player1.getCurrentPokemon();
+    let damage: number = BattleUtils.calculateDamage(attacker, attackIndex, defender);
+    attacker.getMove(attackIndex).reducePP(); // Need to check PP
+    defender.takeDamage(damage);
   }
 
   /**
