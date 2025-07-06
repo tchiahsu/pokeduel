@@ -14,7 +14,7 @@ interface PlayerMove {
 /**
  * A class representing the core logic of the pokemon battle system.
  */
-class BattleModel {
+export default class BattleModel {
   private player1: Player;
   private player2: Player;
   private messages: string[] = [];
