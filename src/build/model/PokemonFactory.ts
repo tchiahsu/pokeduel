@@ -6,14 +6,14 @@ import moveData from "./moves.json" with {"type": "json"};
 /**
  * Class for creating a team of Pokemon from just their name.
  */
-class PokemonFactory {
+export default class PokemonFactory {
 
   /**
    * Creates a team of Pokemon objects from an array of Pokemon names.
    * @param pokemonNames an array of strings representing the names of the Pokemon to create.
    * @returns an array of Pokemon objects.
    */
-  createTeam(pokemonNames: string[]) {
+  static createTeam(pokemonNames: string[]) {
     let team = pokemonNames.map((pokemonName) => this.createPokemon(pokemonName));
     return team;
   }
@@ -23,7 +23,7 @@ class PokemonFactory {
    * @param pokemonName the name of the Pokemon to create.
    * @returns a Pokemon object with stats and moves initialized.
    */
-  createPokemon(pokemonName: string) {
+  static createPokemon(pokemonName: string) {
     const data = pokemonData[pokemonName as keyof typeof pokemonData]
     const moves = data.moves.map((moveName: string) => this.createMove(moveName));
     let pokemon = new Pokemon(
@@ -45,7 +45,7 @@ class PokemonFactory {
    * @param currentMove the name of the move to create.
    * @returns a Move object with its properties initialized.
    */
-  createMove(currentMove: string) {
+  static createMove(currentMove: string) {
     const data = moveData[currentMove as keyof typeof moveData];
     let move = new Move(data.type, data.category, data.power, data.accuracy, data.pp);
     return move;
