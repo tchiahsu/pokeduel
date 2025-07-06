@@ -1,5 +1,6 @@
 {
   "Solar Beam": {
+    "name": "Solar Beam",
     "type": "Grass",
     "category": "Special",
     "power": 120,
@@ -7,6 +8,7 @@
     "pp": 10
   },
   "Sludge Bomb": {
+    "name": "Sludge Bomb",
     "type": "Poison",
     "category": "Special",
     "power": 90,
@@ -14,6 +16,7 @@
     "pp": 10
   },
   "Sleep Powder": {
+    "name": "Sleep Powder",
     "type": "Grass",
     "category": "Status",
     "power": 0,
@@ -21,6 +24,7 @@
     "pp": 15
   },
   "Earthquake": {
+    "name": "Earthquake",
     "type": "Ground",
     "category": "Physical",
     "power": 100,
@@ -28,6 +32,7 @@
     "pp": 10
   },
   "Flamethrower": {
+    "name": "Flamethrower",
     "type": "Fire",
     "category": "Special",
     "power": 90,
@@ -35,6 +40,7 @@
     "pp": 15
   },
   "Air Slash": {
+    "name": "Air Slash",
     "type": "Flying",
     "category": "Special",
     "power": 75,
@@ -42,6 +48,7 @@
     "pp": 15
   },
   "Dragon Claw": {
+    "name": "Dragon Claw",
     "type": "Dragon",
     "category": "Physical",
     "power": 80,
@@ -49,6 +56,7 @@
     "pp": 15
   },
   "Hydro Pump": {
+    "name": "Hydro Pump",
     "type": "Water",
     "category": "Special",
     "power": 110,
@@ -56,6 +64,7 @@
     "pp": 5
   },
   "Ice Beam": {
+    "name": "Ice Beam",
     "type": "Ice",
     "category": "Special",
     "power": 90,
@@ -63,6 +72,7 @@
     "pp": 10
   },
   "Surf": {
+    "name": "Surf",
     "type": "Water",
     "category": "Special",
     "power": 90,
@@ -70,6 +80,7 @@
     "pp": 15
   },
   "Bite": {
+    "name": "Bite",
     "type": "Dark",
     "category": "Physical",
     "power": 60,
@@ -77,6 +88,7 @@
     "pp": 25
   },
   "Psychic": {
+    "name": "Psychic",
     "type": "Psychic",
     "category": "Special",
     "power": 90,
@@ -84,6 +96,7 @@
     "pp": 10
   },
   "Shadow Ball": {
+    "name": "Shadow Ball",
     "type": "Ghost",
     "category": "Special",
     "power": 80,
@@ -91,6 +104,7 @@
     "pp": 15
   },
   "Recover": {
+    "name": "Recover",
     "type": "Normal",
     "category": "Status",
     "power": 0,
@@ -98,6 +112,7 @@
     "pp": 10
   },
   "Calm Mind": {
+    "name": "Calm Mind",
     "type": "Psychic",
     "category": "Status",
     "power": 0,
@@ -105,6 +120,7 @@
     "pp": 20
   },
   "Dynamic Punch": {
+    "name": "Dynamic Punch",
     "type": "Fighting",
     "category": "Physical",
     "power": 100,
@@ -112,6 +128,7 @@
     "pp": 5
   },
   "Stone Edge": {
+    "name": "Stone Edge",
     "type": "Rock",
     "category": "Physical",
     "power": 100,
@@ -119,6 +136,7 @@
     "pp": 5
   },
   "Bulk Up": {
+    "name": "Bulk Up",
     "type": "Fighting",
     "category": "Status",
     "power": 0,
@@ -126,6 +144,7 @@
     "pp": 20
   },
   "Thunderbolt": {
+    "name": "Thunderbolt",
     "type": "Electric",
     "category": "Special",
     "power": 90,
@@ -133,6 +152,7 @@
     "pp": 15
   },
   "Hypnosis": {
+    "name": "Hypnosis",
     "type": "Psychic",
     "category": "Status",
     "power": 0,
@@ -140,6 +160,7 @@
     "pp": 20
   },
   "Explosion": {
+    "name": "Explosion",
     "type": "Normal",
     "category": "Physical",
     "power": 250,
@@ -147,6 +168,7 @@
     "pp": 5
   },
   "Protect": {
+    "name": "Protect",
     "type": "Normal",
     "category": "Status",
     "power": 0,
@@ -154,6 +176,7 @@
     "pp": 10
   },
   "Thunder Punch": {
+    "name": "Thunder Punch",
     "type": "Electric",
     "category": "Physical",
     "power": 75,
@@ -161,6 +184,7 @@
     "pp": 15
   },
   "Fly": {
+    "name": "Fly",
     "type": "Flying",
     "category": "Physical",
     "power": 90,
@@ -168,6 +192,7 @@
     "pp": 15
   },
   "Flare Blitz": {
+    "name": "Flare Blitz",
     "type": "Fire",
     "category": "Physical",
     "power": 120,
@@ -175,6 +200,7 @@
     "pp": 15
   },
   "Extreme Speed": {
+    "name": "Extreme Speed",
     "type": "Normal",
     "category": "Physical",
     "power": 80,
@@ -182,6 +208,7 @@
     "pp": 5
   },
   "Crunch": {
+    "name": "Crunch",
     "type": "Dark",
     "category": "Physical",
     "power": 80,
@@ -189,6 +216,7 @@
     "pp": 15
   },
   "Roar": {
+    "name": "Roar",
     "type": "Normal",
     "category": "Status",
     "power": 0,
@@ -196,6 +224,7 @@
     "pp": 20
   },
   "Leech Seed": {
+    "name": "Leech Seed",
     "type": "Grass",
     "category": "Status",
     "power": 0,
@@ -203,6 +232,7 @@
     "pp": 10
   },
   "Rock Slide": {
+    "name": "Rock Slide",
     "type": "Rock",
     "category": "Physical",
     "power": 75,
@@ -210,6 +240,7 @@
     "pp": 10
   },
   "Horn Drill": {
+    "name": "Horn Drill",
     "type": "Normal",
     "category": "Physical",
     "power": 0,
