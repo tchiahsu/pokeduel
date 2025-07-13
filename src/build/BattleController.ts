@@ -15,23 +15,28 @@ export default class BattleController {
         const player1Name: string = await this.inputReader.getPlayerName();
         const player2Name: string = await this.inputReader.getPlayerName();
 
+        console.log();
         const allPokemon: string[] = this.model.getAllPokemon();
         //this.view.display(allPokemon);
         console.log("Available Pokemon:");
         console.table(allPokemon);
-
+        
+        console.log();
         const player1Team: string[] = await this.inputReader.getPlayerTeamChoice();
         const player2Team: string[] = await this.inputReader.getPlayerTeamChoice();
+        console.log()
 
         this.model.setPlayer1(player1Name, player1Team)
         this.model.setPlayer2(player2Name, player2Team)
+
 
         while (!this.model.isGameOver()) {
             const playerOptions = this.model.getPlayerOptions();
             // this.view.display(playerOptions);
             console.log(playerOptions[0]);
             const p1Move = await this.inputReader.getMove();
-
+            
+            console.log()
             console.log(playerOptions[1]);
             const p2Move = await this.inputReader.getMove();
 
@@ -45,7 +50,7 @@ export default class BattleController {
             const messages = this.model.getMessages();
             // this.view.display(messages);
             console.log("Turn results:");
-            messages.forEach((message: string) => console.log(message))
+            messages.forEach((message: string) => console.log(message));
             // console.log(messages);
 
             if (this.model.aPokemonHasFainted() && !this.model.isGameOver()) {
@@ -54,15 +59,15 @@ export default class BattleController {
                 console.log("Choose a replacement Pokemon:");
                 console.log(`${this.model.getRemainingPokemon()}`);
 
-                const switchMove = await this.inputReader.getMove() // Index of pokemon they want
+                const switchIndex = await this.inputReader.getMove() // Index of pokemon they want
+                const switchMove = {action: "switch", index: parseInt(switchIndex)-1};
                 const switchMessage = this.model.handleFaintedPokemon(switchMove);
                 // this.view.display(switchMessage);
                 console.log(switchMessage);
             }
-
-            const endingMessage = this.model.getEndingMessage();
-            // this.view.display(endingMessage);
-            console.log(endingMessage);
         }
+        const endingMessage = this.model.getEndingMessage();
+        // this.view.display(endingMessage);
+        console.log(endingMessage);
     }
 }

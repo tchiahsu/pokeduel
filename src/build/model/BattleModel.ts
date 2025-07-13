@@ -31,7 +31,7 @@ export default class BattleModel {
    * @param player1Team Contains the player's pokemon team selection.
    */
   public setPlayer1(name: string, player1Team: string[]): void {
-    let pokemonTeam: Pokemon[] = PokemonFactory.createTeam(player1Team);
+    const pokemonTeam: Pokemon[] = PokemonFactory.createTeam(player1Team);
     this.player1 = new Player(name, pokemonTeam);
   }
 
@@ -42,7 +42,7 @@ export default class BattleModel {
    * @param player2Team Contains the player's pokemon team selection.
    */
   public setPlayer2(name: string, player2Team: string[]): void {
-    let pokemonTeam: Pokemon[] = PokemonFactory.createTeam(player2Team);
+    const pokemonTeam: Pokemon[] = PokemonFactory.createTeam(player2Team);
     this.player2 = new Player(name, pokemonTeam);
   }
 
@@ -75,24 +75,17 @@ export default class BattleModel {
    * @returns void
    */
   private handleAttack(p1Move: PlayerMove, p2Move: PlayerMove): void {
-    let firstPlayer: Player = BattleUtils.getFasterPlayer(this.player1, this.player2);
-    let firstPlayerMove: PlayerMove = firstPlayer === this.player1 ? p1Move : p2Move;
-    let secondPlayer: Player = firstPlayer === this.player1 ? this.player2 : this.player1;
-    let secondPlayerMove: PlayerMove = firstPlayer === this.player1 ? p2Move : p1Move;
+    const firstPlayer: Player = BattleUtils.getFasterPlayer(this.player1, this.player2);
+    const firstPlayerMove: PlayerMove = firstPlayer === this.player1 ? p1Move : p2Move;
+    const secondPlayer: Player = firstPlayer === this.player1 ? this.player2 : this.player1;
+    const secondPlayerMove: PlayerMove = firstPlayer === this.player1 ? p2Move : p1Move;
 
     this.processAttack(firstPlayer, firstPlayerMove.index);
     if (BattleUtils.pokemonIsDefeated(secondPlayer)) {
-      this.messages.push(`${secondPlayer.getCurrentPokemon().getName()} has fainted!\n`);
-      this.gameOver = secondPlayer.hasRemainingPokemon() ? false : true;
       return;
     }
 
     this.processAttack(secondPlayer, secondPlayerMove.index);
-    if (BattleUtils.pokemonIsDefeated(firstPlayer)) {
-      this.messages.push(`${firstPlayer.getCurrentPokemon().getName()} has fainted!\n`);
-      this.gameOver = firstPlayer.hasRemainingPokemon() ? false : true;
-      return;
-    }
   }
   
   /**
@@ -103,16 +96,24 @@ export default class BattleModel {
    */
   private processSwitch(player: Player, pokemonIndex: number): void {
     player.switchPokemon(pokemonIndex);
-    this.messages.push(`${player.getName()} switched to ${player.getCurrentPokemon().getName()}!\n`);
+    this.messages.push(`${player.getName()} switched to ${player.getCurrentPokemon().getName()}!`);
   }
   
-  private processAttack(player: Player, attackIndex: number): void {
-    let attacker: Pokemon = player.getCurrentPokemon();
-    let defender: Pokemon = player === this.player1 ? this.player2.getCurrentPokemon() : this.player1.getCurrentPokemon();
-    let damage: number = BattleUtils.calculateDamage(attacker, attackIndex, defender);
-    attacker.getMove(attackIndex).reducePP(); // Need to check PP
-    defender.takeDamage(damage);
-    this.messages.push(`${attacker.getName()} used ${attacker.getMove(attackIndex).getName()}`)
+  private processAttack(attackingPlayer: Player, attackIndex: number): void {
+    const defendingPlayer = attackingPlayer === this.player1 ? this.player2 : this.player1;
+    const attackingPokemon: Pokemon = attackingPlayer.getCurrentPokemon();
+    const defendingPokemon: Pokemon = defendingPlayer.getCurrentPokemon();
+
+    const damage: number = BattleUtils.calculateDamage(attackingPokemon, attackIndex, defendingPokemon);
+    attackingPokemon.getMove(attackIndex).reducePP(); // Need to check PP
+    defendingPokemon.takeDamage(damage);
+    this.messages.push(`${attackingPokemon.getName()} used ${attackingPokemon.getMove(attackIndex).getName()}!`);
+
+    if (BattleUtils.pokemonIsDefeated(defendingPlayer)) {
+      this.messages.push(`${defendingPokemon.getName()} has fainted!`);
+      defendingPlayer.reduceRemainingPokemon();
+      this.gameOver = defendingPlayer.hasRemainingPokemon() ? false : true;
+    }
   }
 
   /**
@@ -121,13 +122,13 @@ export default class BattleModel {
    * @returns The available options for the players.
    */
   public getPlayerOptions(): string[] {
-    let player1Options: string = `${this.player1.getName()} options: \n` +
+    const player1Options: string = `${this.player1.getName()}'s options: \n` +
     `Attack with ${this.player1.getCurrentPokemon().getName()}: ${BattleUtils.getAllMoves(this.player1)}\n` +
-    `Switch Pokemon: ${BattleUtils.getRemainingPokemon(this.player1)}\n\n`
+    `Switch Pokemon: ${BattleUtils.getRemainingPokemon(this.player1)}\n`
 
-    let player2Options: string = `${this.player2.getName()} options: \n` +
+    const player2Options: string = `${this.player2.getName()}'s options: \n` +
     `Attack with ${this.player2.getCurrentPokemon().getName()}: ${BattleUtils.getAllMoves(this.player2)}\n` +
-    `Switch Pokemon: ${BattleUtils.getRemainingPokemon(this.player2)}\n\n`
+    `Switch Pokemon: ${BattleUtils.getRemainingPokemon(this.player2)}\n`
 
     return [player1Options, player2Options];
   }
@@ -138,7 +139,7 @@ export default class BattleModel {
    * @returns The messages representing what happened in this turn.
    */
   public getMessages(): string[] {
-    let messages: string[] = [...this.messages];
+    const messages: string[] = [...this.messages, ""];
     this.messages = [];
     return messages;
   }
@@ -158,8 +159,8 @@ export default class BattleModel {
    * @returns The player's remaining pokemon.
    */
   public getRemainingPokemon() {
-    let faintedPlayer: Player = BattleUtils.pokemonIsDefeated(this.player1) ? this.player1 : this.player2;
-    return `${faintedPlayer.getName()} remaining Pokemon: ${BattleUtils.getRemainingPokemon(faintedPlayer)}\n`;
+    const faintedPlayer: Player = BattleUtils.pokemonIsDefeated(this.player1) ? this.player1 : this.player2;
+    return `${faintedPlayer.getName()}'s remaining Pokemon: ${BattleUtils.getRemainingPokemon(faintedPlayer)}`;
   }
   
   /**
@@ -169,7 +170,7 @@ export default class BattleModel {
    * @returns A message notifying the fainted player has switched pokemon.
    */
   public handleFaintedPokemon(switchMove: PlayerMove): string {
-    let faintedPlayer: Player = BattleUtils.pokemonIsDefeated(this.player1) ? this.player1 : this.player2;
+    const faintedPlayer: Player = BattleUtils.pokemonIsDefeated(this.player1) ? this.player1 : this.player2;
     faintedPlayer.switchPokemon(switchMove.index);
     return `${faintedPlayer.getName()} switched to ${faintedPlayer.getCurrentPokemon().getName()}!\n`;
   }
@@ -189,10 +190,10 @@ export default class BattleModel {
    * @returns The game's ending message with the winner.
    */
   public getEndingMessage(): string {
-    let faintedPlayer: Player = this.player1.hasRemainingPokemon() ? this.player2 : this.player1;
-    let otherPlayer: Player = faintedPlayer === this.player1 ? this.player2 : this.player1;
+    const faintedPlayer: Player = this.player1.hasRemainingPokemon() ? this.player2 : this.player1;
+    const otherPlayer: Player = faintedPlayer === this.player1 ? this.player2 : this.player1;
     
-    return `${faintedPlayer} is out of Pokemon! ${otherPlayer} wins!\n`
+    return `${faintedPlayer.getName()} is out of Pokemon! ${otherPlayer.getName()} wins!`
   }
 
   /**
