@@ -103,7 +103,7 @@ export default class BattleModel {
    */
   private processSwitch(player: Player, pokemonIndex: number): void {
     player.switchPokemon(pokemonIndex);
-    this.messages.push(`${player.getName()} switched to ${player.getCurrentPokemon()}!\n`);
+    this.messages.push(`${player.getName()} switched to ${player.getCurrentPokemon().getName()}!\n`);
   }
   
   private processAttack(player: Player, attackIndex: number): void {
@@ -112,6 +112,7 @@ export default class BattleModel {
     let damage: number = BattleUtils.calculateDamage(attacker, attackIndex, defender);
     attacker.getMove(attackIndex).reducePP(); // Need to check PP
     defender.takeDamage(damage);
+    this.messages.push(`${attacker.getName()} used ${attacker.getMove(attackIndex).getName()}`)
   }
 
   /**
@@ -120,13 +121,13 @@ export default class BattleModel {
    * @returns The available options for the players.
    */
   public getPlayerOptions(): string[] {
-    let player1Options: string = `${this.player1.getName()} options: \n
-    ${this.player1.getCurrentPokemon().getName()} Attack: ${BattleUtils.getAllMoves(this.player1)}\n
-    Switch Pokemon: ${BattleUtils.getRemainingPokemon(this.player1)}\n\n`
+    let player1Options: string = `${this.player1.getName()} options: \n` +
+    `Attack with ${this.player1.getCurrentPokemon().getName()}: ${BattleUtils.getAllMoves(this.player1)}\n` +
+    `Switch Pokemon: ${BattleUtils.getRemainingPokemon(this.player1)}\n\n`
 
-    let player2Options: string = `${this.player2.getName()} options: \n
-    ${this.player2.getCurrentPokemon().getName()} Attack: ${BattleUtils.getAllMoves(this.player2)}\n
-    Switch Pokemon: ${BattleUtils.getRemainingPokemon(this.player2)}\n\n`
+    let player2Options: string = `${this.player2.getName()} options: \n` +
+    `Attack with ${this.player2.getCurrentPokemon().getName()}: ${BattleUtils.getAllMoves(this.player2)}\n` +
+    `Switch Pokemon: ${BattleUtils.getRemainingPokemon(this.player2)}\n\n`
 
     return [player1Options, player2Options];
   }
@@ -170,7 +171,7 @@ export default class BattleModel {
   public handleFaintedPokemon(switchMove: PlayerMove): string {
     let faintedPlayer: Player = BattleUtils.pokemonIsDefeated(this.player1) ? this.player1 : this.player2;
     faintedPlayer.switchPokemon(switchMove.index);
-    return `${faintedPlayer.getName()} switched to ${faintedPlayer.getCurrentPokemon()}!\n`;
+    return `${faintedPlayer.getName()} switched to ${faintedPlayer.getCurrentPokemon().getName()}!\n`;
   }
   
   /**

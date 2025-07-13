@@ -45,13 +45,14 @@ export default class BattleController {
             const messages = this.model.getMessages();
             // this.view.display(messages);
             console.log("Turn results:");
-            console.log(messages[0]);
+            messages.forEach((message: string) => console.log(message))
+            // console.log(messages);
 
             if (this.model.aPokemonHasFainted() && !this.model.isGameOver()) {
                 const remainingPokemon = this.model.getRemainingPokemon();
                 // this.view.display(remainingPokemon);
                 console.log("Choose a replacement Pokemon:");
-                console.log("remaining Pokemon: ");
+                console.log(`${this.model.getRemainingPokemon()}`);
 
                 const switchMove = await this.inputReader.getMove() // Index of pokemon they want
                 const switchMessage = this.model.handleFaintedPokemon(switchMove);
