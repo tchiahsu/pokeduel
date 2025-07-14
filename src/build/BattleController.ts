@@ -34,17 +34,29 @@ export default class BattleController {
             const playerOptions = this.model.getPlayerOptions();
             // this.view.display(playerOptions);
             console.log(playerOptions[0]);
-            const p1Move = await this.inputReader.getMove();
-            
+            let p1Move = await this.inputReader.getMove();
+            let p1ParseMove = p1Move.split(" ");
+            let p1FormattedMove = {action: p1ParseMove[0], index: parseInt(p1ParseMove[1])-1}
+            while (this.model.isInvalidMove(1,p1FormattedMove)) {
+                console.log("You tried to switch to the same Pokemon. Try again");
+                p1Move = await this.inputReader.getMove();
+                p1ParseMove = p1Move.split(" ");
+                p1FormattedMove = {action: p1ParseMove[0], index: parseInt(p1ParseMove[1])-1}
+            }
+
             console.log()
             console.log(playerOptions[1]);
-            const p2Move = await this.inputReader.getMove();
+            let p2Move = await this.inputReader.getMove(); 
+            let p2ParseMove = p2Move.split(" ");
+            let p2FormattedMove = {action: p2ParseMove[0], index: parseInt(p2ParseMove[1])-1}
+            while (this.model.isInvalidMove(2,p2FormattedMove)) {
+                console.log("You tried to switch to the same Pokemon. Try again");
+                p2Move = await this.inputReader.getMove();
+                p2ParseMove = p2Move.split(" ");
+                p2FormattedMove = {action: p2ParseMove[0], index: parseInt(p2ParseMove[1])-1}
+            }
 
             // Convert Attach option to object {action: <action>, index: <index>}
-            const p1ParseMove = p1Move.split(" ");
-            const p2ParseMove = p2Move.split(" ");
-            const p1FormattedMove = {action: p1ParseMove[0], index: parseInt(p1ParseMove[1])-1}
-            const p2FormattedMove = {action: p2ParseMove[0], index: parseInt(p2ParseMove[1])-1}
             this.model.handleTurn(p1FormattedMove, p2FormattedMove);
 
             const messages = this.model.getMessages();
