@@ -89,6 +89,24 @@ export default class BattleModel {
   }
   
   /**
+   * Checks if the player's move is invalid.
+   * A move is invalid if the player tries to switch to their currently active Pokémon.
+   * 
+   * @param player The player number (1 or 2).
+   * @param playerMove The move the player wants to make.
+   * @returns True if the move is invalid, false otherwise.
+   */
+  public isInvalidMove(player: number, playerMove: PlayerMove): boolean {
+    if (player === 1 && playerMove.index === this.player1.getCurrentPokemonIndex()) {
+      return true;
+    } else if(player === 2 && playerMove.index === this.player2.getCurrentPokemonIndex()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
    * Handles switching pokemon for the player.
    * 
    * @param player The player that wants to switch pokemon.
@@ -171,6 +189,7 @@ export default class BattleModel {
    */
   public handleFaintedPokemon(switchMove: PlayerMove): string {
     const faintedPlayer: Player = BattleUtils.pokemonIsDefeated(this.player1) ? this.player1 : this.player2;
+    faintedPlayer.updateTeam(faintedPlayer.getCurrentPokemonIndex());
     faintedPlayer.switchPokemon(switchMove.index);
     return `${faintedPlayer.getName()} switched to ${faintedPlayer.getCurrentPokemon().getName()}!\n`;
   }
