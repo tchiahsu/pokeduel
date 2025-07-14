@@ -39,6 +39,22 @@ export default class Player {
     }
 
     /**
+     * Remove a Pokémon from the team by its index.
+     * @param removeIndex The index of the Pokémon to remove.
+     */
+    public updateTeam(removeIndex: number): void {
+        this.team.splice(removeIndex, 1);
+        this.remainingPokemon = this.team.length;
+
+        if (this.currentPokemon === removeIndex) {
+            this.currentPokemon = 0;
+        } else if (this.currentPokemon > removeIndex) {
+            this.currentPokemon -= 1;
+        }
+    }
+
+
+    /**
      * Get the currently active Pokemon.
      * @returns The current Pokémon object.
      */
@@ -76,5 +92,9 @@ export default class Player {
      */
     public hasRemainingPokemon(): boolean {
         return this.remainingPokemon > 0
+    }
+
+    public getCurrentPokemonIndex(): number {
+    return this.currentPokemon;
     }
 }
