@@ -1,5 +1,5 @@
 {
-  "Venusaur": {
+  "venusaur": {
     "name": "Venusaur",
     "types": ["Grass", "Poison"],
     "hp": 80,
@@ -10,7 +10,7 @@
     "speed": 80,
     "moves": ["Solar Beam", "Sludge Bomb", "Sleep Powder", "Earthquake"]
   },
-  "Charizard": {
+  "charizard": {
     "name": "Charizard",
     "types": ["Fire", "Flying"],
     "hp": 78,
@@ -21,7 +21,7 @@
     "speed": 100,
     "moves": ["Flamethrower", "Air Slash", "Dragon Claw", "Earthquake"]
   },
-  "Blastoise": {
+  "blastoise": {
     "name": "Blastoise",
     "types": ["Water"],
     "hp": 79,
@@ -32,7 +32,7 @@
     "speed": 78,
     "moves": ["Hydro Pump", "Ice Beam", "Surf", "Bite"]
   },
-  "Alakazam": {
+  "alakazam": {
     "name": "Alakazam",
     "types": ["Psychic"],
     "hp": 55,
@@ -43,7 +43,7 @@
     "speed": 120,
     "moves": ["Psychic", "Shadow Ball", "Recover", "Calm Mind"]
   },
-  "Machamp": {
+  "machamp": {
     "name": "Machamp",
     "types": ["Fighting"],
     "hp": 90,
@@ -54,7 +54,7 @@
     "speed": 55,
     "moves": ["Dynamic Punch", "Earthquake", "Stone Edge", "Bulk Up"]
   },
-  "Gengar": {
+  "gengar": {
     "name": "Gengar",
     "types": ["Ghost", "Poison"],
     "hp": 60,
@@ -65,7 +65,7 @@
     "speed": 110,
     "moves": ["Shadow Ball", "Sludge Bomb", "Thunderbolt", "Hypnosis"]
   },
-  "Golem": {
+  "golem": {
     "name": "Golem",
     "types": ["Rock", "Ground"],
     "hp": 80,
@@ -76,7 +76,7 @@
     "speed": 45,
     "moves": ["Earthquake", "Stone Edge", "Explosion", "Protect"]
   },
-  "Dragonite": {
+  "dragonite": {
     "name": "Dragonite",
     "types": ["Dragon", "Flying"],
     "hp": 91,
@@ -87,7 +87,7 @@
     "speed": 80,
     "moves": ["Dragon Claw", "Thunder Punch", "Fly", "Ice Beam"]
   },
-  "Arcanine": {
+  "arcanine": {
     "name": "Arcanine",
     "types": ["Fire"],
     "hp": 90,
@@ -98,7 +98,7 @@
     "speed": 95,
     "moves": ["Flare Blitz", "Extreme Speed", "Crunch", "Roar"]
   },
-  "Exeggutor": {
+  "exeggutor": {
     "name": "Exeggutor",
     "types": ["Grass", "Psychic"],
     "hp": 95,
@@ -109,7 +109,7 @@
     "speed": 55,
     "moves": ["Psychic", "Solar Beam", "Sleep Powder", "Leech Seed"]
   },
-  "Rhydon": {
+  "rhydon": {
     "name": "Rhydon",
     "types": ["Ground", "Rock"],
     "hp": 105,
@@ -120,7 +120,7 @@
     "speed": 40,
     "moves": ["Earthquake", "Rock Slide", "Horn Drill", "Thunderbolt"]
   },
-  "Nidoking": {
+  "nidoking": {
     "name": "Nidoking",
     "types": ["Poison", "Ground"],
     "hp": 81,

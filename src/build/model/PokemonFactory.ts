@@ -14,7 +14,7 @@ export default class PokemonFactory {
    * @returns an array of Pokemon objects.
    */
   static createTeam(pokemonNames: string[]) {
-    let team = pokemonNames.map((pokemonName) => this.createPokemon(pokemonName));
+    let team = pokemonNames.map((pokemonName) => this.createPokemon(pokemonName.toLowerCase()));
     return team;
   }
 
@@ -51,12 +51,3 @@ export default class PokemonFactory {
     return move;
   }
 }
-
-// For testing
-// let pf = new PokemonFactory();
-// let team = pf.createTeam(["Venusaur", "Charizard", "Blastoise", "Alakazam", "Machamp", "Gengar"]);
-// console.log(team);
-
-// console.log(`Blastoise moves: ${team[2].raiseStat("atk", 7)}`);
-// team[2].takeDamage(9);
-// console.log(`Blastoise health: ${team[2].getHp()}`);
