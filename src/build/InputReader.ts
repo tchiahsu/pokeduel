@@ -30,7 +30,7 @@ export default class InputReader {
     }
 
     async getAction(): Promise<string> {
-        const action = (await this.prompt('Selection your move (Attack or Switch): ')).toLocaleLowerCase();
+        const action = (await this.prompt('Select your move (Attack or Switch): ')).toLocaleLowerCase();
         return action;
     }
 
