@@ -36,7 +36,7 @@ export default class InputReader {
 
     async getActionArgument(action: string): Promise<number> {
         let argument: number;
-        if (action == 'attack') {
+        if (action === 'attack') {
             argument = parseInt(await this.prompt('Select attack ability: '));
         } else {
             argument = parseInt(await this.prompt('Select Pokemon: '));

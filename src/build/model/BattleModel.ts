@@ -96,26 +96,19 @@ export default class BattleModel {
    * @param playerMove The move the player wants to make.
    * @returns True if the move is invalid, false otherwise.
    */
-  public isInvalidMove(player: number, playerMove: PlayerMove): boolean {
+  public isInvalidAction(player: number, playerMove: PlayerMove): boolean {
+    const currentPlayer = player === 1 ? this.player1 : this.player2;
+
     if (playerMove.action === 'switch') {
-      if (player === 1 && playerMove.index === this.player1.getCurrentPokemonIndex()) {
-        return true;
-      } else if(player === 2 && playerMove.index === this.player2.getCurrentPokemonIndex()) {
-        return true;
-      } else {
-        return false;
-      }
-    } else if (playerMove.action === 'attack') {
-      if (player === 1 &&  this.player1.getCurrentPokemon().getMove(playerMove.index).getPp() === 0) {
-        return true;
-      } else if(player === 2 && this.player2.getCurrentPokemon().getMove(playerMove.index).getPp() === 0) {
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      return false;
+      return playerMove.index === currentPlayer.getCurrentPokemonIndex();
     }
+
+    if (playerMove.action === 'attack') {
+      const move = currentPlayer.getCurrentPokemon().getMove(playerMove.index);
+      return move.getPp() === 0;
+    }
+
+    return false;
   }
 
   /**
