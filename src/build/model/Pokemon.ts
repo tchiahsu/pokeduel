@@ -15,6 +15,7 @@ export default class Pokemon {
   private speed: number;
   private moves: Move[];
   private fainted: boolean;
+  private status: string;
 
   /**
    * Constructs a new Pokémon instance with the given stats and moves.
@@ -119,6 +120,21 @@ export default class Pokemon {
    */
   public getMove(move: number): Move {
     return this.moves[move];
+  }
+
+  /**
+   * Method to get the effect status on a pokemon
+   * @returns the status effect on the pokemon
+   */
+  public getStatus(): string {
+    return this.status;
+  }
+
+  /**
+   * Method to sets the effect status on a pokemon
+   */
+  public setStatus(status: string): void {
+    this.status = status;
   }
 
   /**

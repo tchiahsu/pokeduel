@@ -3,6 +3,7 @@ import Player from "./Player.js";
 import Pokemon from "./Pokemon.js";
 import PokemonFactory from "./PokemonFactory.js";
 import pokemonData from "./pokemon.json" with {"type": "json"};
+import StatusManager from "./StatusManager.js";
 
 /**
  * An interface representing the player's move.
@@ -171,12 +172,26 @@ export default class BattleModel {
     const defendingPlayer = attackingPlayer === this.player1 ? this.player2 : this.player1;
     const attackingPokemon: Pokemon = attackingPlayer.getCurrentPokemon();
     const defendingPokemon: Pokemon = defendingPlayer.getCurrentPokemon();
+    const move = attackingPokemon.getMove(attackIndex);
 
+    // Check if attacking pokemon is blocked by status
+    const statusMessage = StatusManager.checkIfCanMove(attackingPokemon);
+    if (statusMessage) {
+      this.messages.push(statusMessage);
+      return;
+    }
+
+    // Proceed with attack
     const damage: number = BattleUtils.calculateDamage(attackingPokemon, attackIndex, defendingPokemon);
-    attackingPokemon.getMove(attackIndex).reducePP(); // Need to check PP
+    move.reducePP(); // Need to check PP
     defendingPokemon.takeDamage(damage);
-    this.messages.push(`${attackingPokemon.getName()} used ${attackingPokemon.getMove(attackIndex).getName()}!`);
+    this.messages.push(`${attackingPokemon.getName()} used ${move.getName()}!`);
 
+    // Try to apply effect
+    const effectMessage = StatusManager.tryApplyEffect(attackingPokemon, defendingPokemon, move);
+    if (effectMessage) this.messages.push(effectMessage)
+    
+    // Handle pokemon fainting
     if (BattleUtils.pokemonIsDefeated(defendingPlayer)) {
       this.messages.push(`${defendingPokemon.getName()} has fainted!`);
       defendingPlayer.reduceRemainingPokemon();

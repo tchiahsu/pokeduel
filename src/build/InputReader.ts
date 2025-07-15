@@ -24,8 +24,8 @@ export default class InputReader {
         return name;
     }
 
-    async getPlayerTeamChoice(): Promise<string[]> {
-        const teamString = await this.prompt('Choose your team of 6 Pokemons (separated by a space): ')
+    async getPlayerTeamChoice(player: number): Promise<string[]> {
+        const teamString = await this.prompt(`Player ${player}, choose your team of 6 Pokemons (separated by a space): `)
         return teamString.split(/\s+/).map(name => name.trim());
     }
 
