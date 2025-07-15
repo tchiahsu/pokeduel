@@ -54,11 +54,12 @@ export default class BattleUtils {
    * @returns the remaining pokemon of the player
    */
   static getRemainingPokemon(player: Player): string {
-    const currentIndex = player.getCurrentPokemonIndex();
+    // const currentIndex = player.getCurrentPokemonIndex();
 
-    return player.getTeam().filter((pokemon: Pokemon, idx: number) => idx !== currentIndex && pokemon.getHp() > 0)
-                           .map((pokemon: Pokemon) => pokemon.getName())
-                           .join(", ");
+    // return player.getTeam().filter((pokemon: Pokemon, idx: number) => idx !== currentIndex && pokemon.getHp() > 0)
+    //                        .map((pokemon: Pokemon) => pokemon.getName())
+    //                        .join(", ");
+    return player.getTeam().map((pokemon: Pokemon) => pokemon.getName()).join(", ");
   }
 
   /**

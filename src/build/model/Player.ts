@@ -9,7 +9,7 @@ export default class Player {
     private team: Pokemon[];
     private currentPokemon: number;
     private remainingPokemon: number;
-
+    private faintedPokemon: number[];
     /**
      * Create a new Player instance.
      * @param name The name of the player.
@@ -38,20 +38,20 @@ export default class Player {
         return this.team;
     }
 
-    /**
-     * Remove a Pokémon from the team by its index.
-     * @param removeIndex The index of the Pokémon to remove.
-     */
-    public updateTeam(removeIndex: number): void {
-        this.team.splice(removeIndex, 1);
-        this.remainingPokemon = this.team.length;
+    // /**
+    //  * Remove a Pokémon from the team by its index.
+    //  * @param removeIndex The index of the Pokémon to remove.
+    //  */
+    // public updateTeam(removeIndex: number): void {
+    //     this.team.splice(removeIndex, 1);
+    //     this.remainingPokemon = this.team.length;
 
-        if (this.currentPokemon === removeIndex) {
-            this.currentPokemon = 0;
-        } else if (this.currentPokemon > removeIndex) {
-            this.currentPokemon -= 1;
-        }
-    }
+    //     if (this.currentPokemon === removeIndex) {
+    //         this.currentPokemon = 0;
+    //     } else if (this.currentPokemon > removeIndex) {
+    //         this.currentPokemon -= 1;
+    //     }
+    // }
 
 
     /**
@@ -63,12 +63,28 @@ export default class Player {
     }
 
     /**
-     * 
+     * Returns the number of remaining Pokemon
      * @returns Get the remaining active Pokemon.
      * @returns the number of remaining Pokemon.
      */
     public getRemainingPokemon(): number {
         return this.remainingPokemon;
+    }
+
+    /**
+     * Returns an array of fainted pokemon's index.
+     * @returns array of fainted pokemon index
+     */
+    public getFaintedPokemon(): number[] {
+        return this.faintedPokemon;
+    }
+
+    /**
+     * Adds the fainted Pokemon's index to the faintedPokemon array.
+     * @param faintedIndex the index of the fainted Pokemon
+     */
+    public addFaintedPokemon(faintedIndex: number): void {
+        this.faintedPokemon.push(faintedIndex);
     }
 
     /**
@@ -94,6 +110,10 @@ export default class Player {
         return this.remainingPokemon > 0
     }
 
+    /**
+     * Returns the currentPokemon's index in the team array.
+     * @returns the index of the current pokemon
+     */
     public getCurrentPokemonIndex(): number {
     return this.currentPokemon;
     }
