@@ -96,7 +96,7 @@ export default class BattleModel {
    * @param playerMove The move the player wants to make.
    * @returns True if the move is invalid, false otherwise.
    */
-  public isInvalidAction(player: number, playerMove: PlayerMove): boolean {
+  public isInvalidMove(player: number, playerMove: PlayerMove): boolean {
     const currentPlayer = player === 1 ? this.player1 : this.player2;
 
     if (playerMove.action === 'switch') {
@@ -109,6 +109,51 @@ export default class BattleModel {
     }
 
     return false;
+  }
+
+  /**
+   * Check the user inputs a valid action
+   * 
+   * @param action The action selected by the user.
+   */
+  public isInvalidAction(action: string): boolean {
+    return !(action === 'attack' || action === 'switch')
+  }
+
+  /**
+   * Check the pokemons the user has selected are valid
+   * 
+   * @param team A list of pokemons in a player's team
+   * @param allPokemon A list of all pokemons in the game
+   */
+  public isInvalidPokemon(team: string[], allPokemon: string): boolean {
+    // convert allPokemon into an array of pokemon names
+    const allPokemonArray = allPokemon.split(/\s+/).map(name => name.trim());
+
+    for (let pokemon of team) {
+      if (!allPokemonArray.includes(pokemon)) {
+        return true
+      }
+    }
+    return false
+  }
+
+  /**
+   * Check the given action argument is valid.
+   * For attack - make sure the argument is within indexes 1-4
+   * For switch - make sure the argument is valid for the team size
+   * 
+   * @param action The action selected by the user
+   * @param argument The index for the action the user want to perform
+   * @param team A list of pokemons in a player's team
+   */
+  public isInvalidIndex(action: string, argument: number, team: string[], ): boolean {
+    if (action === 'attack') {
+      return !(argument >= 1 && argument <= 4)
+    } else {
+      const teamLength = team.length
+      return !(argument >= 1 && argument <= teamLength)
+    }
   }
 
   /**
