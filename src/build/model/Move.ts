@@ -69,6 +69,14 @@ export default class Move {
     }
 
     /**
+     * Gets the PP of the move.
+     * @returns The PP as a number.
+     */
+    public getPp(): number {
+        return this.pp;
+    }
+
+    /**
      * Reduces the move's PP (Power Points) by 1.
      * This represents using the move once.
      */

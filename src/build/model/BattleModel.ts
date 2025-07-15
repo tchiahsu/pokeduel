@@ -97,10 +97,22 @@ export default class BattleModel {
    * @returns True if the move is invalid, false otherwise.
    */
   public isInvalidMove(player: number, playerMove: PlayerMove): boolean {
-    if (player === 1 && playerMove.index === this.player1.getCurrentPokemonIndex()) {
-      return true;
-    } else if(player === 2 && playerMove.index === this.player2.getCurrentPokemonIndex()) {
-      return true;
+    if (playerMove.action === 'switch') {
+      if (player === 1 && playerMove.index === this.player1.getCurrentPokemonIndex()) {
+        return true;
+      } else if(player === 2 && playerMove.index === this.player2.getCurrentPokemonIndex()) {
+        return true;
+      } else {
+        return false;
+      }
+    } else if (playerMove.action === 'attack') {
+      if (player === 1 &&  this.player1.getCurrentPokemon().getMove(playerMove.index).getPp() === 0) {
+        return true;
+      } else if(player === 2 && this.player2.getCurrentPokemon().getMove(playerMove.index).getPp() === 0) {
+        return true;
+      } else {
+        return false;
+      }
     } else {
       return false;
     }
@@ -229,7 +241,6 @@ export default class BattleModel {
         allPokemon += "\n";
       }
     });
-
     return allPokemon;
   }
 }
