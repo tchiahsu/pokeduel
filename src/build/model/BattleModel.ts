@@ -228,7 +228,7 @@ export default class BattleModel {
    */
   public getRemainingPokemon() {
     const faintedPlayer: Player = BattleUtils.pokemonIsDefeated(this.player1) ? this.player1 : this.player2;
-    return `${faintedPlayer.getName()}'s remaining Pokemon: ${BattleUtils.getRemainingPokemon(faintedPlayer)}`;
+    return `${faintedPlayer.getName()}'s Pokemons: ${BattleUtils.getRemainingPokemon(faintedPlayer)}`;
   }
   
   /**
@@ -280,5 +280,14 @@ export default class BattleModel {
       }
     });
     return allPokemon;
+  }
+
+  /**
+   * Determine which player's pokemon has fainted
+   */
+  public getFaintedPlayer(): number {
+    if (BattleUtils.pokemonIsDefeated(this.player1)) return 1;
+    if (BattleUtils.pokemonIsDefeated(this.player2)) return 2;
+    throw new Error("No player has fainted.");
   }
 }
