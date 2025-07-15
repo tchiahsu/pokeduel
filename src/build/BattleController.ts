@@ -12,15 +12,18 @@ export default class BattleController {
     }
 
     async go(): Promise<void> {
+        // Initialize Player Names
         const player1Name: string = await this.inputReader.getPlayerName();
         const player2Name: string = await this.inputReader.getPlayerName();
 
+        // Display Pokemon Selection
         console.log();
         const allPokemon: string[] = this.model.getAllPokemon();
         //this.view.display(allPokemon);
         console.log("Available Pokemon:");
         console.table(allPokemon);
         
+        // Get Pokemon Team for each user
         console.log();
         const player1Team: string[] = await this.inputReader.getPlayerTeamChoice();
         const player2Team: string[] = await this.inputReader.getPlayerTeamChoice();
@@ -34,30 +37,30 @@ export default class BattleController {
             const playerOptions = this.model.getPlayerOptions();
             // this.view.display(playerOptions);
             console.log(playerOptions[0]);
-            let p1Move = await this.inputReader.getMove();
-            let p1ParseMove = p1Move.split(" ");
-            let p1FormattedMove = {action: p1ParseMove[0], index: parseInt(p1ParseMove[1])-1}
-            while (this.model.isInvalidMove(1,p1FormattedMove)) {
+            let p1Action = await this.inputReader.getAction();
+            let p1Argument = await this.inputReader.getActionArgument(p1Action);
+            let p1Object = {action: p1Action, index: p1Argument}
+            while (this.model.isInvalidMove(1,p1Object)) {
                 console.log("You tried to switch to the same Pokemon. Try again");
-                p1Move = await this.inputReader.getMove();
-                p1ParseMove = p1Move.split(" ");
-                p1FormattedMove = {action: p1ParseMove[0], index: parseInt(p1ParseMove[1])-1}
+                p1Action = await this.inputReader.getAction();
+                p1Argument = await this.inputReader.getActionArgument(p1Action);
+                p1Object = {action: p1Action, index: p1Argument}
             }
 
-            console.log()
+            console.log();
             console.log(playerOptions[1]);
-            let p2Move = await this.inputReader.getMove(); 
-            let p2ParseMove = p2Move.split(" ");
-            let p2FormattedMove = {action: p2ParseMove[0], index: parseInt(p2ParseMove[1])-1}
-            while (this.model.isInvalidMove(2,p2FormattedMove)) {
+            let p2Action = await this.inputReader.getAction();
+            let p2Argument = await this.inputReader.getActionArgument(p2Action);
+            let p2Object = {action: p2Action, index: p2Argument}
+            while (this.model.isInvalidMove(2,p2Object)) {
                 console.log("You tried to switch to the same Pokemon. Try again");
-                p2Move = await this.inputReader.getMove();
-                p2ParseMove = p2Move.split(" ");
-                p2FormattedMove = {action: p2ParseMove[0], index: parseInt(p2ParseMove[1])-1}
+                p2Action = await this.inputReader.getAction();
+                p2Argument = await this.inputReader.getActionArgument(p2Action);
+                p2Object = {action: p2Action, index: p2Argument}
             }
 
             // Convert Attach option to object {action: <action>, index: <index>}
-            this.model.handleTurn(p1FormattedMove, p2FormattedMove);
+            this.model.handleTurn(p1Object, p2Object);
 
             const messages = this.model.getMessages();
             // this.view.display(messages);
@@ -71,8 +74,8 @@ export default class BattleController {
                 console.log("Choose a replacement Pokemon:");
                 console.log(`${this.model.getRemainingPokemon()}`);
 
-                const switchIndex = await this.inputReader.getMove() // Index of pokemon they want
-                const switchMove = {action: "switch", index: parseInt(switchIndex)-1};
+                const switchIndex = await this.inputReader.getActionArgument('switch') // Index of pokemon they want
+                const switchMove = {action: "switch", index: switchIndex};
                 const switchMessage = this.model.handleFaintedPokemon(switchMove);
                 // this.view.display(switchMessage);
                 console.log(switchMessage);

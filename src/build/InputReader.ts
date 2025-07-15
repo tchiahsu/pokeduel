@@ -29,9 +29,19 @@ export default class InputReader {
         return teamString.split(',').map(name => name.trim());
     }
 
-    async getMove(): Promise<string> {
-        const move = await this.prompt('Enter your move (or switch choice): ');
-        return move;
+    async getAction(): Promise<string> {
+        const action = (await this.prompt('Selection your move (Attack or Switch): ')).toLocaleLowerCase();
+        return action;
+    }
+
+    async getActionArgument(action: string): Promise<number> {
+        let argument: number;
+        if (action == 'attack') {
+            argument = parseInt(await this.prompt('Select attack ability: '));
+        } else {
+            argument = parseInt(await this.prompt('Select Pokemon: '));
+        }
+        return argument;
     }
 
     close(): void {
