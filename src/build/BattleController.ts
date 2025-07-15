@@ -59,12 +59,10 @@ export default class BattleController {
                 console.log("Choose a replacement Pokemon:");
                 console.log(this.model.getRemainingPokemon());
 
-                const team = this.model.getPlayer1Team();
-
                 while (true) {
                     const switchIndex = await this.inputReader.getActionArgument('switch') // Index of pokemon they want
                     
-                    if (this.model.isInvalidIndex('switch', switchIndex, team)) {
+                    if (this.model.isInvalidIndex('switch', switchIndex, player1Team)) {
                         console.log("Invalid switch index. Try again.");
                         continue;
                     }
