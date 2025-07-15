@@ -201,7 +201,7 @@ export default class BattleModel {
    */
   public handleFaintedPokemon(switchMove: PlayerMove): string {
     const faintedPlayer: Player = BattleUtils.pokemonIsDefeated(this.player1) ? this.player1 : this.player2;
-    faintedPlayer.updateTeam(faintedPlayer.getCurrentPokemonIndex());
+    //faintedPlayer.updateTeam(faintedPlayer.getCurrentPokemonIndex());
     faintedPlayer.switchPokemon(switchMove.index);
     return `${faintedPlayer.getName()} switched to ${faintedPlayer.getCurrentPokemon().getName()}!\n`;
   }
