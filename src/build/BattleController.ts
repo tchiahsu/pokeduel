@@ -19,6 +19,7 @@ export default class BattleController {
         const allPokemon: string[] = this.model.getAllPokemon();
         console.log("Available Pokemon:");
         console.table(allPokemon);
+        console.log();
         
         // Get Pokemon Team for each user
         const player1Team = await this.getValidTeamChoice(1, allPokemon);
@@ -58,7 +59,7 @@ export default class BattleController {
      */
     private async getValidTeamChoice(playerNumber: number, allPokemon: string[]): Promise<string[]> {
         while (true) {
-            const team = await this.inputReader.getPlayerTeamChoice();
+            const team = await this.inputReader.getPlayerTeamChoice(playerNumber);
             if (!this.model.isInvalidPokemon(team, allPokemon)) return team;
             console.log(`Player ${playerNumber} has selected invalid Pokemon. Please try again.`)
         }
@@ -79,6 +80,7 @@ export default class BattleController {
             
             if (this.model.isInvalidAction(action)) {
                 console.log("Invalid action. Please choose 'attack' or 'switch'.");
+                console.log();
                 continue;
             }
 
@@ -86,6 +88,7 @@ export default class BattleController {
 
             if (this.model.isInvalidIndex(action, argument, team)) {
                 console.log(`Invalid index for action '${action}'. Please try again.`);
+                console.log();
                 continue;
             }
 
@@ -96,6 +99,7 @@ export default class BattleController {
                 return move
             }
             console.log("Invalid move: Either switching to the same Pokémon or using a move with no PP. Try again.")
+            console.log()
         }
     }
 

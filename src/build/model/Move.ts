@@ -10,6 +10,9 @@ export default class Move {
     private power: number; 
     private accuracy: number; 
     private pp: number;
+    private effect: string;
+    private effectChance: number;
+    private effectTarget: string;
 
     /**
      * Constructs a new Move instance with the specified attributes.
@@ -19,13 +22,17 @@ export default class Move {
      * @param accuracy - The accuracy percentage of the move
      * @param pp - The number of times the move can be used (Power Points)
      */
-    constructor(name: string, type: string, category: string, power: number, accuracy: number, pp: number) {
+    constructor(name: string, type: string, category: string, power: number, accuracy: number, pp: number,
+        effect: string, effectChance: number, effectTarget: string) {
         this.name = name;
         this.type = type;
         this.category = category;
         this.power = power;
         this.accuracy = accuracy;
         this.pp = pp;
+        this.effect = effect;
+        this.effectChance = effectChance;
+        this.effectTarget = effectTarget;
     }
 
     /**
@@ -82,5 +89,29 @@ export default class Move {
      */
     public reducePP(): void {
         this.pp -= 1;
+    }
+
+    /**
+     * Get the effect associated to the move
+     * @returns The name of the effect
+     */
+    public getEffect(): string {
+        return this.effect;
+    }
+
+    /**
+     * Get the percentage change that the effect happens
+     * @returns Chance the effect happens
+     */
+    public getEffectChance(): number {
+        return this.effectChance;
+    }
+
+    /**
+     * Gets the target of the effect (user or opposing pokemon)
+     * @returns target of the effect
+     */
+    public getEffectTarget(): string {
+        return this.effectTarget
     }
 }
