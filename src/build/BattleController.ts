@@ -24,65 +24,94 @@ export default class BattleController {
         console.table(allPokemon);
         
         // Get Pokemon Team for each user
-        console.log();
-        const player1Team: string[] = await this.inputReader.getPlayerTeamChoice();
-        const player2Team: string[] = await this.inputReader.getPlayerTeamChoice();
-        console.log()
+        let player1Team: string[];
+        while (true) {
+            player1Team = await this.inputReader.getPlayerTeamChoice();
+            if (!this.model.isInvalidPokemon(player1Team, allPokemon)) break;
+            console.log("Player 1 has selected invalid Pokemon. Please try again.")
+        }
 
+        let player2Team: string[];
+        while (true) {
+            player2Team = await this.inputReader.getPlayerTeamChoice();
+            if (!this.model.isInvalidPokemon(player2Team, allPokemon)) break;
+            console.log("Player 2 has selected invalid Pokemon. Please try again.")
+        }
+
+        console.log();
         this.model.setPlayer1(player1Name, player1Team)
         this.model.setPlayer2(player2Name, player2Team)
 
 
         while (!this.model.isGameOver()) {
             const playerOptions = this.model.getPlayerOptions();
-            // this.view.display(playerOptions);
-            console.log(playerOptions[0]);
-            let p1Action = await this.inputReader.getAction();
-            let p1Argument = await this.inputReader.getActionArgument(p1Action);
-            let p1Object = {action: p1Action, index: p1Argument}
-            while (this.model.isInvalidMove(1,p1Object)) {
-                console.log("You tried to switch to the same Pokemon. Try again");
-                p1Action = await this.inputReader.getAction();
-                p1Argument = await this.inputReader.getActionArgument(p1Action);
-                p1Object = {action: p1Action, index: p1Argument}
-            }
 
+            const p1Object = await this.getValidAction(1, playerOptions[0], player1Team, player2Team);
             console.log();
-            console.log(playerOptions[1]);
-            let p2Action = await this.inputReader.getAction();
-            let p2Argument = await this.inputReader.getActionArgument(p2Action);
-            let p2Object = {action: p2Action, index: p2Argument}
-            while (this.model.isInvalidMove(2,p2Object)) {
-                console.log("You tried to switch to the same Pokemon. Try again");
-                p2Action = await this.inputReader.getAction();
-                p2Argument = await this.inputReader.getActionArgument(p2Action);
-                p2Object = {action: p2Action, index: p2Argument}
-            }
+            const p2Object = await this.getValidAction(2, playerOptions[1], player1Team, player2Team);
 
-            // Convert Attach option to object {action: <action>, index: <index>}
             this.model.handleTurn(p1Object, p2Object);
 
-            const messages = this.model.getMessages();
-            // this.view.display(messages);
-            console.log("Turn results:");
-            messages.forEach((message: string) => console.log(message));
-            // console.log(messages);
-
+            console.log("Turn result:")
+            this.model.getMessages().forEach((message: string) => console.log(message));
+            
             if (this.model.aPokemonHasFainted() && !this.model.isGameOver()) {
-                const remainingPokemon = this.model.getRemainingPokemon();
-                // this.view.display(remainingPokemon);
                 console.log("Choose a replacement Pokemon:");
-                console.log(`${this.model.getRemainingPokemon()}`);
+                console.log(this.model.getRemainingPokemon());
 
-                const switchIndex = await this.inputReader.getActionArgument('switch') // Index of pokemon they want
-                const switchMove = {action: "switch", index: switchIndex};
-                const switchMessage = this.model.handleFaintedPokemon(switchMove);
-                // this.view.display(switchMessage);
-                console.log(switchMessage);
+                while (true) {
+                    const switchIndex = await this.inputReader.getActionArgument('switch') // Index of pokemon they want
+                    
+                    if (this.model.isInvalidIndex('switch', switchIndex, player1Team)) {
+                        console.log("Invalid switch index. Try again.");
+                        continue;
+                    }
+                    
+                    const switchMove = {action: "switch", index: switchIndex - 1};
+
+                    if (!this.model.isInvalidMove(1, switchMove)) {
+                        const switchMessage = this.model.handleFaintedPokemon(switchMove);
+                        console.log(switchMessage);
+                        break;
+                    }
+
+                    console.log("Invalid switch move. Try again.")
+                }
             }
         }
-        const endingMessage = this.model.getEndingMessage();
-        // this.view.display(endingMessage);
-        console.log(endingMessage);
+        console.log(this.model.getEndingMessage());
+    }
+
+    /**
+     * Prompts a player for a valid action
+     */
+    private async getValidAction(player: number, options: string, player1Team: string[], player2Team: string[]): Promise<{ action: string; index: number }> {
+        console.log(options);
+
+        const currentPlayerTeam = player === 1 ? player1Team : player2Team;
+
+        while (true) {
+            const action = await this.inputReader.getAction();
+            
+            if (this.model.isInvalidAction(action)) {
+                console.log("Invalid action. Please choose 'attack' or 'switch'.");
+                continue;
+            }
+
+            const argument = await this.inputReader.getActionArgument(action);
+
+            if (this.model.isInvalidIndex(action, argument, currentPlayerTeam)) {
+                console.log(`Invalid index for action '${action}'. Please try again.`);
+                continue;
+            }
+
+            const move = {action, index: argument - 1}
+
+            // Validate move (same switch or 0 PP)
+            if (!this.model.isInvalidMove(player, move)) {
+                return move
+            }
+            console.log("Invalid move: Either switching to the same Pokémon or using a move with no PP. Try again.")
+        }
     }
 }
