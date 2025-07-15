@@ -1,8 +1,8 @@
 {
-  "Solar Beam": {
-    "name": "Solar Beam",
-    "type": "Grass",
-    "category": "Special",
+  "solar beam": {
+    "name": "solar beam",
+    "type": "grass",
+    "category": "special",
     "power": 120,
     "accuracy": 100,
     "pp": 10,
@@ -10,10 +10,10 @@
     "effectChance": 0,
     "effectTarget": "none"
   },
-  "Sludge Bomb": {
-    "name": "Sludge Bomb",
-    "type": "Poison",
-    "category": "Special",
+  "sludge bomb": {
+    "name": "sludge bomb",
+    "type": "poison",
+    "category": "special",
     "power": 90,
     "accuracy": 100,
     "pp": 10,
@@ -21,10 +21,10 @@
     "effectChance": 30,
     "effectTarget": "target"
   },
-  "Sleep Powder": {
-    "name": "Sleep Powder",
-    "type": "Grass",
-    "category": "Status",
+  "sleep powder": {
+    "name": "sleep powder",
+    "type": "grass",
+    "category": "status",
     "power": 0,
     "accuracy": 75,
     "pp": 15,
@@ -32,10 +32,10 @@
     "effectChance": 100,
     "effectTarget": "target"
   },
-  "Earthquake": {
-    "name": "Earthquake",
-    "type": "Ground",
-    "category": "Physical",
+  "earthquake": {
+    "name": "earthquake",
+    "type": "ground",
+    "category": "physical",
     "power": 100,
     "accuracy": 100,
     "pp": 10,
@@ -43,10 +43,10 @@
     "effectChance": 0,
     "effectTarget": "none"
   },
-  "Flamethrower": {
-    "name": "Flamethrower",
-    "type": "Fire",
-    "category": "Special",
+  "flamethrower": {
+    "name": "flamethrower",
+    "type": "fire",
+    "category": "special",
     "power": 90,
     "accuracy": 100,
     "pp": 15,
@@ -54,10 +54,10 @@
     "effectChance": 10,
     "effectTarget": "target"
   },
-  "Air Slash": {
-    "name": "Air Slash",
-    "type": "Flying",
-    "category": "Special",
+  "air slash": {
+    "name": "air slash",
+    "type": "flying",
+    "category": "special",
     "power": 75,
     "accuracy": 95,
     "pp": 15,
@@ -65,10 +65,10 @@
     "effectChance": 30,
     "effectTarget": "target"
   },
-  "Dragon Claw": {
-    "name": "Dragon Claw",
-    "type": "Dragon",
-    "category": "Physical",
+  "dragon claw": {
+    "name": "dragon claw",
+    "type": "dragon",
+    "category": "physical",
     "power": 80,
     "accuracy": 100,
     "pp": 15,
@@ -76,10 +76,10 @@
     "effectChance": 0,
     "effectTarget": "none"
   },
-  "Hydro Pump": {
-    "name": "Hydro Pump",
-    "type": "Water",
-    "category": "Special",
+  "hydro pump": {
+    "name": "hydro pump",
+    "type": "water",
+    "category": "special",
     "power": 110,
     "accuracy": 80,
     "pp": 5,
@@ -87,10 +87,10 @@
     "effectChance": 0,
     "effectTarget": "none"
   },
-  "Ice Beam": {
-    "name": "Ice Beam",
-    "type": "Ice",
-    "category": "Special",
+  "ice beam": {
+    "name": "ice beam",
+    "type": "ice",
+    "category": "special",
     "power": 90,
     "accuracy": 100,
     "pp": 10,
@@ -98,10 +98,10 @@
     "effectChance": 10,
     "effectTarget": "target"
   },
-  "Surf": {
-    "name": "Surf",
-    "type": "Water",
-    "category": "Special",
+  "surf": {
+    "name": "surf",
+    "type": "water",
+    "category": "special",
     "power": 90,
     "accuracy": 100,
     "pp": 15,
@@ -109,10 +109,10 @@
     "effectChance": 0,
     "effectTarget": "none"
   },
-  "Bite": {
-    "name": "Bite",
-    "type": "Dark",
-    "category": "Physical",
+  "bite": {
+    "name": "bite",
+    "type": "dark",
+    "category": "physical",
     "power": 60,
     "accuracy": 100,
     "pp": 25,
@@ -120,10 +120,10 @@
     "effectChance": 0,
     "effectTarget": "none"
   },
-  "Psychic": {
-    "name": "Psychic",
-    "type": "Psychic",
-    "category": "Special",
+  "psychic": {
+    "name": "psychic",
+    "type": "psychic",
+    "category": "special",
     "power": 90,
     "accuracy": 100,
     "pp": 10,
@@ -131,10 +131,10 @@
     "effectChance": 10,
     "effectTarget": "target"
   },
-  "Shadow Ball": {
-    "name": "Shadow Ball",
-    "type": "Ghost",
-    "category": "Special",
+  "shadow ball": {
+    "name": "shadow ball",
+    "type": "ghost",
+    "category": "special",
     "power": 80,
     "accuracy": 100,
     "pp": 15,
@@ -142,10 +142,10 @@
     "effectChance": 20,
     "effectTarget": "target"
   },
-  "Recover": {
-    "name": "Recover",
-    "type": "Normal",
-    "category": "Status",
+  "recover": {
+    "name": "recover",
+    "type": "normal",
+    "category": "status",
     "power": 0,
     "accuracy": 100,
     "pp": 10,
@@ -154,9 +154,9 @@
     "effectTarget": "user",
     "effectChance": 0
   },
-  "Calm Mind": {
-    "name": "Calm Mind",
-    "type": "Psychic",
+  "calm mind": {
+    "name": "calm mind",
+    "type": "psychic",
     "category": "Status",
     "power": 0,
     "accuracy": 100,
@@ -169,10 +169,10 @@
     "effectTarget": "user",
     "effectChance": 0
   },
-  "Dynamic Punch": {
-    "name": "Dynamic Punch",
-    "type": "Fighting",
-    "category": "Physical",
+  "dynamic punch": {
+    "name": "dynamic punch",
+    "type": "fighting",
+    "category": "physical",
     "power": 100,
     "accuracy": 50,
     "pp": 5,
@@ -180,10 +180,10 @@
     "effectChance": 100,
     "effectTarget": "target"
   },
-  "Stone Edge": {
-    "name": "Stone Edge",
-    "type": "Rock",
-    "category": "Physical",
+  "stone edge": {
+    "name": "stone edge",
+    "type": "rock",
+    "category": "physical",
     "power": 100,
     "accuracy": 80,
     "pp": 5,
@@ -191,10 +191,10 @@
     "effectChance": 0,
     "effectTarget": "none"
   },
-  "Bulk Up": {
-    "name": "Bulk Up",
-    "type": "Fighting",
-    "category": "Status",
+  "bulk up": {
+    "name": "bulk up",
+    "type": "fighting",
+    "category": "status",
     "power": 0,
     "accuracy": 100,
     "pp": 20,
@@ -206,10 +206,10 @@
     "effectTarget": "user",
     "effectChance": 0
   },
-  "Thunderbolt": {
-    "name": "Thunderbolt",
-    "type": "Electric",
-    "category": "Special",
+  "thunderbolt": {
+    "name": "thunderbolt",
+    "type": "electric",
+    "category": "special",
     "power": 90,
     "accuracy": 100,
     "pp": 15,
@@ -217,10 +217,10 @@
     "effectChance": 10,
     "effectTarget": "target"
   },
-  "Hypnosis": {
-    "name": "Hypnosis",
-    "type": "Psychic",
-    "category": "Status",
+  "hypnosis": {
+    "name": "hypnosis",
+    "type": "psychic",
+    "category": "status",
     "power": 0,
     "accuracy": 60,
     "pp": 20,
@@ -228,10 +228,10 @@
     "effectChance": 100,
     "effectTarget": "target"
   },
-  "Explosion": {
-    "name": "Explosion",
-    "type": "Normal",
-    "category": "Physical",
+  "explosion": {
+    "name": "explosion",
+    "type": "normal",
+    "category": "physical",
     "power": 250,
     "accuracy": 100,
     "pp": 5,
@@ -239,10 +239,10 @@
     "effectChance": 100,
     "effectTarget": "user"
   },
-  "Protect": {
-    "name": "Protect",
-    "type": "Normal",
-    "category": "Status",
+  "protect": {
+    "name": "protect",
+    "type": "normal",
+    "category": "status",
     "power": 0,
     "accuracy": 100,
     "pp": 10,
@@ -250,10 +250,10 @@
     "effectChance": 100,
     "effectTarget": "user"
   },
-  "Thunder Punch": {
-    "name": "Thunder Punch",
-    "type": "Electric",
-    "category": "Physical",
+  "thunder punch": {
+    "name": "thunder punch",
+    "type": "electric",
+    "category": "physical",
     "power": 75,
     "accuracy": 100,
     "pp": 15,
@@ -261,10 +261,10 @@
     "effectChance": 10,
     "effectTarget": "target"
   },
-  "Fly": {
-    "name": "Fly",
-    "type": "Flying",
-    "category": "Physical",
+  "fly": {
+    "name": "fly",
+    "type": "flying",
+    "category": "physical",
     "power": 90,
     "accuracy": 95,
     "pp": 15,
@@ -272,10 +272,10 @@
     "effectChance": 0,
     "effectTarget": "none"
   },
-  "Flare Blitz": {
-    "name": "Flare Blitz",
-    "type": "Fire",
-    "category": "Physical",
+  "flare blitz": {
+    "name": "flare blitz",
+    "type": "fire",
+    "category": "physical",
     "power": 120,
     "accuracy": 100,
     "pp": 15,
@@ -284,10 +284,10 @@
     "effectTarget": "user",
     "effectChance": 0
   },
-  "Extreme Speed": {
-    "name": "Extreme Speed",
-    "type": "Normal",
-    "category": "Physical",
+  "extreme speed": {
+    "name": "extreme speed",
+    "type": "normal",
+    "category": "physical",
     "power": 80,
     "accuracy": 100,
     "pp": 5,
@@ -295,10 +295,10 @@
     "effectChance": 0,
     "effectTarget": "none"
   },
-  "Crunch": {
-    "name": "Crunch",
-    "type": "Dark",
-    "category": "Physical",
+  "crunch": {
+    "name": "crunch",
+    "type": "dark",
+    "category": "physical",
     "power": 80,
     "accuracy": 100,
     "pp": 15,
@@ -306,10 +306,10 @@
     "effectChance": 20,
     "effectTarget": "target"
   },
-  "Roar": {
-    "name": "Roar",
-    "type": "Normal",
-    "category": "Status",
+  "roar": {
+    "name": "roar",
+    "type": "normal",
+    "category": "status",
     "power": 0,
     "accuracy": 100,
     "pp": 20,
@@ -317,10 +317,10 @@
     "effectChance": 100,
     "effectTarget": "target"
   },
-  "Leech Seed": {
-    "name": "Leech Seed",
-    "type": "Grass",
-    "category": "Status",
+  "leech seed": {
+    "name": "leech seed",
+    "type": "grass",
+    "category": "status",
     "power": 0,
     "accuracy": 90,
     "pp": 10,
@@ -328,10 +328,10 @@
     "effectChance": 100,
     "effectTarget": "target"
   },
-  "Rock Slide": {
-    "name": "Rock Slide",
-    "type": "Rock",
-    "category": "Physical",
+  "rock slide": {
+    "name": "rock slide",
+    "type": "rock",
+    "category": "physical",
     "power": 75,
     "accuracy": 90,
     "pp": 10,
@@ -339,10 +339,10 @@
     "effectChance": 30,
     "effectTarget": "target"
   },
-  "Horn Drill": {
-    "name": "Horn Drill",
-    "type": "Normal",
-    "category": "Physical",
+  "horn drill": {
+    "name": "horn drill",
+    "type": "normal",
+    "category": "physical",
     "power": 0,
     "accuracy": 30,
     "pp": 5,
