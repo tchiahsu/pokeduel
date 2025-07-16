@@ -8,12 +8,12 @@ import typeEffectivenessData from "./TypeEffectiveness.json" with {"type": "json
  * battle-related logic between players and their Pokemon.
  */
 export default class BattleUtils {
-  private static CRIT_CHANCE: number = 0.00417;
+  private static CRIT_CHANCE: number = 0.0417;
   private static STAB_MODIFIER: number = 1.5;
   private static CRIT_MODIFIER: number = 1.5;
   private static RANDOM_MODIFIER_UPPER_BOUND: number = 101;
   private static RANDOM_MODIFIER_LOWER_BOUND: number = 85;
-  private static modifierMessages: string[];
+  private static modifierMessages: string[] = [];
 
   /**
    * Determines which player’s Pokemon is affected.
@@ -96,6 +96,17 @@ export default class BattleUtils {
   }
 
   /**
+   * Returns the list of messages from the modifier calculations.
+   * 
+   * @returns The list of messages from the modifier calculations
+   */
+  public static getModiferMessages(): string[] {
+    const messages: string[] = [...this.modifierMessages];
+    this.modifierMessages = [];
+    return messages;
+  }
+
+  /**
    * Calculate the damage modifier for type effectiveness.
    * 
    * @param move The move being used to attack. The attack type will be extracted from this.
@@ -114,8 +125,17 @@ export default class BattleUtils {
       if (type in typeData) {
         return accumulator * typeData[type]
       }
-      return 1
+      return accumulator;
     }, 1)
+
+    // Add type effectiveness message to modifier messages
+    if (modifier == 0) {
+      this.modifierMessages.push("It doesn't seem to have an effect!")
+    } else if (modifier < 1) {
+      this.modifierMessages.push("It's not very effective...");
+    } else if (modifier > 1) {
+      this.modifierMessages.push("It's super effective!")
+    }
 
     return modifier;
   }
@@ -137,7 +157,14 @@ export default class BattleUtils {
    * @returns The critical modifier if it applies, 1 otherwise.
    */
   private static getCriticalModifier(): number {
-    return Math.random() <= this.CRIT_CHANCE ? this.CRIT_MODIFIER : 1
+    const critValue = Math.random() <= this.CRIT_CHANCE ? this.CRIT_MODIFIER : 1
+    
+    // Add critical hit message to modifier messages
+    if (critValue == this.CRIT_MODIFIER) {
+      this.modifierMessages.push("A critical hit!");
+    }
+
+    return critValue;
   }
 
   /**
