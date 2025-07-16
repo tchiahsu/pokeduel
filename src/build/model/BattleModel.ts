@@ -319,4 +319,8 @@ export default class BattleModel {
     if (BattleUtils.pokemonIsDefeated(this.player2)) return 2;
     throw new Error("No player has fainted.");
   }
+
+  public getPlayerObject(playerNumber: number): Player {
+    return playerNumber === 1 ? this.player1 : this.player2;
+  }
 }

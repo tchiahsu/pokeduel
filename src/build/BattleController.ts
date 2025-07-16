@@ -123,9 +123,15 @@ export default class BattleController {
                 continue;
             }
 
+            const pokemonObject = this.model.getPlayerObject(faintedPlayer).getTeam()[index - 1];
+            if (pokemonObject.getHp() <= 0) {
+                console.log("Cannot switch to a fainted Pokémon. Please choose a different Pokemon");
+                continue;
+            }
+
             const switchMove = {action: 'switch', index: index - 1};
 
-            if (!this.model.isInvalidMove(1, switchMove)) {
+            if (!this.model.isInvalidMove(faintedPlayer, switchMove)) {
                 const message = this.model.handleFaintedPokemon(switchMove);
                 console.log(message);
                 return;
