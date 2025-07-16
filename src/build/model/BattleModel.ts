@@ -76,16 +76,19 @@ export default class BattleModel {
    * @returns void
    */
   private handleAttack(p1Move: PlayerMove, p2Move: PlayerMove): void {
+    // Determine the order of attack
     const firstPlayer: Player = BattleUtils.getFasterPlayer(this.player1, this.player2);
     const firstPlayerMove: PlayerMove = firstPlayer === this.player1 ? p1Move : p2Move;
     const secondPlayer: Player = firstPlayer === this.player1 ? this.player2 : this.player1;
     const secondPlayerMove: PlayerMove = firstPlayer === this.player1 ? p2Move : p1Move;
 
+    // Attack with the first player
     this.processAttack(firstPlayer, firstPlayerMove.index);
     if (BattleUtils.pokemonIsDefeated(secondPlayer)) {
       return;
     }
 
+    // Attack with the second player if pokemon has not fainted
     this.processAttack(secondPlayer, secondPlayerMove.index);
   }
   
@@ -98,7 +101,7 @@ export default class BattleModel {
    * @returns True if the move is invalid, false otherwise.
    */
   public isInvalidMove(player: number, playerMove: PlayerMove): boolean {
-    const currentPlayer = player === 1 ? this.player1 : this.player2;
+    const currentPlayer: Player = player === 1 ? this.player1 : this.player2;
 
     if (playerMove.action === 'switch') {
       return playerMove.index === currentPlayer.getCurrentPokemonIndex();
@@ -106,7 +109,7 @@ export default class BattleModel {
 
     if (playerMove.action === 'attack') {
       const move = currentPlayer.getCurrentPokemon().getMove(playerMove.index);
-      return move.getPp() === 0;
+      return move.getPP() === 0;
     }
 
     return false;
@@ -168,8 +171,16 @@ export default class BattleModel {
     this.messages.push(`${player.getName()} switched to ${player.getCurrentPokemon().getName()}!`);
   }
   
+  /**
+   * Handles an attack from a pokemon.
+   * 
+   * @param attackingPlayer The attack player.
+   * @param attackIndex The index of the move the player wants to use.
+   * @returns void
+   */
   private processAttack(attackingPlayer: Player, attackIndex: number): void {
-    const defendingPlayer = attackingPlayer === this.player1 ? this.player2 : this.player1;
+    // Determine which player is attacking and defending
+    const defendingPlayer: Player = attackingPlayer === this.player1 ? this.player2 : this.player1;
     const attackingPokemon: Pokemon = attackingPlayer.getCurrentPokemon();
     const defendingPokemon: Pokemon = defendingPlayer.getCurrentPokemon();
     const move = attackingPokemon.getMove(attackIndex);
@@ -182,10 +193,13 @@ export default class BattleModel {
     }
 
     // Proceed with attack
-    const damage: number = BattleUtils.calculateDamage(attackingPokemon, attackIndex, defendingPokemon);
-    move.reducePP(); // Need to check PP
+    const damage: number = BattleUtils.calculateDamage(attackingPokemon, move, defendingPokemon);
+    move.reducePP();
     defendingPokemon.takeDamage(damage);
     this.messages.push(`${attackingPokemon.getName()} used ${move.getName()}!`);
+
+    // Display messages related to attack damage
+    BattleUtils.getModiferMessages().forEach((modifierMessage: string) => this.messages.push(modifierMessage));
 
     // Try to apply effect
     const effectMessage = StatusManager.tryApplyEffect(attackingPokemon, defendingPokemon, move);

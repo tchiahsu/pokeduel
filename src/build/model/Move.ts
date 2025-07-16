@@ -79,7 +79,7 @@ export default class Move {
      * Gets the PP of the move.
      * @returns The PP as a number.
      */
-    public getPp(): number {
+    public getPP(): number {
         return this.pp;
     }
 
