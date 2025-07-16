@@ -31,7 +31,7 @@ export default class BattleUtils {
       return Math.random() < 0.5 ? player1 : player2;
     }
 
-    return player1Speed > player1Speed ? player1 : player2;
+    return player1Speed > player2Speed ? player1 : player2;
   }
   
   /**
