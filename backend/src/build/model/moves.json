@@ -1,0 +1,353 @@
+{
+  "solar beam": {
+    "name": "solar beam",
+    "type": "grass",
+    "category": "special",
+    "power": 120,
+    "accuracy": 100,
+    "pp": 10,
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
+  },
+  "sludge bomb": {
+    "name": "sludge bomb",
+    "type": "poison",
+    "category": "special",
+    "power": 90,
+    "accuracy": 100,
+    "pp": 10,
+    "effect": "poison",
+    "effectChance": 30,
+    "effectTarget": "target"
+  },
+  "sleep powder": {
+    "name": "sleep powder",
+    "type": "grass",
+    "category": "status",
+    "power": 0,
+    "accuracy": 75,
+    "pp": 15,
+    "effect": "sleep",
+    "effectChance": 100,
+    "effectTarget": "target"
+  },
+  "earthquake": {
+    "name": "earthquake",
+    "type": "ground",
+    "category": "physical",
+    "power": 100,
+    "accuracy": 100,
+    "pp": 10,
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
+  },
+  "flamethrower": {
+    "name": "flamethrower",
+    "type": "fire",
+    "category": "special",
+    "power": 90,
+    "accuracy": 100,
+    "pp": 15,
+    "effect": "burn",
+    "effectChance": 10,
+    "effectTarget": "target"
+  },
+  "air slash": {
+    "name": "air slash",
+    "type": "flying",
+    "category": "special",
+    "power": 75,
+    "accuracy": 95,
+    "pp": 15,
+    "effect": "flinch",
+    "effectChance": 30,
+    "effectTarget": "target"
+  },
+  "dragon claw": {
+    "name": "dragon claw",
+    "type": "dragon",
+    "category": "physical",
+    "power": 80,
+    "accuracy": 100,
+    "pp": 15,
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
+  },
+  "hydro pump": {
+    "name": "hydro pump",
+    "type": "water",
+    "category": "special",
+    "power": 110,
+    "accuracy": 80,
+    "pp": 5,
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
+  },
+  "ice beam": {
+    "name": "ice beam",
+    "type": "ice",
+    "category": "special",
+    "power": 90,
+    "accuracy": 100,
+    "pp": 10,
+    "effect": "freeze",
+    "effectChance": 10,
+    "effectTarget": "target"
+  },
+  "surf": {
+    "name": "surf",
+    "type": "water",
+    "category": "special",
+    "power": 90,
+    "accuracy": 100,
+    "pp": 15,
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
+  },
+  "bite": {
+    "name": "bite",
+    "type": "dark",
+    "category": "physical",
+    "power": 60,
+    "accuracy": 100,
+    "pp": 25,
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
+  },
+  "psychic": {
+    "name": "psychic",
+    "type": "psychic",
+    "category": "special",
+    "power": 90,
+    "accuracy": 100,
+    "pp": 10,
+    "effect": "lowerSpDef",
+    "effectChance": 10,
+    "effectTarget": "target"
+  },
+  "shadow ball": {
+    "name": "shadow ball",
+    "type": "ghost",
+    "category": "special",
+    "power": 80,
+    "accuracy": 100,
+    "pp": 15,
+    "effect": "lowerSpDef",
+    "effectChance": 20,
+    "effectTarget": "target"
+  },
+  "recover": {
+    "name": "recover",
+    "type": "normal",
+    "category": "status",
+    "power": 0,
+    "accuracy": 100,
+    "pp": 10,
+    "effect": "heal",
+    "healPercent": 50,
+    "effectTarget": "user",
+    "effectChance": 0
+  },
+  "calm mind": {
+    "name": "calm mind",
+    "type": "psychic",
+    "category": "Status",
+    "power": 0,
+    "accuracy": 100,
+    "pp": 20,
+    "effect": "boost",
+    "boosts": {
+      "spAtk": 1,
+      "spDef": 1
+    },
+    "effectTarget": "user",
+    "effectChance": 0
+  },
+  "dynamic punch": {
+    "name": "dynamic punch",
+    "type": "fighting",
+    "category": "physical",
+    "power": 100,
+    "accuracy": 50,
+    "pp": 5,
+    "effect": "confuse",
+    "effectChance": 100,
+    "effectTarget": "target"
+  },
+  "stone edge": {
+    "name": "stone edge",
+    "type": "rock",
+    "category": "physical",
+    "power": 100,
+    "accuracy": 80,
+    "pp": 5,
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
+  },
+  "bulk up": {
+    "name": "bulk up",
+    "type": "fighting",
+    "category": "status",
+    "power": 0,
+    "accuracy": 100,
+    "pp": 20,
+    "effect": "boost",
+    "boosts": {
+      "atk": 1,
+      "def": 1
+    },
+    "effectTarget": "user",
+    "effectChance": 0
+  },
+  "thunderbolt": {
+    "name": "thunderbolt",
+    "type": "electric",
+    "category": "special",
+    "power": 90,
+    "accuracy": 100,
+    "pp": 15,
+    "effect": "paralyze",
+    "effectChance": 10,
+    "effectTarget": "target"
+  },
+  "hypnosis": {
+    "name": "hypnosis",
+    "type": "psychic",
+    "category": "status",
+    "power": 0,
+    "accuracy": 60,
+    "pp": 20,
+    "effect": "sleep",
+    "effectChance": 100,
+    "effectTarget": "target"
+  },
+  "explosion": {
+    "name": "explosion",
+    "type": "normal",
+    "category": "physical",
+    "power": 250,
+    "accuracy": 100,
+    "pp": 5,
+    "effect": "selfDestruct",
+    "effectChance": 100,
+    "effectTarget": "user"
+  },
+  "protect": {
+    "name": "protect",
+    "type": "normal",
+    "category": "status",
+    "power": 0,
+    "accuracy": 100,
+    "pp": 10,
+    "effect": "shield",
+    "effectChance": 100,
+    "effectTarget": "user"
+  },
+  "thunder punch": {
+    "name": "thunder punch",
+    "type": "electric",
+    "category": "physical",
+    "power": 75,
+    "accuracy": 100,
+    "pp": 15,
+    "effect": "paralyze",
+    "effectChance": 10,
+    "effectTarget": "target"
+  },
+  "fly": {
+    "name": "fly",
+    "type": "flying",
+    "category": "physical",
+    "power": 90,
+    "accuracy": 95,
+    "pp": 15,
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
+  },
+  "flare blitz": {
+    "name": "flare blitz",
+    "type": "fire",
+    "category": "physical",
+    "power": 120,
+    "accuracy": 100,
+    "pp": 15,
+    "effect": "recoil",
+    "recoilPercent": 33,
+    "effectTarget": "user",
+    "effectChance": 0
+  },
+  "extreme speed": {
+    "name": "extreme speed",
+    "type": "normal",
+    "category": "physical",
+    "power": 80,
+    "accuracy": 100,
+    "pp": 5,
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
+  },
+  "crunch": {
+    "name": "crunch",
+    "type": "dark",
+    "category": "physical",
+    "power": 80,
+    "accuracy": 100,
+    "pp": 15,
+    "effect": "lowerDef",
+    "effectChance": 20,
+    "effectTarget": "target"
+  },
+  "roar": {
+    "name": "roar",
+    "type": "normal",
+    "category": "status",
+    "power": 0,
+    "accuracy": 100,
+    "pp": 20,
+    "effect": "forceSwitch",
+    "effectChance": 100,
+    "effectTarget": "target"
+  },
+  "leech seed": {
+    "name": "leech seed",
+    "type": "grass",
+    "category": "status",
+    "power": 0,
+    "accuracy": 90,
+    "pp": 10,
+    "effect": "leech",
+    "effectChance": 100,
+    "effectTarget": "target"
+  },
+  "rock slide": {
+    "name": "rock slide",
+    "type": "rock",
+    "category": "physical",
+    "power": 75,
+    "accuracy": 90,
+    "pp": 10,
+    "effect": "flinch",
+    "effectChance": 30,
+    "effectTarget": "target"
+  },
+  "horn drill": {
+    "name": "horn drill",
+    "type": "normal",
+    "category": "physical",
+    "power": 0,
+    "accuracy": 30,
+    "pp": 5,
+    "effect": "oneHitKO",
+    "effectChance": 30,
+    "effectTarget": "target"
+  }
+}
