@@ -61,9 +61,9 @@
     "power": 75,
     "accuracy": 95,
     "pp": 15,
-    "effect": "flinch",
-    "effectChance": 30,
-    "effectTarget": "target"
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
   },
   "dragon claw": {
     "name": "dragon claw",
@@ -127,9 +127,9 @@
     "power": 90,
     "accuracy": 100,
     "pp": 10,
-    "effect": "lowerSpDef",
-    "effectChance": 10,
-    "effectTarget": "target"
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
   },
   "shadow ball": {
     "name": "shadow ball",
@@ -138,9 +138,9 @@
     "power": 80,
     "accuracy": 100,
     "pp": 15,
-    "effect": "lowerSpDef",
-    "effectChance": 20,
-    "effectTarget": "target"
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
   },
   "recover": {
     "name": "recover",
@@ -149,10 +149,9 @@
     "power": 0,
     "accuracy": 100,
     "pp": 10,
-    "effect": "heal",
-    "healPercent": 50,
-    "effectTarget": "user",
-    "effectChance": 0
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
   },
   "calm mind": {
     "name": "calm mind",
@@ -161,13 +160,9 @@
     "power": 0,
     "accuracy": 100,
     "pp": 20,
-    "effect": "boost",
-    "boosts": {
-      "spAtk": 1,
-      "spDef": 1
-    },
-    "effectTarget": "user",
-    "effectChance": 0
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
   },
   "dynamic punch": {
     "name": "dynamic punch",
@@ -198,13 +193,9 @@
     "power": 0,
     "accuracy": 100,
     "pp": 20,
-    "effect": "boost",
-    "boosts": {
-      "atk": 1,
-      "def": 1
-    },
-    "effectTarget": "user",
-    "effectChance": 0
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
   },
   "thunderbolt": {
     "name": "thunderbolt",
@@ -235,9 +226,9 @@
     "power": 250,
     "accuracy": 100,
     "pp": 5,
-    "effect": "selfDestruct",
-    "effectChance": 100,
-    "effectTarget": "user"
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
   },
   "protect": {
     "name": "protect",
@@ -246,9 +237,9 @@
     "power": 0,
     "accuracy": 100,
     "pp": 10,
-    "effect": "shield",
-    "effectChance": 100,
-    "effectTarget": "user"
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
   },
   "thunder punch": {
     "name": "thunder punch",
@@ -279,10 +270,9 @@
     "power": 120,
     "accuracy": 100,
     "pp": 15,
-    "effect": "recoil",
-    "recoilPercent": 33,
-    "effectTarget": "user",
-    "effectChance": 0
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
   },
   "extreme speed": {
     "name": "extreme speed",
@@ -302,9 +292,9 @@
     "power": 80,
     "accuracy": 100,
     "pp": 15,
-    "effect": "lowerDef",
-    "effectChance": 20,
-    "effectTarget": "target"
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
   },
   "roar": {
     "name": "roar",
@@ -313,9 +303,9 @@
     "power": 0,
     "accuracy": 100,
     "pp": 20,
-    "effect": "forceSwitch",
-    "effectChance": 100,
-    "effectTarget": "target"
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
   },
   "leech seed": {
     "name": "leech seed",
@@ -324,9 +314,9 @@
     "power": 0,
     "accuracy": 90,
     "pp": 10,
-    "effect": "leech",
-    "effectChance": 100,
-    "effectTarget": "target"
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
   },
   "rock slide": {
     "name": "rock slide",
@@ -335,9 +325,9 @@
     "power": 75,
     "accuracy": 90,
     "pp": 10,
-    "effect": "flinch",
-    "effectChance": 30,
-    "effectTarget": "target"
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
   },
   "horn drill": {
     "name": "horn drill",
@@ -346,8 +336,63 @@
     "power": 0,
     "accuracy": 30,
     "pp": 5,
-    "effect": "oneHitKO",
-    "effectChance": 30,
-    "effectTarget": "target"
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
+  },
+    "iron head": {
+    "name": "iron head",
+    "type": "steel",
+    "category": "physical",
+    "power": 80,
+    "accuracy": 100,
+    "pp": 15,
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
+  },
+  "wish": {
+    "name": "wish",
+    "type": "normal",
+    "category": "status",
+    "power": 0,
+    "accuracy": 100,
+    "pp": 10,
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
+  },
+  "u-turn": {
+    "name": "u-turn",
+    "type": "bug",
+    "category": "physical",
+    "power": 70,
+    "accuracy": 100,
+    "pp": 20,
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
+  },
+  "ancient power": {
+    "name": "ancient power",
+    "type": "rock",
+    "category": "special",
+    "power": 60,
+    "accuracy": 100,
+    "pp": 5,
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
+  },
+  "toxic spikes": {
+    "name": "toxic spikes",
+    "type": "poison",
+    "category": "status",
+    "power": 0,
+    "accuracy": 100,
+    "pp": 20,
+    "effect": "none",
+    "effectChance": 0,
+    "effectTarget": "none"
   }
 }

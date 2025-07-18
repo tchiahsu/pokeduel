@@ -130,5 +130,38 @@
     "spDef": 75,
     "speed": 85,
     "moves": ["sludge bomb", "earthquake", "ice beam", "thunderbolt"]
+  },
+  "jirachi": {
+    "name": "jirachi",
+    "types": ["steel", "psychic"],
+    "hp": 100,
+    "attack": 100,
+    "defense": 100,
+    "spAtk": 100,
+    "spDef": 100,
+    "speed": 100,
+    "moves": ["psychic", "iron head", "thunderbolt", "wish"]
+  },
+  "flygon": {
+    "name": "flygon",
+    "types": ["ground", "dragon"],
+    "hp": 80,
+    "attack": 100,
+    "defense": 80,
+    "spAtk": 80,
+    "spDef": 80,
+    "speed": 100,
+    "moves": ["earthquake", "dragon claw", "stone edge", "u-turn"]
+  },
+  "omastar": {
+    "name": "omastar",
+    "types": ["rock", "water"],
+    "hp": 70,
+    "attack": 60,
+    "defense": 125,
+    "spAtk": 115,
+    "spDef": 70,
+    "speed": 55,
+    "moves": ["hydro pump", "ancient power", "ice beam", "toxic spikes"]
   }
 }

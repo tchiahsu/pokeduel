@@ -16,6 +16,7 @@ export default class Pokemon {
   private moves: Move[];
   private fainted: boolean;
   private status: string;
+  private effectCounter: number;
 
   /**
    * Constructs a new Pokémon instance with the given stats and moves.
@@ -40,6 +41,7 @@ export default class Pokemon {
     this.speed = speed;
     this.moves = moves;
     this.fainted = true;
+    this.effectCounter = 0;
   }
 
   /**
@@ -169,5 +171,27 @@ export default class Pokemon {
    */
   public isFainted(): boolean {
     return this.fainted;
+  }
+
+  /**
+   * Method that increases the status counter by 1
+   */
+  public increaseStatusCounter(): void {
+    this.effectCounter += 1;
+  }
+
+  /**
+   * Method that reset the status counter to 0
+   */
+  public resetStatusCounter(): void {
+    this.effectCounter = 0;
+  }
+
+  /**
+   * Method that gets the number of rounds the effect has been in place
+   * @returns the number of round the effect has taken place
+   */
+  public getStatusCounter(): number {
+    return this.effectCounter;
   }
 }
