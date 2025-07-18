@@ -9,9 +9,14 @@ export default class StatusManager {
         switch (status) {
             case "poison":
                 // Pokemon 1/8th of max HP each turn
+                const poisonDamage = Math.floor(pokemon.getHp() / 8)
+                pokemon.takeDamage(poisonDamage);
+                return `${pokemon.getName()} is hurt by posion!`;
             case "sleep":
+                pokemon.increaseStatusCounter();
                 if (Math.random() < 0.33 || pokemon.getStatusCounter() == 3) { // 33% since the pokemon sleeps 1-3 turns
                     pokemon.setStatus("none")
+                    pokemon.resetStatusCounter();
                     return `${pokemon.getName()} woke up!`;
                 }
                 return `${pokemon.getName()} is fast asleep!`;
@@ -19,6 +24,8 @@ export default class StatusManager {
                 // Inflicts 1/16th of Max HP
                 // Pokemon Physical Attack Speed is cut by Half
                 // Pokemon Special Attack Stat is doubled
+                const burnDamage = Math.floor(pokemon.getHp() / 16);
+                pokemon.takeDamage(burnDamage);
             case "freeze":
                 // The pokemon cannot use any attacks
                 if (Math.random() < 0.2) { // 20% chance to get out
@@ -28,11 +35,18 @@ export default class StatusManager {
                 return `${pokemon.getName()} is frozen!`;
             case "confuse":
                 // The pokemon cannot attack between 1 to 4 turns
+                pokemon.increaseStatusCounter();
+                if (pokemon.getStatusCounter() > 4) {
+                    pokemon.setStatus("none");
+                    pokemon.resetStatusCounter();
+                    return null
+                }
                 if (Math.random() < 0.33) { // 33% chance to be conffused
                     return `${pokemon.getName()} hurt itself in confusion!`
                 }
-                break;
+                return null;
             case "paralyze":
+                
                 // Speed stat is reduced by 50% of max
                 if (Math.random() < 0.25) { // 25% chance to be fully paralyzed and unable to attack
                     return `${pokemon.getName()} is paralyzed and can't move!`
