@@ -76,6 +76,13 @@ export default class BattleModel {
    * @returns void
    */
   private handleAttack(p1Move: PlayerMove, p2Move: PlayerMove): void {
+    // Display message about pokemon effect status
+    const p1EffectStatus = StatusManager.checkIfCanMove(this.player1.getCurrentPokemon());
+    if (p1EffectStatus) this.messages.push(p1EffectStatus);
+
+    const p2EffectStatus = StatusManager.checkIfCanMove(this.player2.getCurrentPokemon());
+    if (p2EffectStatus) this.messages.push(p2EffectStatus);
+
     // Determine the order of attack
     const firstPlayer: Player = BattleUtils.getFasterPlayer(this.player1, this.player2);
     const firstPlayerMove: PlayerMove = firstPlayer === this.player1 ? p1Move : p2Move;
@@ -189,6 +196,14 @@ export default class BattleModel {
     const statusMessage = StatusManager.checkIfCanMove(attackingPokemon);
     if (statusMessage) {
       this.messages.push(statusMessage);
+
+      if (attackingPokemon.getHp() <= 0) {
+        this.messages.push(`${attackingPokemon.getName()} has fainted!`);
+        attackingPlayer.reduceRemainingPokemon();
+        this.gameOver = !attackingPlayer.hasRemainingPokemon();
+        return;
+      }
+      // If the status prevents ur pokemon from making a move, it returns
       return;
     }
 

@@ -7,6 +7,7 @@ import Move from "./Move.js"
 export default class Pokemon {
   private name: string;
   private types: string[];
+  private maxHP: number;
   private hp: number;
   private atk: number;
   private def: number;
@@ -17,6 +18,7 @@ export default class Pokemon {
   private fainted: boolean;
   private status: string;
   private effectCounter: number;
+  private appliedStatusEffect: Set<string> = new Set()
 
   /**
    * Constructs a new Pokémon instance with the given stats and moves.
@@ -34,6 +36,7 @@ export default class Pokemon {
     this.name = name;
     this.types = types;
     this.hp = hp;
+    this.maxHP = hp;
     this.atk = atk;
     this.def = def;
     this.spAtk = spAtk;
@@ -58,6 +61,14 @@ export default class Pokemon {
    */
   public getTypes(): string[] {
     return this.types;
+  }
+
+  /**
+   * Returns the max HP of the pokemon
+   * @returns max HP of pokemon
+   */
+  public getMaxHP(): number {
+    return this.maxHP;
   }
 
   /**
@@ -193,5 +204,30 @@ export default class Pokemon {
    */
   public getStatusCounter(): number {
     return this.effectCounter;
+  }
+
+  /**
+   * Checks if the status effect has been applied
+   * @param effectName : name of the active effect
+   * @returns true if it has, false otherwise
+   */
+  public hasStatusApplied(effectName: string): boolean {
+    return this.appliedStatusEffect.has(effectName);
+  }
+
+  /**
+   * Adds the status effect to mark it as applied
+   * @param effectName 
+   */
+  public applyStatusEffect(effectName: string): void {
+    this.appliedStatusEffect.add(effectName);
+  }
+
+  /**
+   * Deletes the status effect to mark it as inactive
+   * @param effectName 
+   */
+  public resetStatusEffect(effectName: string): void {
+    this.appliedStatusEffect.delete(effectName);
   }
 }
