@@ -130,11 +130,11 @@ export default class BattleUtils {
 
     // Add type effectiveness message to modifier messages
     if (modifier == 0) {
-      this.modifierMessages.push("It doesn't seem to have an effect!")
+      this.modifierMessages.push("  >> It doesn't seem to have an effect!")
     } else if (modifier < 1) {
-      this.modifierMessages.push("It's not very effective...");
+      this.modifierMessages.push("  >> It's not very effective...");
     } else if (modifier > 1) {
-      this.modifierMessages.push("It's super effective!")
+      this.modifierMessages.push("  >> It's super effective!")
     }
 
     return modifier;
