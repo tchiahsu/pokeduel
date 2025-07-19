@@ -20,6 +20,7 @@ export default class BattleModel {
   private player1: Player;
   private player2: Player;
   private messages: string[] = [];
+  private turnSummary: string[] = [];
   private gameOver: boolean = false;
 
   constructor() {
@@ -54,6 +55,8 @@ export default class BattleModel {
    * @param p2Move Player 2's move.
    */
   public handleTurn(p1Move: PlayerMove, p2Move: PlayerMove): void {
+    this.turnSummary = [];
+    
     if (p1Move.action === "switch" && p2Move.action === "switch") {
       this.processSwitch(this.player1, p1Move.index);
       this.processSwitch(this.player2, p2Move.index);
@@ -76,12 +79,7 @@ export default class BattleModel {
    * @returns void
    */
   private handleAttack(p1Move: PlayerMove, p2Move: PlayerMove): void {
-    // Display message about pokemon effect status
-    const p1EffectStatus = StatusManager.checkIfCanMove(this.player1.getCurrentPokemon());
-    if (p1EffectStatus) this.messages.push(p1EffectStatus);
-
-    const p2EffectStatus = StatusManager.checkIfCanMove(this.player2.getCurrentPokemon());
-    if (p2EffectStatus) this.messages.push(p2EffectStatus);
+    this.turnSummary = [];
 
     // Determine the order of attack
     const firstPlayer: Player = BattleUtils.getFasterPlayer(this.player1, this.player2);
@@ -92,79 +90,14 @@ export default class BattleModel {
     // Attack with the first player
     this.processAttack(firstPlayer, firstPlayerMove.index);
     if (BattleUtils.pokemonIsDefeated(secondPlayer)) {
+      this.messages.push(...this.turnSummary);
       return;
     }
 
     // Attack with the second player if pokemon has not fainted
     this.processAttack(secondPlayer, secondPlayerMove.index);
-  }
-  
-  /**
-   * Checks if the player's move is invalid.
-   * A move is invalid if the player tries to switch to their currently active Pokémon.
-   * 
-   * @param player The player number (1 or 2).
-   * @param playerMove The move the player wants to make.
-   * @returns True if the move is invalid, false otherwise.
-   */
-  public isInvalidMove(player: number, playerMove: PlayerMove): boolean {
-    const currentPlayer: Player = player === 1 ? this.player1 : this.player2;
 
-    if (playerMove.action === 'switch') {
-      return playerMove.index === currentPlayer.getCurrentPokemonIndex();
-    }
-
-    if (playerMove.action === 'attack') {
-      const move = currentPlayer.getCurrentPokemon().getMove(playerMove.index);
-      return move.getPP() === 0;
-    }
-
-    return false;
-  }
-
-  /**
-   * Check the user inputs a valid action
-   * 
-   * @param action The action selected by the user.
-   */
-  public isInvalidAction(action: string): boolean {
-    return !(action === 'attack' || action === 'switch')
-  }
-
-  /**
-   * Check the pokemons the user has selected are valid
-   * 
-   * @param team A list of pokemons in a player's team
-   * @param allPokemon A list of all pokemons in the game
-   */
-  public isInvalidPokemon(team: string[], allPokemon: string): boolean {
-    // convert allPokemon into an array of pokemon names
-    const allPokemonArray = allPokemon.split(/\s+/).map(name => name.trim());
-
-    for (let pokemon of team) {
-      if (!allPokemonArray.includes(pokemon)) {
-        return true
-      }
-    }
-    return false
-  }
-
-  /**
-   * Check the given action argument is valid.
-   * For attack - make sure the argument is within indexes 1-4
-   * For switch - make sure the argument is valid for the team size
-   * 
-   * @param action The action selected by the user
-   * @param argument The index for the action the user want to perform
-   * @param team A list of pokemons in a player's team
-   */
-  public isInvalidIndex(action: string, argument: number, team: string[], ): boolean {
-    if (action === 'attack') {
-      return !(argument >= 1 && argument <= 4)
-    } else {
-      const teamLength = team.length
-      return !(argument >= 1 && argument <= teamLength)
-    }
+    this.messages.push(...this.turnSummary);
   }
 
   /**
@@ -194,35 +127,40 @@ export default class BattleModel {
 
     // Check if attacking pokemon is blocked by status
     const statusMessage = StatusManager.checkIfCanMove(attackingPokemon);
-    if (statusMessage) {
-      this.messages.push(statusMessage);
+    if (statusMessage.message) {
+      this.turnSummary.push(statusMessage.message);
+    }
 
+    if (!statusMessage.canMove) {
+      // The effect prevents pokemon from attacking
       if (attackingPokemon.getHp() <= 0) {
-        this.messages.push(`${attackingPokemon.getName()} has fainted!`);
+        this.turnSummary.push(`${attackingPokemon.getName()} has fainted!`);
         attackingPlayer.reduceRemainingPokemon();
         this.gameOver = !attackingPlayer.hasRemainingPokemon();
-        return;
       }
       // If the status prevents ur pokemon from making a move, it returns
       return;
     }
 
+    // Add attack message
+    this.turnSummary.push(`${attackingPokemon.getName()} used ${move.getName()}!`)
+
     // Proceed with attack
     const damage: number = BattleUtils.calculateDamage(attackingPokemon, move, defendingPokemon);
     move.reducePP();
     defendingPokemon.takeDamage(damage);
-    this.messages.push(`${attackingPokemon.getName()} used ${move.getName()}!`);
+    this.turnSummary.push(`  >> ${defendingPokemon.getName()} took ${damage} damage! It has ${defendingPokemon.getHp()} hp left!`);
 
     // Display messages related to attack damage
-    BattleUtils.getModiferMessages().forEach((modifierMessage: string) => this.messages.push(modifierMessage));
+    BattleUtils.getModiferMessages().forEach((modifierMessage: string) => this.turnSummary.push(modifierMessage));
 
     // Try to apply effect
     const effectMessage = StatusManager.tryApplyEffect(attackingPokemon, defendingPokemon, move);
-    if (effectMessage) this.messages.push(effectMessage)
+    if (effectMessage) this.turnSummary.push(effectMessage)
     
     // Handle pokemon fainting
     if (BattleUtils.pokemonIsDefeated(defendingPlayer)) {
-      this.messages.push(`${defendingPokemon.getName()} has fainted!`);
+      this.turnSummary.push(`${defendingPokemon.getName()} has fainted!`);
       defendingPlayer.reduceRemainingPokemon();
       this.gameOver = defendingPlayer.hasRemainingPokemon() ? false : true;
     }
@@ -337,5 +275,73 @@ export default class BattleModel {
 
   public getPlayerObject(playerNumber: number): Player {
     return playerNumber === 1 ? this.player1 : this.player2;
+  }
+
+  /**
+   * Checks if the player's move is invalid.
+   * A move is invalid if the player tries to switch to their currently active Pokémon.
+   * 
+   * @param player The player number (1 or 2).
+   * @param playerMove The move the player wants to make.
+   * @returns True if the move is invalid, false otherwise.
+   */
+  public isInvalidMove(player: number, playerMove: PlayerMove): boolean {
+    const currentPlayer: Player = player === 1 ? this.player1 : this.player2;
+
+    if (playerMove.action === 'switch') {
+      return playerMove.index === currentPlayer.getCurrentPokemonIndex();
+    }
+
+    if (playerMove.action === 'attack') {
+      const move = currentPlayer.getCurrentPokemon().getMove(playerMove.index);
+      return move.getPP() === 0;
+    }
+
+    return false;
+  }
+
+  /**
+   * Check the user inputs a valid action
+   * 
+   * @param action The action selected by the user.
+   */
+  public isInvalidAction(action: string): boolean {
+    return !(action === 'attack' || action === 'switch')
+  }
+
+  /**
+   * Check the pokemons the user has selected are valid
+   * 
+   * @param team A list of pokemons in a player's team
+   * @param allPokemon A list of all pokemons in the game
+   */
+  public isInvalidPokemon(team: string[], allPokemon: string): boolean {
+    // convert allPokemon into an array of pokemon names
+    const allPokemonArray = allPokemon.split(/\s+/).map(name => name.trim());
+
+    for (let pokemon of team) {
+      if (!allPokemonArray.includes(pokemon)) {
+        return true
+      }
+    }
+    return false
+  }
+
+  /**
+   * Check the given action argument is valid.
+   * For attack - make sure the argument is within indexes 1-4
+   * For switch - make sure the argument is valid for the team size
+   * 
+   * @param action The action selected by the user
+   * @param argument The index for the action the user want to perform
+   * @param team A list of pokemons in a player's team
+   */
+  public isInvalidIndex(action: string, argument: number, team: string[], ): boolean {
+    if (action === 'attack') {
+      return !(argument >= 1 && argument <= 4)
+    } else {
+      const teamLength = team.length
+      return !(argument >= 1 && argument <= teamLength)
+    }
   }
 }
