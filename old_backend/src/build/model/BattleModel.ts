@@ -21,6 +21,7 @@ export default class BattleModel {
   private player2: Player;
   private messages: string[] = [];
   private turnSummary: string[] = [];
+  private endTurnEffects: (() => string | null)[] = [];
   private gameOver: boolean = false;
 
   constructor() {
@@ -69,6 +70,23 @@ export default class BattleModel {
     } else {
       this.handleAttack(p1Move, p2Move);
     }
+
+    this.endTurnEffects.forEach(effect=> {
+      const result = effect();
+      if (result) this.turnSummary.push(result);
+    });
+    this.endTurnEffects = [];
+
+    [this.player1, this.player2].forEach(player => {
+      const currentPokemon = player.getCurrentPokemon();
+      if (currentPokemon.getHp() <= 0 && player.hasRemainingPokemon()) {
+        this.turnSummary.push(`${currentPokemon.getName()} has fainted!`);
+        player.reduceRemainingPokemon();
+        this.gameOver = !player.hasRemainingPokemon();
+      }
+    });
+
+    this.messages.push(...this.turnSummary);
   }
   
   /**
@@ -79,8 +97,6 @@ export default class BattleModel {
    * @returns void
    */
   private handleAttack(p1Move: PlayerMove, p2Move: PlayerMove): void {
-    this.turnSummary = [];
-
     // Determine the order of attack
     const firstPlayer: Player = BattleUtils.getFasterPlayer(this.player1, this.player2);
     const firstPlayerMove: PlayerMove = firstPlayer === this.player1 ? p1Move : p2Move;
@@ -90,14 +106,11 @@ export default class BattleModel {
     // Attack with the first player
     this.processAttack(firstPlayer, firstPlayerMove.index);
     if (BattleUtils.pokemonIsDefeated(secondPlayer)) {
-      this.messages.push(...this.turnSummary);
       return;
     }
 
     // Attack with the second player if pokemon has not fainted
     this.processAttack(secondPlayer, secondPlayerMove.index);
-
-    this.messages.push(...this.turnSummary);
   }
 
   /**
@@ -131,6 +144,10 @@ export default class BattleModel {
       this.turnSummary.push(statusMessage.message);
     }
 
+    if (statusMessage.endTurnEffect) {
+      this.endTurnEffects.push(statusMessage.endTurnEffect)
+    }
+
     if (!statusMessage.canMove) {
       // The effect prevents pokemon from attacking
       if (attackingPokemon.getHp() <= 0) {
@@ -149,7 +166,8 @@ export default class BattleModel {
     const damage: number = BattleUtils.calculateDamage(attackingPokemon, move, defendingPokemon);
     move.reducePP();
     defendingPokemon.takeDamage(damage);
-    this.turnSummary.push(`  >> ${defendingPokemon.getName()} took ${damage} damage! It has ${defendingPokemon.getHp()} hp left!`);
+    const hp = defendingPokemon.getHp() < 0 ? 0 : defendingPokemon.getHp();
+    this.turnSummary.push(`  >> ${defendingPokemon.getName()} took ${damage} damage! It has ${hp} hp left!`);
 
     // Display messages related to attack damage
     BattleUtils.getModiferMessages().forEach((modifierMessage: string) => this.turnSummary.push(modifierMessage));

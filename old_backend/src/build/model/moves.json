@@ -29,7 +29,7 @@
     "accuracy": 75,
     "pp": 15,
     "effect": "sleep",
-    "effectChance": 100,
+    "effectChance": 75,
     "effectTarget": "target"
   },
   "earthquake": {
