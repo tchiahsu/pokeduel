@@ -5,6 +5,7 @@ import Pokemon from "./Pokemon.js";
 export type StatusResult = {
     message: string | null;
     canMove: boolean;
+    endTurnEffect?: () => string | null;
 }
 
 export default class StatusManager {
@@ -17,26 +18,37 @@ export default class StatusManager {
                 // Pokemon 1/8th of max HP each turn
                 const poisonDamage = Math.floor(pokemon.getMaxHP() / 8)
                 pokemon.takeDamage(poisonDamage);
-                return { message: `*${pokemon.getName()} is hurt by poison*`, canMove: true};
+                return {
+                    message: null,
+                    canMove: true,
+                    endTurnEffect: () => {
+                        pokemon.takeDamage(poisonDamage);
+                        return `*${pokemon.getName()} is hurt by poison*`;
+                    }
+                };
             case "sleep":
                 pokemon.increaseStatusCounter();
                 if (Math.random() < 0.33 || pokemon.getStatusCounter() == 3) { // 33% since the pokemon sleeps 1-3 turns
                     pokemon.setStatus("none")
                     pokemon.resetStatusCounter();
-                    return { message: `*${pokemon.getName()} woke up*`, canMove: true };
+                    return { message: `*${pokemon.getName()} woke up*`, canMove: true, };
                 }
-                return { message: null, canMove: true };
+                return { message: `*${pokemon.getName()} is asleep!*`, canMove: false };
             case "burn":
                 // Pokemon Physical Attack Speed is cut by Half
                 if (!pokemon.hasStatusApplied("burn")) {
                     pokemon.applyStatusEffect("burn");
-                    const attack = Math.floor(pokemon.getAtk() / 2)
-                    pokemon.lowerStat("atk", attack);
                 }
                 // Inflicts 1/16th of Max HP
                 const burnDamage = Math.floor(pokemon.getMaxHP() / 16);
-                pokemon.takeDamage(burnDamage);
-                return { message: `*${pokemon.getName()} is dealt burn damage*`, canMove: true }
+                return {
+                    message: null,
+                    canMove: true,
+                    endTurnEffect: () => {
+                        pokemon.takeDamage(burnDamage);
+                        return `*${pokemon.getName()} is dealt burn damage*`
+                    }
+                }
             case "freeze":
                 // The pokemon cannot use any attacks
                 if (Math.random() < 0.2) { // 20% chance to get out
@@ -61,16 +73,15 @@ export default class StatusManager {
             case "paralyze":
                 if (!pokemon.hasStatusApplied("paralyze")) {
                     pokemon.applyStatusEffect("paralyze");
-                    const speed = Math.floor(pokemon.getSpeed() / 2);
-                    pokemon.lowerStat("speed", speed)
                 }
                 if (Math.random() < 0.25) { // 25% chance to be fully paralyzed and unable to attack
                     return { message: `*${pokemon.getName()} is paralyzed and can't move*`, canMove: false }
                 }
                 return { message: null, canMove: true };
-        }
 
-        return { message: null, canMove: true };; // No effect on pokemon
+            default:
+                return { message: null, canMove: true };
+        }
     }
 
     public static tryApplyEffect(user: Pokemon, target: Pokemon, move: any): string | null {

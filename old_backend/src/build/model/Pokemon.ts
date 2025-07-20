@@ -45,6 +45,7 @@ export default class Pokemon {
     this.moves = moves;
     this.fainted = true;
     this.effectCounter = 0;
+    this.status = "none";
   }
 
   /**
