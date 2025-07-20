@@ -157,7 +157,8 @@ export default class BattleModel {
     const damage: number = BattleUtils.calculateDamage(attackingPokemon, move, defendingPokemon);
     move.reducePP();
     defendingPokemon.takeDamage(damage);
-    this.turnSummary.push(`  >> ${defendingPokemon.getName()} took ${damage} damage! It has ${defendingPokemon.getHp()} hp left!`);
+    const hp = defendingPokemon.getHp() < 0 ? 0 : defendingPokemon.getHp();
+    this.turnSummary.push(`  >> ${defendingPokemon.getName()} took ${damage} damage! It has ${hp} hp left!`);
 
     // Display messages related to attack damage
     BattleUtils.getModiferMessages().forEach((modifierMessage: string) => this.turnSummary.push(modifierMessage));
