@@ -20,7 +20,6 @@
   
 ### Player Modes
 - Player vs. Player
-- Player vs. AI
   
 ## Frontend Tech Stack
 | Purpose          | Tech                 |
@@ -41,58 +40,6 @@
 | Component           | Tech               |
 |---------------------|--------------------|
 | Framework           | Node.js + Express  |
-| Real-Time           | Tailwind CSS       |
 | REST API            | Socket.IO          |
-| Database Management | PostgreSQL         |
-
-### Architecture Concept
-```
-Client A  <-------->  Socket.IO Server  <-------->  Client B
-         :                    :
-      REST API             PostgreSQL
-```
-### Game Engine Model
-- All TypeScript / JavaScript
-- Core Responsabilities:
-   - Damage Calculation
-   - Status effect tracking
-   - Turn handling & validation
-   - Logging game events
-   - Determining win/loss
- 
-## Database: PostgreSQL
-| DB Features           | Why PostgreSQL                           |
-|-----------------------|------------------------------------------|
-| Relational Structure  | Good for Users, Matches, Pokemon, Teams  |
-| Strong Integrity      | Enforce constraints                      |
-| Advanced Querying     | Useful for stats, leaderboards           |
-| JSON Support          | If you want to store flexible data       |
-
-### Potential Structure
-- **Users**: id, username, password, email
-- **Teams**: id, user_id, name
-- **Pokemon**: id, name, type1, type2, base_stats, ability1, ..., etc
-- **Matches**: id, player1_id, player2_id, winner_id, etc
-- **Moves**: id, name, power, type, accuracy, speed, etc
-
-## Hosting + Deployment (TBD)
-
-## Stretch Goal
-- AI Opponent
-- Leaderboards
-- Tournament Mode (like going to differnent Dojo like Ash did to get stars)
-
-## Suggested Milestones
-| Milestone      | Task                                          |
-|----------------|-----------------------------------------------|
-| Milestone #1   | Define game rules, plan structure of UI       |
-| Milestone #2   | Implement game engine logic standalone        |
-| Milestone #3   | Setup CI/CD Pipeline for frontend             |
-| Milestone #4   | Build static frontend screens                 |
-| Milestone #5   | Integrate frontend with game logic            |
-| Milestone #6   | Add Socket.IO multiplayer logic               |
-| Milestone #7   | Build database & REST endpoints               |
-| Milestone #8   | Polish UI, test edge cases, write docs        |
-| Milestone #9   | DEPLOY ... and add to Resume ;)               |
 
 
