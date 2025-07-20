@@ -77,6 +77,15 @@ export default class BattleModel {
     });
     this.endTurnEffects = [];
 
+    [this.player1, this.player2].forEach(player => {
+      const currentPokemon = player.getCurrentPokemon();
+      if (currentPokemon.getHp() <= 0 && player.hasRemainingPokemon()) {
+        this.turnSummary.push(`${currentPokemon.getName()} has fainted!`);
+        player.reduceRemainingPokemon();
+        this.gameOver = !player.hasRemainingPokemon();
+      }
+    });
+
     this.messages.push(...this.turnSummary);
   }
   
