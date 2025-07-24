@@ -19,8 +19,11 @@ interface PlayerMove {
 export default class BattleModel {
   private player1: Player;
   private player2: Player;
+  // Stores the messages dispalyed in turn summary
   private messages: string[] = [];
+  // Temprorary storage for messages generated during the current turn
   private turnSummary: string[] = [];
+  // Stores functions that should be run after the attacks has been processed
   private endTurnEffects: (() => string | null)[] = [];
   private gameOver: boolean = false;
 
@@ -71,12 +74,16 @@ export default class BattleModel {
       this.handleAttack(p1Move, p2Move);
     }
 
+    // This effects are collected in processAttack
+    // Its meant to inflict effect damage after the attacks have been processed
     this.endTurnEffects.forEach(effect=> {
       const result = effect();
       if (result) this.turnSummary.push(result);
     });
     this.endTurnEffects = [];
 
+    // Checks whether any of the pokemon has fainted after all moves and status effects
+    // have been applied for the turn
     [this.player1, this.player2].forEach(player => {
       const currentPokemon = player.getCurrentPokemon();
       if (currentPokemon.getHp() <= 0 && player.hasRemainingPokemon()) {
@@ -138,41 +145,46 @@ export default class BattleModel {
     const defendingPokemon: Pokemon = defendingPlayer.getCurrentPokemon();
     const move = attackingPokemon.getMove(attackIndex);
 
-    // Check if attacking pokemon is blocked by status
+    // Check whether the attacking pokemon is able to move this turn
+    // Add the message associated to the effect that is applied
     const statusMessage = StatusManager.checkIfCanMove(attackingPokemon);
     if (statusMessage.message) {
       this.turnSummary.push(statusMessage.message);
     }
 
+    // Add the message associated to the effect that happens at the end of the turn
     if (statusMessage.endTurnEffect) {
       this.endTurnEffects.push(statusMessage.endTurnEffect)
     }
 
+    // If the effect prevents the pokemon from moving/attacking, then this skips the attack
     if (!statusMessage.canMove) {
-      // The effect prevents pokemon from attacking
+      // Starts the fainting flow if the effect lowers pokemon HP to 0
       if (attackingPokemon.getHp() <= 0) {
         this.turnSummary.push(`${attackingPokemon.getName()} has fainted!`);
         attackingPlayer.reduceRemainingPokemon();
         this.gameOver = !attackingPlayer.hasRemainingPokemon();
       }
-      // If the status prevents ur pokemon from making a move, it returns
+      // Return if the pokemon can't attack and hasn't fainted
       return;
     }
 
-    // Add attack message
+    // Add attack message from pokemon
     this.turnSummary.push(`${attackingPokemon.getName()} used ${move.getName()}!`)
 
-    // Proceed with attack
+    // Attack flow
     const damage: number = BattleUtils.calculateDamage(attackingPokemon, move, defendingPokemon);
     move.reducePP();
     defendingPokemon.takeDamage(damage);
+
+    // Display pokemon HP after each attack
     const hp = defendingPokemon.getHp() < 0 ? 0 : defendingPokemon.getHp();
     this.turnSummary.push(`  >> ${defendingPokemon.getName()} took ${damage} damage! It has ${hp} hp left!`);
 
     // Display messages related to attack damage
     BattleUtils.getModiferMessages().forEach((modifierMessage: string) => this.turnSummary.push(modifierMessage));
 
-    // Try to apply effect
+    // New status effects may be inflicted based on the move used
     const effectMessage = StatusManager.tryApplyEffect(attackingPokemon, defendingPokemon, move);
     if (effectMessage) this.turnSummary.push(effectMessage)
     
