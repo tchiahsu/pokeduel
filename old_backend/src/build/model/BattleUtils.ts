@@ -84,6 +84,9 @@ export default class BattleUtils {
     const defenderDefense: number = attackType === "physical" ? defender.getDef() : defender.getSpDef();
     const movePower = move.getPower();
 
+    // Move used is a status move
+    if (movePower === 0) return 0;
+
     const criticalModifer: number = this.getCriticalModifier();
     const typeEffectivenessModifier: number = this.getTypeEffectivenessModifier(move, defender);
     const stabModifier: number = this.getStabModifier(attacker, move);
