@@ -1,21 +1,35 @@
 {
-  "name": "backend",
+  "name": "pokemon_monarch",
   "version": "1.0.0",
+  "description": "![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)\r ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)\r ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)\r ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)\r ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)\r ![Socket.io](https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io&badgeColor=010101)",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "dev": "ts-node-dev src/app.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "npx tsc && node dist/GameEngine.js",
+    "endpointDev": "npx tsc && nodemon dist/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tchiahsu/pokemon_monarch.git"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "express": "^5.1.0"
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tchiahsu/pokemon_monarch/issues"
   },
+  "homepage": "https://github.com/tchiahsu/pokemon_monarch#readme",
   "devDependencies": {
     "@types/express": "^5.0.3",
-    "ts-node-dev": "^2.0.0",
+    "@types/node": "^24.0.10",
+    "nodemon": "^3.1.10",
+    "socket.io-client": "^4.8.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "readline-sync": "^1.4.10",
+    "socket.io": "^4.8.1"
   }
 }
