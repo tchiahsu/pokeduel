@@ -84,6 +84,9 @@ export default class BattleUtils {
     const defenderDefense: number = attackType === "physical" ? defender.getDef() : defender.getSpDef();
     const movePower = move.getPower();
 
+    // Move used is a status move
+    if (movePower === 0) return 0;
+
     const criticalModifer: number = this.getCriticalModifier();
     const typeEffectivenessModifier: number = this.getTypeEffectivenessModifier(move, defender);
     const stabModifier: number = this.getStabModifier(attacker, move);
@@ -130,11 +133,11 @@ export default class BattleUtils {
 
     // Add type effectiveness message to modifier messages
     if (modifier == 0) {
-      this.modifierMessages.push("It doesn't seem to have an effect!")
+      this.modifierMessages.push("  >> It doesn't seem to have an effect!")
     } else if (modifier < 1) {
-      this.modifierMessages.push("It's not very effective...");
+      this.modifierMessages.push("  >> It's not very effective...");
     } else if (modifier > 1) {
-      this.modifierMessages.push("It's super effective!")
+      this.modifierMessages.push("  >> It's super effective!")
     }
 
     return modifier;
