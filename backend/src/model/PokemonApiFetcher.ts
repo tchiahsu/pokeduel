@@ -9,6 +9,7 @@ type DefaultPokemonData = {
   results: NamedApiResource[];
 };
 
+// Represent the the type for querying a single default pokemon name and sprite from the Pokemon API
 type DefaultPokemon = {
   name: string;
   sprite: string;
