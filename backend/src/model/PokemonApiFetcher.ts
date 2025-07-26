@@ -1,19 +1,21 @@
+import { PokemonType, MoveType } from "../types/entities.js";
+
 // Represents the common resource type in the Pokemon API
 type NamedApiResource = {
   name: string;
   url: string;
 };
 
-// Represents the type for querying the default pokemon from the Pokemon API
+// Represents the type for querying the default pokemon data from the Pokemon API
 type DefaultPokemonData = {
   results: NamedApiResource[];
 };
 
-// Represent the the type for querying a single default pokemon name and sprite from the Pokemon API
+// Represents the type for a default pokemon object
 type DefaultPokemon = {
   name: string;
   sprite: string;
-}
+};
 
 // Represents the type for fetching a single pokemon from the Pokemon API
 type PokemonBaseData = {
@@ -57,21 +59,6 @@ type MovesBaseMetaData = {
   ailment_chance: number;
 };
 
-// Represents the type for a Pokemon object
-type Pokemon = {
-  name: string;
-  types: string[];
-  hp: number;
-  attack: number;
-  defense: number;
-  "special-attack": number;
-  "special-defense": number;
-  speed: number;
-  moves: string[];
-  frontSprite: string;
-  backSprite: string;
-};
-
 // Represents the keys within the Pokemon object
 type StatKeys =
   | "hp"
@@ -81,26 +68,14 @@ type StatKeys =
   | "special-defense"
   | "speed";
 
-// Represents the type of a Move object
-type Move = {
-  name: string;
-  type: string;
-  category: string;
-  power: number;
-  accuracy: number;
-  pp: number;
-  effect: string;
-  effectChance: number;
-};
-
 // Represents the type for player's selection
 type PlayerSelection = Record<string, string[]>;
 
 // Represents the type for the pokemon data created from the Pokemon API
-type PokemonData = Record<string, Pokemon>;
+type PokemonData = Record<string, PokemonType>;
 
 // Represents the type for the move data created from the Pokemon API
-type MoveData = Record<string, Move>;
+type MoveData = Record<string, MoveType>;
 
 /**
  * A utility class for fetching Pokemon and move data from the Pokemon API (https://pokeapi.co/).
@@ -218,13 +193,13 @@ export default class PokemonApiFetcher {
   static async createOnePokemonData(
     pokemonName: string,
     pokemonMoves: string[]
-  ): Promise<Pokemon> {
+  ): Promise<PokemonType> {
     try {
       const response: Response = await fetch(
         `https://pokeapi.co/api/v2/pokemon/${pokemonName}`
       );
       const pokemonBaseData: PokemonBaseData = await response.json();
-      const pokemon: Partial<Pokemon> = {
+      const pokemon: Partial<PokemonType> = {
         name: pokemonBaseData.name,
         types: pokemonBaseData.types.map(
           (typeData: PokemonTypeData) => typeData.type.name
@@ -238,13 +213,13 @@ export default class PokemonApiFetcher {
         const statName = pokemonStat.stat.name as StatKeys;
         pokemon[statName] = pokemonStat.base_stat;
       });
-      return pokemon as Pokemon;
+      return pokemon as PokemonType;
     } catch (error) {
       console.error(
         `Failed to fetch and create the pokemon data for "${pokemonName}"`,
         error
       );
-      return {} as Pokemon;
+      return {} as PokemonType;
     }
   }
 
@@ -285,13 +260,13 @@ export default class PokemonApiFetcher {
    * @param moveName The name of the move.
    * @returns A single Move object.
    */
-  static async createOneMoveData(moveName: string): Promise<Move> {
+  static async createOneMoveData(moveName: string): Promise<MoveType> {
     try {
       const response: Response = await fetch(
         `https://pokeapi.co/api/v2/move/${moveName}`
       );
       const moveBaseData: MoveBaseData = await response.json();
-      const move: Move = {
+      const move: MoveType = {
         name: moveBaseData.name,
         type: moveBaseData.type.name,
         category: moveBaseData.damage_class.name,
@@ -308,7 +283,7 @@ export default class PokemonApiFetcher {
         `Failed to fetch and create the move data for "${moveName}"`,
         error
       );
-      return {} as Move;
+      return {} as MoveType;
     }
   }
 }

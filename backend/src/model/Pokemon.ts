@@ -1,5 +1,4 @@
-import pokemonData from "./pokemon.json" with { "type": "json"};
-import Move from "./Move.js"
+import Move from "./Move.js";
 
 /**
  * Creates a Pokemon with the passed-in stats.
@@ -15,15 +14,17 @@ export default class Pokemon {
   private spDef: number;
   private speed: number;
   private moves: Move[];
+  private frontSprite: string;
+  private backSprite: string;
   private fainted: boolean;
   private status: string;
   private effectCounter: number;
-  private appliedStatusEffect: Set<string> = new Set()
+  private appliedStatusEffect: Set<string> = new Set();
 
   /**
    * Constructs a new Pokémon instance with the given stats and moves.
    * @param name - The name of the Pokémon
-   * @param types - The types of the Pokémon (e.g., ["Fire", "Flying"])
+   * @param types - The types of the Pokémon (e.g., ["fire", "flying"])
    * @param hp - The current HP (health points) of the Pokémon
    * @param atk - The physical attack stat
    * @param def - The physical defense stat
@@ -32,7 +33,19 @@ export default class Pokemon {
    * @param speed - The speed stat
    * @param moves - An array of Move objects the Pokémon can use
    */
-  constructor(name: string, types: string[], hp: number, atk: number, def: number, spAtk: number, spDef: number, speed: number, moves: Move[]) {
+  constructor(
+    name: string,
+    types: string[],
+    hp: number,
+    atk: number,
+    def: number,
+    spAtk: number,
+    spDef: number,
+    speed: number,
+    moves: Move[],
+    frontSprite: string,
+    backSprite: string
+  ) {
     this.name = name;
     this.types = types;
     this.hp = hp;
@@ -43,6 +56,8 @@ export default class Pokemon {
     this.spDef = spDef;
     this.speed = speed;
     this.moves = moves;
+    this.frontSprite = frontSprite;
+    this.backSprite = backSprite;
     this.fainted = true;
     this.effectCounter = 0;
     this.status = "none";
@@ -164,7 +179,10 @@ export default class Pokemon {
    * @param stat the stat of the Pokemon that is to be lowered
    * @param reduce the number by which stat is to be lowered
    */
-  public lowerStat(stat: "atk" | "def" | "spAtk" | "spDef" | "speed", reduce: number): void {
+  public lowerStat(
+    stat: "atk" | "def" | "spAtk" | "spDef" | "speed",
+    reduce: number
+  ): void {
     this[stat] -= reduce;
   }
 
@@ -173,7 +191,10 @@ export default class Pokemon {
    * @param stat the stat of the Pokemon that is to be raised
    * @param reduce the number by which stat is to be raised
    */
-  public raiseStat(stat: "atk" | "def" | "spAtk" | "spDef" | "speed", raise: number): void {
+  public raiseStat(
+    stat: "atk" | "def" | "spAtk" | "spDef" | "speed",
+    raise: number
+  ): void {
     this[stat] += raise;
   }
 
@@ -218,7 +239,7 @@ export default class Pokemon {
 
   /**
    * Adds the status effect to mark it as applied
-   * @param effectName 
+   * @param effectName
    */
   public applyStatusEffect(effectName: string): void {
     this.appliedStatusEffect.add(effectName);
@@ -226,7 +247,7 @@ export default class Pokemon {
 
   /**
    * Deletes the status effect to mark it as inactive
-   * @param effectName 
+   * @param effectName
    */
   public resetStatusEffect(effectName: string): void {
     this.appliedStatusEffect.delete(effectName);

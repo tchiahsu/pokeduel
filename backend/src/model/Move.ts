@@ -23,7 +23,7 @@ export default class Move {
      * @param pp - The number of times the move can be used (Power Points)
      */
     constructor(name: string, type: string, category: string, power: number, accuracy: number, pp: number,
-        effect: string, effectChance: number, effectTarget: string) {
+        effect: string, effectChance: number) {
         this.name = name;
         this.type = type;
         this.category = category;
@@ -32,7 +32,6 @@ export default class Move {
         this.pp = pp;
         this.effect = effect;
         this.effectChance = effectChance;
-        this.effectTarget = effectTarget;
     }
 
     /**
