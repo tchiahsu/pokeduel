@@ -232,14 +232,14 @@ export default class PokemonApiFetcher {
    */
   static async createOnePokemonStats(
     pokemonName: string
-  ): Promise<Pokemon> {
+  ): Promise<PokemonType> {
     try {
       const response: Response = await fetch(
         `https://pokeapi.co/api/v2/pokemon/${pokemonName}`
       );
       const pokemonBaseData: PokemonBaseData = await response.json();
 
-      const pokemon: Partial<Pokemon> = {
+      const pokemon: Partial<PokemonType> = {
         name: pokemonBaseData.name,
         types: pokemonBaseData.types.map(
           (typeData: PokemonTypeData) => typeData.type.name
@@ -253,13 +253,13 @@ export default class PokemonApiFetcher {
         const statName = pokemonStat.stat.name as StatKeys;
         pokemon[statName] = pokemonStat.base_stat;
       });
-      return pokemon as Pokemon;
+      return pokemon as PokemonType;
     } catch (error) {
       console.error(
         `Failed to fetch and create the pokemon data for "${pokemonName}"`,
         error
       );
-      return {} as Pokemon;
+      return {} as PokemonType;
     }
   }
 
