@@ -5,9 +5,14 @@ type NamedApiResource = {
 };
 
 // Represents the type for querying the default pokemon from the Pokemon API
-type DefaultPokemon = {
+type DefaultPokemonData = {
   results: NamedApiResource[];
 };
+
+type DefaultPokemon = {
+  name: string;
+  sprite: string;
+}
 
 // Represents the type for fetching a single pokemon from the Pokemon API
 type PokemonBaseData = {
@@ -107,24 +112,35 @@ type MoveData = Record<string, Move>;
  */
 export default class PokemonApiFetcher {
   /**
-   * Fetches and returns an array containing the names of the default pokemon
+   * Fetches and returns an array containing the names and sprites of the default pokemon
    * from the Pokemon API.
    * The default pokemon are the first 151 pokemon in the game.
    *
    * @returns An array containing the names of the default pokemon.
    */
-  static async getDefaultPokemon(): Promise<string[]> {
+  static async getDefaultPokemon(): Promise<DefaultPokemon[]> {
     try {
       const response: Response = await fetch(
         `https://pokeapi.co/api/v2/pokemon?limit=151`
       );
-      const defaultPokemonData: DefaultPokemon = await response.json();
-      return defaultPokemonData.results.map(
-        (pokemon: NamedApiResource) => pokemon.name
-      );
+      const defaultPokemonData: DefaultPokemonData = await response.json();
+
+      const defaultPokemon: DefaultPokemon[] = [];
+
+      for (const pokemon of defaultPokemonData.results) {
+        const pokemonObj: Partial<DefaultPokemon> = {};
+        pokemonObj.name = pokemon.name;
+
+        const response: Response = await fetch(pokemon.url);
+        const pokemonBaseData: PokemonBaseData = await response.json();
+        pokemonObj.sprite = pokemonBaseData.sprites.front_default;
+
+        defaultPokemon.push(pokemonObj as DefaultPokemon);
+      }
+      return defaultPokemon;
     } catch (error) {
       console.error(`Failed to fetch default pokemon`, error);
-      return [];
+      return [] as DefaultPokemon[];
     }
   }
 
@@ -295,26 +311,3 @@ export default class PokemonApiFetcher {
     }
   }
 }
-
-// PokemonApiFetcher.getDefaultPokemon().then(result => result.forEach((pokemon) => console.log(pokemon)));
-// PokemonApiFetcher.getPokemonMoves("flygon").then(result => result.forEach((move) => console.log(move)));
-// PokemonApiFetcher.isPokemon("flygon").then((bool) => console.log(bool));
-
-// PokemonApiFetcher.createOnePokemonData("flygon", [
-//   "mega-punch",
-//   "fire-punch",
-// ]).then((pokemonData) => console.log(pokemonData));
-
-// PokemonApiFetcher.createFullPokemonData({
-//   flygon: ["mega-punch", "fire-punch"],
-//   charizard: ["swords-dance", "cut", "wing-attack"],
-// }).then((data) => console.log(data));
-
-// PokemonApiFetcher.createOneMoveData("sludge-bomb").then((data) =>
-//   console.log(data)
-// );
-
-// PokemonApiFetcher.createFullMoveData({
-//   flygon: ["mega-punch", "fire-punch"],
-//   charizard: ["swords-dance", "cut", "wing-attack"],
-// }).then((data) => console.log(data));
