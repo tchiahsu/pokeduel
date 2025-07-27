@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Multiplayer from './pages/Multiplayer';
@@ -15,7 +15,7 @@ function App() {
           <Route path="/multiplayer" element={<Multiplayer />} />
           <Route path="/team-selection" element={<Selection />} />
           <Route path="/battle" element={<Battle />} />
-        </Routes>
+        </Routes>x
       </div>
     </HashRouter>
   );
