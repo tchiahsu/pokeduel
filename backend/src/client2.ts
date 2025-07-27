@@ -6,11 +6,15 @@ socket.on("connect", () => {
   console.log(`Connected as ${socket.id}`);
 });
 
+socket.on("update-game", (data) => {
+  console.log(data.message);
+});
+
 socket.emit("setPlayer", {
-  name: "Harrison",
+  name: "Pham",
   teamSelection: {
-    charizard: ["flamethrower", "air-slash", "dragon-claw", "earthquake"],
-    blastoise: ["hydro-pump", "ice-beam", "surf", "bite"],
+    alakazam: ["psychic", "shadow ball", "recover", "calm mind"],
+    machamp: ["dynamic punch", "earthquake", "stone edge", "bulk up"],
   },
 });
 

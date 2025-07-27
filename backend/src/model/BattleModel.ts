@@ -6,50 +6,127 @@ import pokemonData from "./pokemon.json" with {"type": "json"};
 import StatusManager from "./StatusManager.js";
 
 /**
- * An interface representing the player's move.
+ * An type representing a player's move.
  */
-interface PlayerMove {
+type PlayerMove = {
   action: string;
   index: number;
 }
+
+type TurnContext = {
+    player1: Player;
+    player2: Player;
+    p1Move: PlayerMove;
+    p2Move: PlayerMove;
+  }
 
 /**
  * A class representing the core logic of the pokemon battle system.
  */
 export default class BattleModel {
-  private player1: Player;
-  private player2: Player;
-  // Stores the messages dispalyed in turn summary
+  private player1ID: string;
+  private player2ID: string;
+  // Stores the messages displayed in turn summary
   private messages: string[] = [];
-  // Temprorary storage for messages generated during the current turn
+  // Temporary storage for messages generated during the current turn
   private turnSummary: string[] = [];
   // Stores functions that should be run after the attacks has been processed
   private endTurnEffects: (() => string | null)[] = [];
   private gameOver: boolean = false;
+  private players: Record<string, Player> = {};
+  private moves: Record<string, PlayerMove> = {};
 
   constructor() {
   }
 
-  /**
-   * Sets player 1.
-   * 
-   * @param name The name of the player.
-   * @param player1Team Contains the player's pokemon team selection.
-   */
-  public setPlayer1(name: string, player1Team: string[]): void {
-    const pokemonTeam: Pokemon[] = PokemonFactory.createTeam(player1Team);
-    this.player1 = new Player(name, pokemonTeam);
+  // /**
+  //  * Sets player 1.
+  //  * 
+  //  * @param name The name of the player.
+  //  * @param player1Team Contains the player's pokemon team selection.
+  //  */
+  // public setPlayer1(name: string, player1Team: string[]): void {
+  //   const pokemonTeam: Pokemon[] = PokemonFactory.createTeam(player1Team);
+  //   this.player1 = new Player(name, pokemonTeam);
+  // }
+
+  // /**
+  //  * Sets player 2.
+  //  * 
+  //  * @param name The name of the player.
+  //  * @param player2Team Contains the player's pokemon team selection.
+  //  */
+  // public setPlayer2(name: string, player2Team: string[]): void {
+  //   const pokemonTeam: Pokemon[] = PokemonFactory.createTeam(player2Team);
+  //   this.player2 = new Player(name, pokemonTeam);
+  // }
+
+  public async setPlayer(playerID: string, name: string, teamSelection: Record<string, string[]>): Promise<void> {
+    if (!(playerID in this.players)) {
+      const pokemonTeam: Pokemon[] = await PokemonFactory.createTeam(teamSelection);
+      this.players[playerID] = new Player(name, pokemonTeam);
+    }
+
+    if (Object.keys(this.players).length === 1) {
+      this.player1ID = playerID;
+    } else {
+      this.player2ID = playerID;
+    }
   }
 
-  /**
-   * Sets player 2.
-   * 
-   * @param name The name of the player.
-   * @param player2Team Contains the player's pokemon team selection.
-   */
-  public setPlayer2(name: string, player2Team: string[]): void {
-    const pokemonTeam: Pokemon[] = PokemonFactory.createTeam(player2Team);
-    this.player2 = new Player(name, pokemonTeam);
+  public getPlayers(): Record<string, Player> {
+    return this.players;
+  }
+
+  public getPlayer1ID(): string {
+    return this.player1ID;
+  }
+
+  public getMoves(): Record<string, PlayerMove> {
+    return this.moves;
+  }
+
+  public checkSetStatus() {
+    return Object.keys(this.players);
+  }
+
+  public addMove(playerID: string, playerMove: PlayerMove): void {
+    this.moves[playerID] = playerMove;
+  }
+
+  public readyToHandleTurn(): boolean {
+    return Object.keys(this.moves).length === 2;
+  }
+
+  // /**
+  //  * Handle's the actions for the players.
+  //  * 
+  //  * @param p1Move Player 1's move.
+  //  * @param p2Move Player 2's move.
+  //  */
+  // public handleTurn(p1Move: PlayerMove, p2Move: PlayerMove): void {
+  //   this.turnSummary = [];
+    
+  //   if (p1Move.action === "switch" && p2Move.action === "switch") {
+  //     this.processSwitch(this.player1, p1Move.index);
+  //     this.processSwitch(this.player2, p2Move.index);
+  //   } else if (p1Move.action === "switch" && p2Move.action === "attack") {
+  //     this.processSwitch(this.player1, p1Move.index);
+  //     this.processAttack(this.player2, p2Move.index);
+  //   } else if (p1Move.action === "attack" && p2Move.action === "switch") {
+  //     this.processSwitch(this.player2, p2Move.index);
+  //     this.processAttack(this.player1, p1Move.index);
+  //   } else {
+  //     this.handleAttack(p1Move, p2Move);
+  //   }
+
+  public getTurnContext(): TurnContext {
+    return {
+      player1: this.players[this.player1ID],
+      player2: this.players[this.player2ID],
+      p1Move: this.moves[this.player1ID],
+      p2Move: this.moves[this.player2ID],
+    }
   }
 
   /**
@@ -58,20 +135,17 @@ export default class BattleModel {
    * @param p1Move Player 1's move.
    * @param p2Move Player 2's move.
    */
-  public handleTurn(p1Move: PlayerMove, p2Move: PlayerMove): void {
+  public handleTurn(): void {
+    const {player1, player2, p1Move, p2Move} = this.getTurnContext();
     this.turnSummary = [];
-    
+
     if (p1Move.action === "switch" && p2Move.action === "switch") {
-      this.processSwitch(this.player1, p1Move.index);
-      this.processSwitch(this.player2, p2Move.index);
-    } else if (p1Move.action === "switch" && p2Move.action === "attack") {
-      this.processSwitch(this.player1, p1Move.index);
-      this.processAttack(this.player2, p2Move.index);
-    } else if (p1Move.action === "attack" && p2Move.action === "switch") {
-      this.processSwitch(this.player2, p2Move.index);
-      this.processAttack(this.player1, p1Move.index);
+      this.processSwitch(player1, p1Move.index);
+      this.processSwitch(player2, p2Move.index);
+    } else if (p1Move.action === "switch" || p2Move.action === "switch") {
+      this.handleSingleSwitch();
     } else {
-      this.handleAttack(p1Move, p2Move);
+      this.handleAttack();
     }
 
     // This effects are collected in processAttack
@@ -84,7 +158,7 @@ export default class BattleModel {
 
     // Checks whether any of the pokemon has fainted after all moves and status effects
     // have been applied for the turn
-    [this.player1, this.player2].forEach(player => {
+    [player1, player2].forEach(player => {
       const currentPokemon = player.getCurrentPokemon();
       if (currentPokemon.getHp() <= 0 && player.hasRemainingPokemon()) {
         this.turnSummary.push(`${currentPokemon.getName()} has fainted!`);
@@ -93,9 +167,21 @@ export default class BattleModel {
       }
     });
 
+    this.moves = {};
     this.messages.push(...this.turnSummary);
   }
   
+  public handleSingleSwitch() {
+    const {player1, player2, p1Move, p2Move} = this.getTurnContext();
+    const switchingPlayer = p1Move.action === "switch" ? player1 : player2;
+    const switchingPlayerMove = switchingPlayer === player1 ? p1Move : p2Move;
+    const attackingPlayer = switchingPlayer === player1 ? player2 : player1;
+    const attackingPlayerMove = switchingPlayer === player1 ? p2Move : p1Move;
+
+    this.processSwitch(switchingPlayer, switchingPlayerMove.index);
+    this.processAttack(attackingPlayer, attackingPlayerMove.index);
+  }
+
   /**
    * Handles the attack logic for battle.
    * 
@@ -103,12 +189,14 @@ export default class BattleModel {
    * @param p2Move Player 2's move.
    * @returns void
    */
-  private handleAttack(p1Move: PlayerMove, p2Move: PlayerMove): void {
+  private handleAttack(): void {
+    const {player1, player2, p1Move, p2Move} = this.getTurnContext();
+
     // Determine the order of attack
-    const firstPlayer: Player = BattleUtils.getFasterPlayer(this.player1, this.player2);
-    const firstPlayerMove: PlayerMove = firstPlayer === this.player1 ? p1Move : p2Move;
-    const secondPlayer: Player = firstPlayer === this.player1 ? this.player2 : this.player1;
-    const secondPlayerMove: PlayerMove = firstPlayer === this.player1 ? p2Move : p1Move;
+    const firstPlayer: Player = BattleUtils.getFasterPlayer(player1, player2);
+    const firstPlayerMove: PlayerMove = firstPlayer === player1 ? p1Move : p2Move;
+    const secondPlayer: Player = firstPlayer === player1 ? player2 : player1;
+    const secondPlayerMove: PlayerMove = firstPlayer === player1 ? p2Move : p1Move;
 
     // Attack with the first player
     this.processAttack(firstPlayer, firstPlayerMove.index);
@@ -139,8 +227,9 @@ export default class BattleModel {
    * @returns void
    */
   private processAttack(attackingPlayer: Player, attackIndex: number): void {
+    const {player1, player2} = this.getTurnContext();
     // Determine which player is attacking and defending
-    const defendingPlayer: Player = attackingPlayer === this.player1 ? this.player2 : this.player1;
+    const defendingPlayer: Player = attackingPlayer === player1 ? player2 : player1;
     const attackingPokemon: Pokemon = attackingPlayer.getCurrentPokemon();
     const defendingPokemon: Pokemon = defendingPlayer.getCurrentPokemon();
     const move = attackingPokemon.getMove(attackIndex);
@@ -202,13 +291,15 @@ export default class BattleModel {
    * @returns The available options for the players.
    */
   public getPlayerOptions(): string[] {
-    const player1Options: string = `${this.player1.getName()}'s options: \n` +
-    `Attack with ${this.player1.getCurrentPokemon().getName()}: ${BattleUtils.getAllMoves(this.player1)}\n` +
-    `Switch Pokemon: ${BattleUtils.getRemainingPokemon(this.player1)}\n`
+    const {player1, player2, p1Move, p2Move} = this.getTurnContext();
 
-    const player2Options: string = `${this.player2.getName()}'s options: \n` +
-    `Attack with ${this.player2.getCurrentPokemon().getName()}: ${BattleUtils.getAllMoves(this.player2)}\n` +
-    `Switch Pokemon: ${BattleUtils.getRemainingPokemon(this.player2)}\n`
+    const player1Options: string = `${player1.getName()}'s options: \n` +
+    `Attack with ${player1.getCurrentPokemon().getName()}: ${BattleUtils.getAllMoves(player1)}\n` +
+    `Switch Pokemon: ${BattleUtils.getRemainingPokemon(player1)}\n`
+
+    const player2Options: string = `${player2.getName()}'s options: \n` +
+    `Attack with ${player2.getCurrentPokemon().getName()}: ${BattleUtils.getAllMoves(player2)}\n` +
+    `Switch Pokemon: ${BattleUtils.getRemainingPokemon(player2)}\n`
 
     return [player1Options, player2Options];
   }
@@ -230,7 +321,9 @@ export default class BattleModel {
    * @returns Whether one of the current pokemon has fainted.
    */
   public aPokemonHasFainted(): boolean {
-    return BattleUtils.pokemonIsDefeated(this.player1) || BattleUtils.pokemonIsDefeated(this.player2);
+    const {player1, player2} = this.getTurnContext();
+
+    return BattleUtils.pokemonIsDefeated(player1) || BattleUtils.pokemonIsDefeated(player2);
   }
 
   /**
@@ -239,7 +332,9 @@ export default class BattleModel {
    * @returns The player's remaining pokemon.
    */
   public getRemainingPokemon() {
-    const faintedPlayer: Player = BattleUtils.pokemonIsDefeated(this.player1) ? this.player1 : this.player2;
+    const {player1, player2} = this.getTurnContext();
+
+    const faintedPlayer: Player = BattleUtils.pokemonIsDefeated(player1) ? player1 : player2;
     return `${faintedPlayer.getName()}'s Pokemons: ${BattleUtils.getRemainingPokemon(faintedPlayer)}`;
   }
   
@@ -250,7 +345,9 @@ export default class BattleModel {
    * @returns A message notifying the fainted player has switched pokemon.
    */
   public handleFaintedPokemon(switchMove: PlayerMove): string {
-    const faintedPlayer: Player = BattleUtils.pokemonIsDefeated(this.player1) ? this.player1 : this.player2;
+    const {player1, player2} = this.getTurnContext();
+
+    const faintedPlayer: Player = BattleUtils.pokemonIsDefeated(player1) ? player1 : player2;
     //faintedPlayer.updateTeam(faintedPlayer.getCurrentPokemonIndex());
     faintedPlayer.switchPokemon(switchMove.index);
     return `${faintedPlayer.getName()} switched to ${faintedPlayer.getCurrentPokemon().getName()}!\n`;
@@ -271,8 +368,10 @@ export default class BattleModel {
    * @returns The game's ending message with the winner.
    */
   public getEndingMessage(): string {
-    const faintedPlayer: Player = this.player1.hasRemainingPokemon() ? this.player2 : this.player1;
-    const otherPlayer: Player = faintedPlayer === this.player1 ? this.player2 : this.player1;
+    const {player1, player2} = this.getTurnContext();
+
+    const faintedPlayer: Player = player1.hasRemainingPokemon() ? player2 : player1;
+    const otherPlayer: Player = faintedPlayer === player1 ? player2 : player1;
     
     return `${faintedPlayer.getName()} is out of Pokemon! ${otherPlayer.getName()} wins!`
   }
@@ -298,13 +397,17 @@ export default class BattleModel {
    * Determine which player's pokemon has fainted
    */
   public getFaintedPlayer(): number {
-    if (BattleUtils.pokemonIsDefeated(this.player1)) return 1;
-    if (BattleUtils.pokemonIsDefeated(this.player2)) return 2;
+    const {player1, player2} = this.getTurnContext();
+
+    if (BattleUtils.pokemonIsDefeated(player1)) return 1;
+    if (BattleUtils.pokemonIsDefeated(player2)) return 2;
     throw new Error("No player has fainted.");
   }
 
   public getPlayerObject(playerNumber: number): Player {
-    return playerNumber === 1 ? this.player1 : this.player2;
+    const {player1, player2} = this.getTurnContext();
+
+    return playerNumber === 1 ? player1 : player2;
   }
 
   /**
@@ -316,7 +419,9 @@ export default class BattleModel {
    * @returns True if the move is invalid, false otherwise.
    */
   public isInvalidMove(player: number, playerMove: PlayerMove): boolean {
-    const currentPlayer: Player = player === 1 ? this.player1 : this.player2;
+    const {player1, player2} = this.getTurnContext();
+
+    const currentPlayer: Player = player === 1 ? player1 : player2;
 
     if (playerMove.action === 'switch') {
       return playerMove.index === currentPlayer.getCurrentPokemonIndex();
