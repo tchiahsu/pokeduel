@@ -15,7 +15,7 @@ function App() {
           <Route path="/multiplayer" element={<Multiplayer />} />
           <Route path="/team-selection" element={<Selection />} />
           <Route path="/battle" element={<Battle />} />
-        </Routes>x
+        </Routes>
       </div>
     </HashRouter>
   );
