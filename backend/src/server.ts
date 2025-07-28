@@ -3,6 +3,7 @@ import http from "http";
 import { Server } from "socket.io";
 import PokemonApiFetcher from "./model/PokemonApiFetcher.js";
 import BattleModel from "./model/BattleModel.js";
+import cors from "cors";
 
 const app = express();
 const server = http.createServer(app);
@@ -10,6 +11,7 @@ const io = new Server(server, { cors: { origin: "*" } });
 const PORT = process.env.PORT || 8000;
 
 app.use(express.json());
+app.use(cors());
 
 app.get("/get-default-pokemon", async (req, res) => {
   const defaultPokemon = await PokemonApiFetcher.getDefaultPokemon();
