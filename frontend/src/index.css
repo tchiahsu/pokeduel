@@ -43,7 +43,7 @@ body {
   }
 }
 
-.pokemon-color {
+.pokemon-h1 {
   color: #ffcb05;
   text-shadow: 
     -12px -12px 0 #2563eb,
@@ -54,6 +54,19 @@ body {
      12px  0px 0 #2563eb,
      0px -12px 0 #2563eb,
      0px  12px 0 #2563eb;
+}
+
+.pokemon-h3 {
+  color: #ffcb05;
+  text-shadow: 
+    -3px -3px 0 #2563eb,
+     3px -3px 0 #2563eb,
+    -3px  3px 0 #2563eb,
+     3px  3px 0 #2563eb,
+    -3px  0px 0 #2563eb,
+     3px  0px 0 #2563eb,
+     0px -3px 0 #2563eb,
+     0px  3px 0 #2563eb;
 }
 
 
