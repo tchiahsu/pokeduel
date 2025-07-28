@@ -1,32 +1,16 @@
 import { Link } from 'react-router-dom';
-import { useState, useEffect } from 'react'
 import selectionBg from '../assets/bg-field.jpg';
 
-export default function Selection() {
-    const API_URL_BASE = 'http://localhost:8000'
-
-    const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
-
-    type Pokemon = {
+type Pokemon = {
         name: string;
         sprite: string;
     }
 
-    // Fetch the pokemon into the frontend
-    useEffect(() => {
-        async function fetchPokemon() {
-            try {
-                const res = await fetch(`${API_URL_BASE}/get-default-pokemon`);
-                const data = await res.json();
-                setPokemonList(data);
-            } catch (e) {
-                console.error('Error fetching default Pokemon:', e);
-            }
-        }
+    type Props = {
+    list: Pokemon[];
+    };
 
-        fetchPokemon();
-    }, []);
-
+export default function Selection({ list }: Props) {
     return (
         <div className="relative min-h-screen min-w-screen flex flex-col">
             <img
@@ -51,7 +35,7 @@ export default function Selection() {
                 <div className="flex-12 bg-gray-300 mr-6 ml-2 mb-6 rounded-lg opacity-80 overflow-y-auto max-h-dvh">
                     <h4 className="text-xl font-bold mb-2">Available Pokemon</h4>
                     <div className="grid grid-cols-6 gap-6 p-4">
-                        {pokemonList.map((poke, index) => (
+                        {list.map((poke, index) => (
                             <div
                                 key={index}
                                 className="flex flex-col items-center hover:bg-white hover:scale-105 transition-all rounded-md p-2 cursor-pointer"
