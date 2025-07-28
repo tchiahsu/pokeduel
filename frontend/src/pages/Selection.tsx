@@ -6,9 +6,9 @@ type Pokemon = {
         sprite: string;
     }
 
-    type Props = {
-    list: Pokemon[];
-    };
+type Props = {
+list: Pokemon[];
+};
 
 export default function Selection({ list }: Props) {
     return (
