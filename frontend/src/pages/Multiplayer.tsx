@@ -48,10 +48,10 @@ export default function Multiplayer() {
             </div>
 
             <div className="relative">
-                <h1 className="text-8xl pb-6 tracking-[-8px] pokemon-h1">
+                <h1 className="text-8xl pb-12 tracking-[-8px] pokemon-h1 ">
                     PokeDuel
                 </h1>
-                <div className="flex flex-col items-center justify-center">
+                <div className="flex flex-col gap-5 items-center justify-center">
                     {/* Input Box 1 to enter player name */}
                     <InputBox
                         placeholder="Enter your name"
@@ -60,7 +60,7 @@ export default function Multiplayer() {
                     />
                     {/* Input Box 2 - roomID input box and generate butotn */}
                     {/* To be modified later to */}
-                    <div className="flex items-center w-max">
+                    <div className="flex gap-2 items-center w-full">
                         <InputBox
                             placeholder="Room ID"
                             value={roomId}
@@ -68,7 +68,7 @@ export default function Multiplayer() {
                         />
                         <button
                             onClick={handleButtonClick}
-                            className="bg-red-400 hover:bg-red-500 text-white font-bold py-2 px-4 rounded"
+                            className="border-2 border-blue-600 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:border-blue"
                         >
                             {copyStatus === 'generate' ? 'Generate' : 'Copy'} 
                         </button>
