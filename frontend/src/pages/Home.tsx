@@ -11,16 +11,16 @@ export default function Home() {
                 className="absolute inset-0 w-full h-full object-cover opacity-50"
             />
 
-            <div className="relative">
+            <div className="relative gap-5">
                 <h1 className="text-8xl pb-6 tracking-[-8px] pokemon-h1">
                     PokeDuel
                 </h1>
-                <p>Battle Friends, Become a Champion</p>
+                <p className='m-3'>Battle Friends, Become a Champion</p>
                 <div>
-                    <Link to='/multiplayer'>
+                    <Link to='/multiplayer' className='m-4'>
                         <Button>Solo Battle</Button>
                     </Link>
-                    <Link to='/multiplayer'>
+                    <Link to='/multiplayer' className='m-4'>
                         <Button>Multiplayer</Button>
                     </Link>
                 </div>
