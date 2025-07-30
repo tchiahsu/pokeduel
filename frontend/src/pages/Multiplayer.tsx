@@ -49,7 +49,7 @@ export default function Multiplayer() {
             </div>
 
             <div className="relative inset-x-0 inset-y-0">
-                <div className="flex flex-col gap-3 items-center justify-center">
+                <div className="flex flex-col gap-6 items-center justify-center">
                     {mode === null && (
                         <InputBox
                         placeholder="Enter your name"
@@ -59,7 +59,7 @@ export default function Multiplayer() {
                     )}
 
                     {mode === null && (
-                        <div className='flex gap-1'>
+                        <div className='flex gap-2'>
                             <Link to='/'>
                                 <Button>Back to Home</Button>
                             </Link>
@@ -91,7 +91,7 @@ export default function Multiplayer() {
                     )}
 
                 </div>
-                <div>   
+                <div className='pt-6'>   
                 {mode != null && (
                     <Link to='/team-selection'>
                         <Button disabled={!(roomId)}>Start Game</Button>

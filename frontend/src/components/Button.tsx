@@ -13,7 +13,7 @@ const Button = ({ children, onClick, type="button", disabled=false }: ButtonProp
             type={type}
             onClick={onClick}
             disabled={disabled}
-            className={`bg-gray-300 text-gray-500 border-2 rounded-lg py-2 px-4 m-6
+            className={`bg-gray-300 text-gray-500 border-2 rounded-lg py-2 px-4
                 ${disabled ? "opacity-80 cursor-not-allowed" : "cursor-pointer hover:bg-red-300 hover:text-red-600"}`}
         >
             {children}

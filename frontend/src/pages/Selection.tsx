@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import selectionBg from '../assets/bg-field.jpg';
 import SearchBar from '../components/SearchBar';
-import GameModeButton from '../components/GameModeButton';
+import Button from '../components/Button';
 
 
 type Pokemon = {
@@ -48,12 +48,12 @@ export default function Selection({ list }: Props) {
                 className="absolute inset-0 w-full h-full object-cover opacity-50 z-0"
             />
             {/* Team Selection Title */}
-            <div className="relative flex justify-between items-start max-h-[15vh]">
+            <div className="relative flex justify-between items-start max-h-[15vh] pr-2">
                 <h3 className="text-3xl pokemon-h3 m-10 text-left">
                     Team Selection:
                 </h3>
-                <Link to='/multiplayer'>
-                    <GameModeButton>Back</GameModeButton>
+                <Link to='/multiplayer' className='m-8'>
+                    <Button>Back</Button>
                 </Link>
             </div>
 
@@ -69,7 +69,7 @@ export default function Selection({ list }: Props) {
                     {/* Search Pokemon Bar */}
                     <div className='flex sticky top-0 bg-gray-300 z-10 pt-4 pl-4 pr-4 gap-2'>
                         <SearchBar value = {searchTerm} onChange={setSearchTerm}></SearchBar>
-                        <GameModeButton onClick={handleSearch}>Search</GameModeButton>
+                        <Button onClick={handleSearch}>Search</Button>
                     </div>
                     
                     <div className="grid grid-cols-6 gap-6 p-4">
