@@ -27,7 +27,7 @@ app.get("/get-pokemon-moves/:name", async (req, res) => {
 app.get("/get-pokemon-data/:name", async (req, res) => {
   const { name } = req.params;
 
-  const pokemonData = await PokemonApiFetcher.createOnePokemonStats(name);
+  const pokemonData = await PokemonApiFetcher.createOnePokemonData(name, []);
   res.json(pokemonData);
 });
 
