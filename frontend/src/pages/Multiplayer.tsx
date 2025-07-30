@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import homeBg from '../assets/bg-forrest.jpg';
-import GameModeButton from '../components/GameModeButton';
+import Button from '../components/Button';
 import InputBox from '../components/InputBox';
 import ConditionalButton from '../components/ConditionalButton';
 
@@ -62,7 +62,7 @@ export default function Multiplayer() {
                     {mode === null && (
                         <div className='flex gap-1'>
                             <Link to='/'>
-                                <GameModeButton>Back to Home</GameModeButton>
+                                <Button>Back to Home</Button>
                             </Link>
                             <ConditionalButton onClick={createRoomID} disabled={!playerName}>Create Room</ConditionalButton>
                             <ConditionalButton onClick={handleJoinRoom} disabled={!playerName}>Join Room</ConditionalButton>
