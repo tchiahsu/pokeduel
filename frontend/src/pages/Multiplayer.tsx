@@ -3,94 +3,101 @@ import { useState } from 'react';
 import homeBg from '../assets/bg-forrest.jpg';
 import GameModeButton from '../components/GameModeButton';
 import InputBox from '../components/InputBox';
+import ConditionalButton from '../components/ConditionalButton';
 
 export default function Multiplayer() {
     const [playerName, setPlayerName] = useState('');
     const [roomId, setRoomId] = useState('');
-    const [generatedRoomId, setGeneratedRoomId] = useState('');
-    const [copyStatus, setCopyStatus] = useState<'generate' | 'copy'>('generate');
-    
-    // Dummy RoomID generated for now - to be changed and server should send a session ID
-    const handleGenerateRoom = () => {
-        const newId = Math.random().toString(36).substring(2, 8).toUpperCase();
-        setGeneratedRoomId(newId);
-        setRoomId(newId);
-        setCopyStatus('copy');
+    const [mode, setMode] = useState<'create' | 'join' | null>(null);
+
+    //handles creating a new roomID
+    //to be modified later and connect to server
+    const createRoomID = () => {
+        const id = "tbh2025";
+        setRoomId(id);
+        setMode('create');
     }
 
-    const handleCopyRoomId = () => {
-        navigator.clipboard.writeText(generatedRoomId);
-        setCopyStatus('copy');
+    //handles when I user clicks join room
+    const handleJoinRoom = () => {
+        setMode('join');
     };
 
-    const handleButtonClick = () => {
-        if (copyStatus === 'generate') {
-            handleGenerateRoom();
-        } else {
-            handleCopyRoomId();
-        }
+    //handles when a user clicks
+    //to be modified later and connect to server
+    const handleLeaveRoom = () => {
+        setRoomId('');
+        setMode(null);
     };
-    
+
+    //copy the text to system
+    const copy = () => {
+        navigator.clipboard.writeText(roomId);
+        alert('RoomID copied!');
+    }
+
     return (
         <div className="relative min-h-screen min-w-screen flex flex-col items-center justify-center">
-            
             <img
                 src={homeBg}
                 className="absolute inset-0 w-full h-full object-cover opacity-50"
                 alt="background"
             />
 
-            {/* Multiplaye Title */}
-            <div className="relative max-h-[15vh]">
-                <h3 className="text-3xl pokemon-h3 m-10 text-left">
-                    Multiplayer 
-                </h3>
+            <div className="absolute inset-x-0 top-0 pt-10 flex flex-col gap-7 items-center">
+                <h3 className="text-3xl pokemon-h3 m-5 text-center">Multiplayer</h3>
+                <h1 className="text-8xl pb-6 tracking-[-8px] pokemon-h1">PokeDuel</h1>
             </div>
 
-            <div className="relative">
-                <h1 className="text-8xl pb-12 tracking-[-8px] pokemon-h1 ">
-                    PokeDuel
-                </h1>
-                <div className="flex flex-col gap-5 items-center justify-center">
-                    {/* Input Box 1 to enter player name */}
-                    <InputBox
+            <div className="relative inset-x-0 inset-y-0">
+                <div className="flex flex-col gap-3 items-center justify-center">
+                    {mode === null && (
+                        <InputBox
                         placeholder="Enter your name"
                         value={playerName}
                         onChange={(e) => setPlayerName(e.target.value)}
-                    />
-                    {/* Input Box 2 - roomID input box and generate butotn */}
-                    {/* To be modified later to */}
-                    <div className="flex gap-2 items-center w-full">
-                        <InputBox
-                            placeholder="Room ID"
-                            value={roomId}
-                            onChange={(e) => setRoomId(e.target.value)}
                         />
-                        <button
-                            onClick={handleButtonClick}
-                            className="border-2 border-blue-600 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:border-blue"
-                        >
-                            {copyStatus === 'generate' ? 'Generate' : 'Copy'} 
-                        </button>
-                    </div>
-                    {/* Input Box 3 to enter a Game-room */}
-                    <InputBox
-                        placeholder="Enter a Room ID"
-                        value={roomId}
-                        onChange={(e) => setRoomId(e.target.value)}
-                    />
+                    )}
+
+                    {mode === null && (
+                        <div className='flex gap-1'>
+                            <Link to='/'>
+                                <GameModeButton>Back to Home</GameModeButton>
+                            </Link>
+                            <ConditionalButton onClick={createRoomID} disabled={!playerName}>Create Room</ConditionalButton>
+                            <ConditionalButton onClick={handleJoinRoom} disabled={!playerName}>Join Room</ConditionalButton>
+                        </div>
+                    )}
+
+                    {mode === 'create' && (
+                        <div className="flex flex-col items-center gap-1 pb-5">
+                            <p className='text-gray-700 p-7'>Share the code to battle your friends!</p>
+                            <div className="flex items-center gap-2">
+                                <span className="bg-gray-200 border-2 border-gray-400 rounded-lg py-2 px-20 text-gray-700">{roomId}</span>
+                                <button onClick={copy} className="border-2 border-blue-600 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:border-blue">Copy</button>
+                                <button onClick={handleLeaveRoom} className="border-2 border-blue-600 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:border-blue">Leave</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {mode === 'join' && (
+                        <div className='flex gap-2'> 
+                            <InputBox
+                                placeholder="Enter Room ID"
+                                value={roomId}
+                                onChange={(e) => setRoomId(e.target.value.toUpperCase())}
+                            />
+                            <button onClick={handleLeaveRoom} className="border-2 border-blue-600 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:border-blue">Leave</button>
+                        </div>                        
+                    )}
+
                 </div>
-                <div>
-
-                {/* Button to go back */}
-                <Link to='/'>
-                    <GameModeButton>Back to Home</GameModeButton>
-                </Link>
-
-                {/* Button to start the game, have to addd - grayed out until name and id entered */}
-                <Link to='/team-selection'>
-                    <GameModeButton>Start Game</GameModeButton>
-                </Link>
+                <div>   
+                {mode != null && (
+                    <Link to='/team-selection'>
+                        <ConditionalButton disabled={!(roomId)}>Start Game</ConditionalButton>
+                    </Link>
+                )}
                 </div>
             </div>
         </div>
