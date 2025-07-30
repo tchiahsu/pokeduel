@@ -3,7 +3,6 @@ import { useState } from 'react';
 import homeBg from '../assets/bg-forrest.jpg';
 import Button from '../components/Button';
 import InputBox from '../components/InputBox';
-import ConditionalButton from '../components/ConditionalButton';
 
 export default function Multiplayer() {
     const [playerName, setPlayerName] = useState('');
@@ -64,8 +63,8 @@ export default function Multiplayer() {
                             <Link to='/'>
                                 <Button>Back to Home</Button>
                             </Link>
-                            <ConditionalButton onClick={createRoomID} disabled={!playerName}>Create Room</ConditionalButton>
-                            <ConditionalButton onClick={handleJoinRoom} disabled={!playerName}>Join Room</ConditionalButton>
+                            <Button onClick={createRoomID} disabled={!playerName}>Create Room</Button>
+                            <Button onClick={handleJoinRoom} disabled={!playerName}>Join Room</Button>
                         </div>
                     )}
 
@@ -95,7 +94,7 @@ export default function Multiplayer() {
                 <div>   
                 {mode != null && (
                     <Link to='/team-selection'>
-                        <ConditionalButton disabled={!(roomId)}>Start Game</ConditionalButton>
+                        <Button disabled={!(roomId)}>Start Game</Button>
                     </Link>
                 )}
                 </div>
