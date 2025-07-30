@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import homeBg from '../assets/bg-forrest.jpg';
-import GameModeButton from '../components/GameModeButton';
+import Button from '../components/Button';
 import InputBox from '../components/InputBox';
 
 export default function Multiplayer() {
@@ -84,12 +84,12 @@ export default function Multiplayer() {
 
                 {/* Button to go back */}
                 <Link to='/'>
-                    <GameModeButton>Back to Home</GameModeButton>
+                    <Button>Back to Home</Button>
                 </Link>
 
                 {/* Button to start the game, have to addd - grayed out until name and id entered */}
                 <Link to='/team-selection'>
-                    <GameModeButton>Start Game</GameModeButton>
+                    <Button>Start Game</Button>
                 </Link>
                 </div>
             </div>

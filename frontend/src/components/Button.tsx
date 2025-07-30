@@ -1,12 +1,12 @@
 import React from "react";
 
-type GameModeButtonProps = {
+type ButtonProps = {
     children: React.ReactNode;
     onClick?: () => void;
     type?: "button" | "submit" | "reset";
 };
 
-const GameModeButton = ({ children, onClick, type="button"}: GameModeButtonProps) => {
+const Button = ({ children, onClick, type="button"}: ButtonProps) => {
     return (
         <button
             type={type}
@@ -19,4 +19,4 @@ const GameModeButton = ({ children, onClick, type="button"}: GameModeButtonProps
     );
 };
 
-export default GameModeButton;
+export default Button;

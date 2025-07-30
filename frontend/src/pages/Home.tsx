@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import homeBg from '../assets/bg-forrest.jpg';
-import GameModeButton from '../components/GameModeButton';
+import Button from '../components/Button';
 
 export default function Home() {
     return (
@@ -18,10 +18,10 @@ export default function Home() {
                 <p>Battle Friends, Become a Champion</p>
                 <div>
                     <Link to='/multiplayer'>
-                        <GameModeButton>Solo Battle</GameModeButton>
+                        <Button>Solo Battle</Button>
                     </Link>
                     <Link to='/multiplayer'>
-                        <GameModeButton>Multiplayer</GameModeButton>
+                        <Button>Multiplayer</Button>
                     </Link>
                 </div>
             </div>
