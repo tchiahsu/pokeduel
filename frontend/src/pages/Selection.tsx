@@ -48,10 +48,13 @@ export default function Selection({ list }: Props) {
                 className="absolute inset-0 w-full h-full object-cover opacity-50 z-0"
             />
             {/* Team Selection Title */}
-            <div className="relative max-h-[15vh]">
+            <div className="relative flex justify-between items-start max-h-[15vh]">
                 <h3 className="text-3xl pokemon-h3 m-10 text-left">
                     Team Selection:
                 </h3>
+                <Link to='/multiplayer'>
+                    <GameModeButton>Back</GameModeButton>
+                </Link>
             </div>
 
             {/* Pokemon Selection Screen */}           
