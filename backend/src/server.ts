@@ -72,17 +72,70 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("submitMove", (data) => {
+  socket.on("submitMove", (playerMove) => {
     const roomID: string = roomManager.getPlayerRoom(socket.id);
     const battleModel: BattleModel = roomManager.getBattleModel(roomID);
-    battleModel.addMove(socket.id, data);
-    if (battleModel.readyToHandleTurn()) {
+    battleModel.addMove(socket.id, playerMove);
+    if (battleModel.isReadyToHandleTurn()) {
       battleModel.handleTurn();
       const turnSummary = battleModel.getTurnSummary();
       const player1ID = battleModel.getPlayer1ID();
       const player2ID = battleModel.getPlayer2ID();
+
+      // Send turn summary to each player
       io.to(player1ID).emit("turnSummary", turnSummary[player1ID]);
       io.to(player2ID).emit("turnSummary", turnSummary[player2ID]);
+
+      if (battleModel.hasFaintedPlayers()) {
+        const [faintedPlayer1, faintedPlayer2] =
+          battleModel.getFaintedPlayers();
+
+        if (faintedPlayer1 && faintedPlayer2) {
+          io.to(faintedPlayer1).emit(
+            "requestFaintedSwitch",
+            battleModel.getSwitchOptions(faintedPlayer1)
+          );
+          io.to(faintedPlayer2).emit(
+            "requestFaintedSwitch",
+            battleModel.getSwitchOptions(faintedPlayer2)
+          );
+        } else {
+          io.to(faintedPlayer1).emit(
+            "requestFaintedSwitch",
+            battleModel.getSwitchOptions(faintedPlayer1)
+          );
+          const alivePlayer = battleModel.getOppositePlayer(faintedPlayer1);
+          io.to(alivePlayer).emit("waitForFaintedSwitch", {
+            message: `Waiting for other player to switch pokemon`,
+          });
+        }
+
+        return;
+      }
+
+      const nextOptions = battleModel.getNextOptions();
+      io.to(player1ID).emit("nextOptions", nextOptions[player1ID]);
+      io.to(player2ID).emit("nextOptions", nextOptions[player2ID]);
+    }
+  });
+
+  socket.on("submitFaintedSwitch", (playerMove) => {
+    const roomID: string = roomManager.getPlayerRoom(socket.id);
+    const battleModel: BattleModel = roomManager.getBattleModel(roomID);
+    battleModel.addMove(socket.id, playerMove);
+    if (battleModel.isReadyToHandleFaintedSwitch()) {
+      battleModel.handleFaintedSwitch();
+      const turnSummary = battleModel.getTurnSummary();
+      const player1ID = battleModel.getPlayer1ID();
+      const player2ID = battleModel.getPlayer2ID();
+
+      // Send turn summary to each player
+      io.to(player1ID).emit("turnSummary", turnSummary[player1ID]);
+      io.to(player2ID).emit("turnSummary", turnSummary[player2ID]);
+
+      const nextOptions = battleModel.getNextOptions();
+      io.to(player1ID).emit("nextOptions", nextOptions[player1ID]);
+      io.to(player2ID).emit("nextOptions", nextOptions[player2ID]);
     }
   });
 

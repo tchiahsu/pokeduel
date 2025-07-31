@@ -12,7 +12,7 @@ type PlayerMove = {
   index: number;
 };
 
-type nextOptions = {
+type NextOptions = {
   moves: Record<string, number>[];
   pokemon: PlayerPokemon[];
 };
@@ -63,6 +63,12 @@ export default class BattleModel {
     return this.player2ID;
   }
 
+  public getOppositePlayer(playerID: string) {
+    const oppositePlayer: string =
+      playerID === this.player1ID ? this.player2ID : this.player1ID;
+    return oppositePlayer;
+  }
+
   public async setPlayer(
     playerID: string,
     name: string,
@@ -90,7 +96,7 @@ export default class BattleModel {
     this.moves[playerID] = playerMove;
   }
 
-  public readyToHandleTurn(): boolean {
+  public isReadyToHandleTurn(): boolean {
     return Object.keys(this.moves).length === 2;
   }
 
@@ -286,72 +292,91 @@ export default class BattleModel {
     // if (effectMessage) this.messages.push(effectMessage); ///////////////
   }
 
-  /**
-   * Returns the available options for the players.
-   *
-   * @returns The available options for the players.
-   */
-  public getPlayerOptions(): string[] {
-    const { player: player1 } = this.getPlayerAndMoveByID(this.player1ID);
-    const { player: player2 } = this.getPlayerAndMoveByID(this.player2ID);
+  // /**
+  //  * Returns the available options for the players.
+  //  *
+  //  * @returns The available options for the players.
+  //  */
+  // public getPlayerOptions(): string[] {
+  //   const { player: player1 } = this.getPlayerAndMoveByID(this.player1ID);
+  //   const { player: player2 } = this.getPlayerAndMoveByID(this.player2ID);
 
-    const player1Options: string =
-      `${player1.getName()}'s options: \n` +
-      `Attack with ${player1
-        .getCurrentPokemon()
-        .getName()}: ${this.battleUtils.getAllMoves(player1)}\n` +
-      `Switch Pokemon: ${this.battleUtils.getRemainingPokemon(player1)}\n`;
+  //   const player1Options: string =
+  //     `${player1.getName()}'s options: \n` +
+  //     `Attack with ${player1
+  //       .getCurrentPokemon()
+  //       .getName()}: ${this.battleUtils.getAllMoves(player1)}\n` +
+  //     `Switch Pokemon: ${this.battleUtils.getRemainingPokemon(player1)}\n`;
 
-    const player2Options: string =
-      `${player2.getName()}'s options: \n` +
-      `Attack with ${player2
-        .getCurrentPokemon()
-        .getName()}: ${this.battleUtils.getAllMoves(player2)}\n` +
-      `Switch Pokemon: ${this.battleUtils.getRemainingPokemon(player2)}\n`;
+  //   const player2Options: string =
+  //     `${player2.getName()}'s options: \n` +
+  //     `Attack with ${player2
+  //       .getCurrentPokemon()
+  //       .getName()}: ${this.battleUtils.getAllMoves(player2)}\n` +
+  //     `Switch Pokemon: ${this.battleUtils.getRemainingPokemon(player2)}\n`;
 
-    return [player1Options, player2Options];
-  }
+  //   return [player1Options, player2Options];
+  // }
 
-  public playerNeedsToSwitch(): boolean {
+  public hasFaintedPlayers(): boolean {
     return this.faintedPlayers.length != 0;
   }
 
-  /**
-   * Returns the player's remaining pokemon.
-   *
-   * @returns The player's remaining pokemon.
-   */
-  public getRemainingPokemon() {
-    const { player: player1 } = this.getPlayerAndMoveByID(this.player1ID);
-    const { player: player2 } = this.getPlayerAndMoveByID(this.player2ID);
-
-    const faintedPlayer: Player = this.battleUtils.pokemonIsDefeated(player1)
-      ? player1
-      : player2;
-    return `${faintedPlayer.getName()}'s Pokemons: ${this.battleUtils.getRemainingPokemon(
-      faintedPlayer
-    )}`;
+  public getFaintedPlayers(): string[] {
+    return this.faintedPlayers;
   }
 
-  /**
-   * Handles switching out a fainted pokemon and returns a message notifying the player has switched pokemon.
-   *
-   * @param switchMove The player's move with the index of the pokemon to switch to.
-   * @returns A message notifying the fainted player has switched pokemon.
-   */
-  public handleFaintedPokemon(switchMove: PlayerMove): string {
-    const { player: player1 } = this.getPlayerAndMoveByID(this.player1ID);
-    const { player: player2 } = this.getPlayerAndMoveByID(this.player2ID);
-
-    const faintedPlayer: Player = this.battleUtils.pokemonIsDefeated(player1)
-      ? player1
-      : player2;
-    //faintedPlayer.updateTeam(faintedPlayer.getCurrentPokemonIndex());
-    faintedPlayer.switchPokemon(switchMove.index);
-    return `${faintedPlayer.getName()} switched to ${faintedPlayer
-      .getCurrentPokemon()
-      .getName()}!\n`;
+  public isReadyToHandleFaintedSwitch(): boolean {
+    return this.faintedPlayers.length === Object.keys(this.moves).length;
   }
+
+  public handleFaintedSwitch(): void {
+    const [faintedPlayer1, faintedPlayer2] = this.faintedPlayers;
+    if (faintedPlayer1 && faintedPlayer2) {
+      this.processSwitch(faintedPlayer1);
+      this.processSwitch(faintedPlayer2);
+    } else {
+      this.processSwitch(faintedPlayer1);
+    }
+    this.faintedPlayers = [];
+  }
+
+  // /**
+  //  * Returns the player's remaining pokemon.
+  //  *
+  //  * @returns The player's remaining pokemon.
+  //  */
+  // public getRemainingPokemon() {
+  //   const { player: player1 } = this.getPlayerAndMoveByID(this.player1ID);
+  //   const { player: player2 } = this.getPlayerAndMoveByID(this.player2ID);
+
+  //   const faintedPlayer: Player = this.battleUtils.pokemonIsDefeated(player1)
+  //     ? player1
+  //     : player2;
+  //   return `${faintedPlayer.getName()}'s Pokemons: ${this.battleUtils.getRemainingPokemon(
+  //     faintedPlayer
+  //   )}`;
+  // }
+
+  // /**
+  //  * Handles switching out a fainted pokemon and returns a message notifying the player has switched pokemon.
+  //  *
+  //  * @param switchMove The player's move with the index of the pokemon to switch to.
+  //  * @returns A message notifying the fainted player has switched pokemon.
+  //  */
+  // public handleFaintedPokemon(switchMove: PlayerMove): string {
+  //   const { player: player1 } = this.getPlayerAndMoveByID(this.player1ID);
+  //   const { player: player2 } = this.getPlayerAndMoveByID(this.player2ID);
+
+  //   const faintedPlayer: Player = this.battleUtils.pokemonIsDefeated(player1)
+  //     ? player1
+  //     : player2;
+  //   //faintedPlayer.updateTeam(faintedPlayer.getCurrentPokemonIndex());
+  //   faintedPlayer.switchPokemon(switchMove.index);
+  //   return `${faintedPlayer.getName()} switched to ${faintedPlayer
+  //     .getCurrentPokemon()
+  //     .getName()}!\n`;
+  // }
 
   /**
    * Returns a boolean indicating whether the game is over or not.
@@ -362,70 +387,34 @@ export default class BattleModel {
     return this.gameOver;
   }
 
-  /**
-   * Returns the game's ending message with the winner.
-   *
-   * @returns The game's ending message with the winner.
-   */
-  public getEndingMessage(): string {
-    const { player: player1 } = this.getPlayerAndMoveByID(this.player1ID);
-    const { player: player2 } = this.getPlayerAndMoveByID(this.player2ID);
+  // /**
+  //  * Returns the game's ending message with the winner.
+  //  *
+  //  * @returns The game's ending message with the winner.
+  //  */
+  // public getEndingMessage(): string {
+  //   const { player: player1 } = this.getPlayerAndMoveByID(this.player1ID);
+  //   const { player: player2 } = this.getPlayerAndMoveByID(this.player2ID);
 
-    const faintedPlayer: Player = player1.hasRemainingPokemon()
-      ? player2
-      : player1;
-    const otherPlayer: Player = faintedPlayer === player1 ? player2 : player1;
+  //   const faintedPlayer: Player = player1.hasRemainingPokemon()
+  //     ? player2
+  //     : player1;
+  //   const otherPlayer: Player = faintedPlayer === player1 ? player2 : player1;
 
-    return `${faintedPlayer.getName()} is out of Pokemon! ${otherPlayer.getName()} wins!`;
-  }
+  //   return `${faintedPlayer.getName()} is out of Pokemon! ${otherPlayer.getName()} wins!`;
+  // }
 
-  /**
-   * Determine which player's pokemon has fainted
-   */
-  public getFaintedPlayer(): number {
-    const { player: player1 } = this.getPlayerAndMoveByID(this.player1ID);
-    const { player: player2 } = this.getPlayerAndMoveByID(this.player2ID);
+  // /**
+  //  * Determine which player's pokemon has fainted
+  //  */
+  // public getFaintedPlayer(): number {
+  //   const { player: player1 } = this.getPlayerAndMoveByID(this.player1ID);
+  //   const { player: player2 } = this.getPlayerAndMoveByID(this.player2ID);
 
-    if (this.battleUtils.pokemonIsDefeated(player1)) return 1;
-    if (this.battleUtils.pokemonIsDefeated(player2)) return 2;
-    throw new Error("No player has fainted.");
-  }
-
-  /**
-   * Returns the current Pokemon's moves for the given player.
-   *
-   * @param playerID - The ID of the player.
-   * @returns An array of objects, each mapping a move name to its PP.
-   */
-  private getPlayerMoves(playerID: string): Record<string, number>[] {
-    const { player } = this.getPlayerAndMoveByID(playerID);
-    const currentPokemon = player.getCurrentPokemon();
-    const playerMoves: Record<string, number>[] = [];
-    for (const move of currentPokemon.getMoves()) {
-      playerMoves.push({ [move.getName()]: move.getPP() });
-    }
-    return playerMoves;
-  }
-
-  /**
-   * Returns the team of Pokémon for the given player.
-   *
-   * @param playerID - The ID of the player.
-   * @returns An array of PlayerPokemon objects with basic info.
-   */
-  private getPlayerPokemon(playerID: string): PlayerPokemon[] {
-    const { player } = this.getPlayerAndMoveByID(playerID);
-    const playerTeam: PlayerPokemon[] = [];
-    for (const pokemon of player.getTeam()) {
-      const playerPokemon: PlayerPokemon = {
-        name: pokemon.getName(),
-        hp: pokemon.getHp(),
-        sprite: pokemon.getFrontSprite(),
-      };
-      playerTeam.push(playerPokemon);
-    }
-    return playerTeam;
-  }
+  //   if (this.battleUtils.pokemonIsDefeated(player1)) return 1;
+  //   if (this.battleUtils.pokemonIsDefeated(player2)) return 2;
+  //   throw new Error("No player has fainted.");
+  // }
 
   /**
    * Creates an event object describing an action taken by a player.
@@ -506,5 +495,61 @@ export default class BattleModel {
     turnSummary[this.player2ID] = this.personalizeEvents(this.player2ID);
     this.events = [];
     return turnSummary;
+  }
+
+  /**
+   * Returns the current Pokemon's moves for the given player.
+   *
+   * @param playerID - The ID of the player.
+   * @returns An array of objects, each mapping a move name to its PP.
+   */
+  private getPlayerMoveOptions(playerID: string): Record<string, number>[] {
+    const { player } = this.getPlayerAndMoveByID(playerID);
+    const currentPokemon = player.getCurrentPokemon();
+    const playerMoves: Record<string, number>[] = [];
+    for (const move of currentPokemon.getMoves()) {
+      playerMoves.push({ [move.getName()]: move.getPP() });
+    }
+    return playerMoves;
+  }
+
+  /**
+   * Returns the team of Pokémon for the given player.
+   *
+   * @param playerID - The ID of the player.
+   * @returns An array of PlayerPokemon objects with basic info.
+   */
+  private getPlayerPokemonOptions(playerID: string): PlayerPokemon[] {
+    const { player } = this.getPlayerAndMoveByID(playerID);
+    const playerTeam: PlayerPokemon[] = [];
+    for (const pokemon of player.getTeam()) {
+      const playerPokemon: PlayerPokemon = {
+        name: pokemon.getName(),
+        hp: pokemon.getHp(),
+        sprite: pokemon.getFrontSprite(),
+      };
+      playerTeam.push(playerPokemon);
+    }
+    return playerTeam;
+  }
+
+  public getSwitchOptions(playerID: string): PlayerPokemon[] {
+    return this.getPlayerPokemonOptions(playerID);
+  }
+
+  public buildPlayerNextOptions(playerID: string): NextOptions {
+    const nextOptions: NextOptions = {
+      moves: this.getPlayerMoveOptions(playerID),
+      pokemon: this.getPlayerPokemonOptions(playerID),
+    };
+
+    return nextOptions;
+  }
+
+  public getNextOptions(): Record<string, NextOptions> {
+    const nextOptions: Record<string, NextOptions> = {};
+    nextOptions[this.player1ID] = this.buildPlayerNextOptions(this.player1ID);
+    nextOptions[this.player2ID] = this.buildPlayerNextOptions(this.player2ID);
+    return nextOptions;
   }
 }
