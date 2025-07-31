@@ -11,6 +11,7 @@ export default class BattleUtils {
   private CRIT_CHANCE: number = 0.0417;
   private STAB_MODIFIER: number = 1.5;
   private CRIT_MODIFIER: number = 1.5;
+  private BONUS_MODIFIER: number = 20;
   private RANDOM_MODIFIER_UPPER_BOUND: number = 101;
   private RANDOM_MODIFIER_LOWER_BOUND: number = 85;
   private modifierMessages: string[] = [];
@@ -93,7 +94,8 @@ export default class BattleUtils {
     const randomModifier: number = this.getRandomModifier();
 
     const modifierProduct = criticalModifer * typeEffectivenessModifier * stabModifier * randomModifier;
-    const damage: number = Math.round((((attackerPower * movePower) / (defenderDefense * 50)) + 2) * modifierProduct);
+    const bonusModifier = this.BONUS_MODIFIER * randomModifier;
+    const damage: number = Math.round((((attackerPower * movePower) / (defenderDefense * 50)) + 2) * modifierProduct) + bonusModifier;
     
     return damage;
   }
