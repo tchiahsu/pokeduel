@@ -1,4 +1,4 @@
-import { PokemonType, MoveType } from "../types/entities.js";
+import { PokemonType, MoveType } from "../types/types.js";
 
 // Represents the common resource type in the Pokemon API
 type NamedApiResource = {

@@ -1,7 +1,7 @@
 import Pokemon from "./Pokemon.js";
 import Move from "./Move.js";
 import PokemonApiFetcher from "./PokemonApiFetcher.js";
-import { PokemonType, MoveType } from "../types/entities.js";
+import { PokemonType, MoveType } from "../types/types.js";
 /**
  * Class for creating a team of Pokemon from just their name.
  */
