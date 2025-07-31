@@ -1,35 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import React from 'react';
+import { HashRouter, Routes, Route } from 'react-router-dom';
+import { useState, useEffect } from 'react'
+import Home from './pages/Home';
+import Multiplayer from './pages/Multiplayer';
+import Selection from './pages/Selection';
+import Battle from './pages/Battle';
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const API_URL_BASE = 'http://localhost:8000';
+  
+  const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
 
+  type Pokemon = {
+    name: string;
+    sprite: string;
+  };
+
+  // Fetch the pokemon into the frontend
+  useEffect(() => {
+      async function fetchPokemon() {
+          try {
+              const res = await fetch(`${API_URL_BASE}/get-default-pokemon`);
+              const data = await res.json();
+              setPokemonList(data);
+          } catch (e) {
+              console.error('Error fetching default Pokemon:', e);
+          }
+      }
+      fetchPokemon();
+  }, []);
   return (
-    <>
+    <HashRouter>
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/multiplayer" element={<Multiplayer />} />
+          <Route path="/team-selection" element={<Selection list={pokemonList}/>} />
+          <Route path="/battle" element={<Battle />} />
+        </Routes>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs bg-red-100">
-        Click on the Vite and React logos to learn more. THIS IS A TEST
-      </p>
-    </>
-  )
+    </HashRouter>
+  );
 }
+//initial loading component
 
 export default App

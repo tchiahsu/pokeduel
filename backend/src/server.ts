@@ -28,7 +28,6 @@ app.get("/pokemon/:name/moves", async (req, res) => {
 // Get the stats of the selected pokemon
 app.get("/pokemon/:name/stats", async (req, res) => {
   const pokemonName = req.params.name;
-
   const pokemonData = await PokemonApiFetcher.createOnePokemonData(
     pokemonName,
     []
