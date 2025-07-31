@@ -25,12 +25,17 @@ type PlayerPokemon = {
 
 type Event = {
   user: string; // "self" | "opponent"
-  animation: string; // "attack" | "switch" | "status" | "none"
+  animation: string; // "attack" | "switch" | "status" | "faint" | "none"
   message: string;
   type: string;
   image: string;
   name: string;
   pokemon?: Pokemon;
+};
+
+type EndTurnEffect = {
+  player: string;
+  effect: () => string | null;
 };
 
 /**
@@ -40,13 +45,15 @@ export default class BattleModel {
   // The IDs of the players (their socket IDs)
   private player1ID: string;
   private player2ID: string;
+  // Maps the IDs of the players to their in-game Player
   private players: Record<string, Player> = {};
+  // Maps the IDs of the players to their moves
   private moves: Record<string, PlayerMove> = {};
-  private endTurnEffects: (() => string | null)[] = [];
+  private endTurnEffects: EndTurnEffect[] = [];
   private gameOver: boolean = false;
   private events: Event[] = [];
-  private messages: string[] = [];
   private battleUtils: BattleUtils = new BattleUtils();
+  private faintedPlayers: string[] = [];
 
   public getPlayer1ID() {
     return this.player1ID;
@@ -93,7 +100,6 @@ export default class BattleModel {
 
   /**
    * Handle's the actions for the players.
-   *
    */
   public handleTurn(): void {
     const { player: player1, playerMove: p1Move } = this.getPlayerAndMoveByID(
@@ -112,22 +118,32 @@ export default class BattleModel {
       this.handleSingleSwitch();
     }
 
-    // This effects are collected in processAttack
-    // Its meant to inflict effect damage after the attacks have been processed
-    this.endTurnEffects.forEach((effect) => {
+    // The effects collected in processAttack
+    // Inflicts effect damage after the attacks have been processed
+    this.endTurnEffects.forEach((endTurnEffect) => {
+      const player = endTurnEffect.player;
+      const effect = endTurnEffect.effect;
       const result = effect();
-      if (result) this.messages.push(result);
+      if (result) this.events.push(this.createEvent(player, "status", result));
     });
     this.endTurnEffects = [];
 
-    // Checks whether any of the pokemon has fainted after all moves and status effects
+    // Checks whether any of the pokemon have fainted after all moves and status effects
     // have been applied for the turn
-    [player1, player2].forEach((player) => {
+    [this.player1ID, this.player2ID].forEach((playerID) => {
+      const { player } = this.getPlayerAndMoveByID(playerID);
       const currentPokemon = player.getCurrentPokemon();
-      if (currentPokemon.getHp() <= 0 && player.hasRemainingPokemon()) {
-        this.messages.push(`${currentPokemon.getName()} has fainted!`);
+      if (this.battleUtils.pokemonIsDefeated(player)) {
+        this.events.push(
+          this.createEvent(
+            playerID,
+            "faint",
+            `${currentPokemon.getName()} has fainted!`
+          )
+        );
         player.reduceRemainingPokemon();
-        this.gameOver = !player.hasRemainingPokemon();
+        this.faintedPlayers.push(playerID);
+        this.gameOver = !player.hasRemainingPokemon() || this.gameOver;
       }
     });
 
@@ -172,13 +188,13 @@ export default class BattleModel {
     const secondPlayer =
       firstPlayer === this.player1ID ? this.player2ID : this.player1ID;
 
-    // Attack with the first player
+    // Attack with the first player (the faster player)
     this.processAttack(firstPlayer);
     if (this.battleUtils.pokemonIsDefeated(slowerPlayer)) {
       return;
     }
 
-    // Attack with the second player if pokemon has not fainted
+    // Attack with the second player (the slower player) if pokemon has not fainted
     this.processAttack(secondPlayer);
   }
 
@@ -223,27 +239,23 @@ export default class BattleModel {
 
     // Check whether the attacking pokemon is able to move this turn
     // Add the message associated to the effect that is applied
-    const statusMessage = StatusManager.checkIfCanMove(attackingPokemon);
-    if (statusMessage.message) {
+    const pokemonStatus = StatusManager.checkIfCanMove(attackingPokemon);
+    if (pokemonStatus.message) {
       this.events.push(
-        this.createEvent(playerID, "status", statusMessage.message)
+        this.createEvent(playerID, "status", pokemonStatus.message)
       );
     }
 
-    // Add the message associated to the effect that happens at the end of the turn
-    if (statusMessage.endTurnEffect) {
-      this.endTurnEffects.push(statusMessage.endTurnEffect);
+    // Add the message associated with the effect that happens at the end of the turn
+    if (pokemonStatus.endTurnEffect) {
+      this.endTurnEffects.push({
+        player: playerID,
+        effect: pokemonStatus.endTurnEffect,
+      });
     }
 
-    // If the effect prevents the pokemon from moving/attacking, then this skips the attack
-    if (!statusMessage.canMove) {
-      // Starts the fainting flow if the effect lowers pokemon HP to 0
-      if (attackingPokemon.getHp() <= 0) {
-        this.messages.push(`${attackingPokemon.getName()} has fainted!`);
-        attackingPlayer.reduceRemainingPokemon();
-        this.gameOver = !attackingPlayer.hasRemainingPokemon();
-      }
-      // Return if the pokemon can't attack and hasn't fainted
+    // If the effect prevents the pokemon from moving/attacking, then this skips the attack (confuse, sleep, etc.)
+    if (!pokemonStatus.canMove) {
       return;
     }
 
@@ -266,19 +278,12 @@ export default class BattleModel {
     });
 
     // New status effects may be inflicted based on the move used
-    const effectMessage = StatusManager.tryApplyEffect(
-      attackingPokemon,
-      defendingPokemon,
-      move
-    );
-    if (effectMessage) this.messages.push(effectMessage);
-
-    // Handle pokemon fainting
-    if (this.battleUtils.pokemonIsDefeated(defendingPlayer)) {
-      this.messages.push(`${defendingPokemon.getName()} has fainted!`);
-      defendingPlayer.reduceRemainingPokemon();
-      this.gameOver = defendingPlayer.hasRemainingPokemon() ? false : true;
-    }
+    // const effectMessage = StatusManager.tryApplyEffect(
+    //   attackingPokemon,
+    //   defendingPokemon,
+    //   move
+    // );
+    // if (effectMessage) this.messages.push(effectMessage); ///////////////
   }
 
   /**
@@ -307,27 +312,9 @@ export default class BattleModel {
     return [player1Options, player2Options];
   }
 
-  /**
-   * Returns the messages representing what happened in this turn.
-   *
-   * @returns The messages representing what happened in this turn.
-   */
-  public getMessages(): string[] {
-    const messages: string[] = [...this.messages, ""];
-    this.messages = [];
-    return messages;
+  public playerNeedsToSwitch(): boolean {
+    return this.faintedPlayers.length != 0;
   }
-
-  // /**
-  //  * Returns whether one of the current pokemon has fainted.
-  //  *
-  //  * @returns Whether one of the current pokemon has fainted.
-  //  */
-  // public aPokemonHasFainted(): boolean {
-  //   const {player1, player2} = this.getTurnContext();
-
-  //   return BattleUtils.pokemonIsDefeated(player1) || BattleUtils.pokemonIsDefeated(player2);
-  // }
 
   /**
    * Returns the player's remaining pokemon.
