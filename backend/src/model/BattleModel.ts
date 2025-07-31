@@ -46,6 +46,7 @@ export default class BattleModel {
   private gameOver: boolean = false;
   private events: Event[] = [];
   private messages: string[] = [];
+  private battleUtils: BattleUtils = new BattleUtils();
 
   public getPlayer1ID() {
     return this.player1ID;
@@ -161,7 +162,10 @@ export default class BattleModel {
     );
 
     // Determine the order of attack
-    const fasterPlayer: Player = BattleUtils.getFasterPlayer(player1, player2);
+    const fasterPlayer: Player = this.battleUtils.getFasterPlayer(
+      player1,
+      player2
+    );
     const slowerPlayer: Player = fasterPlayer === player1 ? player2 : player1;
     const firstPlayer =
       fasterPlayer === player1 ? this.player1ID : this.player2ID;
@@ -170,7 +174,7 @@ export default class BattleModel {
 
     // Attack with the first player
     this.processAttack(firstPlayer);
-    if (BattleUtils.pokemonIsDefeated(slowerPlayer)) {
+    if (this.battleUtils.pokemonIsDefeated(slowerPlayer)) {
       return;
     }
 
@@ -248,7 +252,7 @@ export default class BattleModel {
     this.events.push(this.createEvent(playerID, "attack", message));
 
     // Attack flow
-    const damage: number = BattleUtils.calculateDamage(
+    const damage: number = this.battleUtils.calculateDamage(
       attackingPokemon,
       move,
       defendingPokemon
@@ -257,7 +261,7 @@ export default class BattleModel {
     defendingPokemon.takeDamage(damage);
 
     // Display messages related to attack damage
-    BattleUtils.getModiferMessages().forEach((modifierMessage: string) => {
+    this.battleUtils.getModiferMessages().forEach((modifierMessage: string) => {
       this.events.push(this.createEvent(playerID, "none", modifierMessage));
     });
 
@@ -270,7 +274,7 @@ export default class BattleModel {
     if (effectMessage) this.messages.push(effectMessage);
 
     // Handle pokemon fainting
-    if (BattleUtils.pokemonIsDefeated(defendingPlayer)) {
+    if (this.battleUtils.pokemonIsDefeated(defendingPlayer)) {
       this.messages.push(`${defendingPokemon.getName()} has fainted!`);
       defendingPlayer.reduceRemainingPokemon();
       this.gameOver = defendingPlayer.hasRemainingPokemon() ? false : true;
@@ -290,15 +294,15 @@ export default class BattleModel {
       `${player1.getName()}'s options: \n` +
       `Attack with ${player1
         .getCurrentPokemon()
-        .getName()}: ${BattleUtils.getAllMoves(player1)}\n` +
-      `Switch Pokemon: ${BattleUtils.getRemainingPokemon(player1)}\n`;
+        .getName()}: ${this.battleUtils.getAllMoves(player1)}\n` +
+      `Switch Pokemon: ${this.battleUtils.getRemainingPokemon(player1)}\n`;
 
     const player2Options: string =
       `${player2.getName()}'s options: \n` +
       `Attack with ${player2
         .getCurrentPokemon()
-        .getName()}: ${BattleUtils.getAllMoves(player2)}\n` +
-      `Switch Pokemon: ${BattleUtils.getRemainingPokemon(player2)}\n`;
+        .getName()}: ${this.battleUtils.getAllMoves(player2)}\n` +
+      `Switch Pokemon: ${this.battleUtils.getRemainingPokemon(player2)}\n`;
 
     return [player1Options, player2Options];
   }
@@ -334,10 +338,10 @@ export default class BattleModel {
     const { player: player1 } = this.getPlayerAndMoveByID(this.player1ID);
     const { player: player2 } = this.getPlayerAndMoveByID(this.player2ID);
 
-    const faintedPlayer: Player = BattleUtils.pokemonIsDefeated(player1)
+    const faintedPlayer: Player = this.battleUtils.pokemonIsDefeated(player1)
       ? player1
       : player2;
-    return `${faintedPlayer.getName()}'s Pokemons: ${BattleUtils.getRemainingPokemon(
+    return `${faintedPlayer.getName()}'s Pokemons: ${this.battleUtils.getRemainingPokemon(
       faintedPlayer
     )}`;
   }
@@ -352,7 +356,7 @@ export default class BattleModel {
     const { player: player1 } = this.getPlayerAndMoveByID(this.player1ID);
     const { player: player2 } = this.getPlayerAndMoveByID(this.player2ID);
 
-    const faintedPlayer: Player = BattleUtils.pokemonIsDefeated(player1)
+    const faintedPlayer: Player = this.battleUtils.pokemonIsDefeated(player1)
       ? player1
       : player2;
     //faintedPlayer.updateTeam(faintedPlayer.getCurrentPokemonIndex());
@@ -395,11 +399,17 @@ export default class BattleModel {
     const { player: player1 } = this.getPlayerAndMoveByID(this.player1ID);
     const { player: player2 } = this.getPlayerAndMoveByID(this.player2ID);
 
-    if (BattleUtils.pokemonIsDefeated(player1)) return 1;
-    if (BattleUtils.pokemonIsDefeated(player2)) return 2;
+    if (this.battleUtils.pokemonIsDefeated(player1)) return 1;
+    if (this.battleUtils.pokemonIsDefeated(player2)) return 2;
     throw new Error("No player has fainted.");
   }
 
+  /**
+   * Returns the current Pokemon's moves for the given player.
+   *
+   * @param playerID - The ID of the player.
+   * @returns An array of objects, each mapping a move name to its PP.
+   */
   private getPlayerMoves(playerID: string): Record<string, number>[] {
     const { player } = this.getPlayerAndMoveByID(playerID);
     const currentPokemon = player.getCurrentPokemon();
@@ -410,6 +420,12 @@ export default class BattleModel {
     return playerMoves;
   }
 
+  /**
+   * Returns the team of Pokémon for the given player.
+   *
+   * @param playerID - The ID of the player.
+   * @returns An array of PlayerPokemon objects with basic info.
+   */
   private getPlayerPokemon(playerID: string): PlayerPokemon[] {
     const { player } = this.getPlayerAndMoveByID(playerID);
     const playerTeam: PlayerPokemon[] = [];
@@ -424,6 +440,15 @@ export default class BattleModel {
     return playerTeam;
   }
 
+  /**
+   * Creates an event object describing an action taken by a player.
+   * The event includes metadata like the Pokemon's image, name, and type.
+   *
+   * @param currentPlayer - The ID of the player taking the action.
+   * @param action - The type of action (e.g., "attack", "switch", "status").
+   * @param message - The message that displays during the event.
+   * @returns An Event object.
+   */
   private createEvent(
     currentPlayer: string,
     action: string,
@@ -451,6 +476,14 @@ export default class BattleModel {
     return event;
   }
 
+  /**
+   * Personalizes the event list for a specific player by changing the event
+   * metadata to be from the perspective of "self" vs "opponent", and updates
+   * images and names accordingly for switch events.
+   *
+   * @param playerID - The ID of the player viewing the events.
+   * @returns A list of personalized Event objects.
+   */
   private personalizeEvents(playerID: string): Event[] {
     const personalizedEvents: Event[] = this.events.map((event: Event) => {
       const personalizedEvent: Event = {
@@ -474,6 +507,12 @@ export default class BattleModel {
     return personalizedEvents;
   }
 
+  /**
+   * Returns a summary of the turn for both players, with events personalized
+   * to each player's perspective. Also clears the internal event list.
+   *
+   * @returns A mapping of player IDs to their respective personalized Events in an array.
+   */
   public getTurnSummary(): Record<string, Event[]> {
     const turnSummary: Record<string, Event[]> = {};
     turnSummary[this.player1ID] = this.personalizeEvents(this.player1ID);
