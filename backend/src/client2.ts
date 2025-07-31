@@ -1,21 +1,57 @@
 import io from "socket.io-client";
+import readline from "readline";
 
-const socket = io("http://localhost:5000/");
-
-socket.on("connect", () => {
-  console.log(`Connected as ${socket.id}`);
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
 });
 
-socket.on("update-game", (data) => {
-  console.log(data.message);
-});
+const socket = io("http://localhost:8000/");
 
-socket.emit("setPlayer", {
-  name: "Pham",
-  teamSelection: {
-    alakazam: ["psychic", "shadow ball", "recover", "calm mind"],
-    machamp: ["dynamic punch", "earthquake", "stone edge", "bulk up"],
-  },
-});
+const roomID = process.argv[2];
 
-socket.emit("submitMove", { action: "switch", index: 2 });
+async function gameRoomTest() {
+  const response: Response = await fetch(
+    `http://localhost:8000/room/${roomID}`
+  );
+  const responseJSON = await response.json();
+  if (responseJSON.available) {
+    socket.on("connect", () => {
+      console.log(`Connected as ${socket.id}`);
+    });
+
+    socket.emit("joinRoom", roomID);
+
+    socket.on("joinRoom", (data) => {
+      console.log(data.message);
+    });
+
+    socket.emit("setPlayer", {
+      name: "Pham",
+      teamSelection: {
+        alakazam: ["psychic", "shadow-ball", "recover", "calm-mind"],
+        machamp: ["dynamic-punch", "earthquake", "stone-edge", "bulk-up"],
+      },
+    });
+  } else {
+    console.log(responseJSON.message);
+  }
+
+  socket.on("gameStart", () => {
+    getMove();
+  });
+
+  function getMove() {
+    rl.question("Enter your move: ", (input) => {
+      const move = JSON.parse(input);
+      socket.emit("submitMove", move);
+    });
+  }
+
+  socket.on("turnSummary", (data) => {
+    console.log(data);
+    getMove();
+  });
+}
+
+gameRoomTest();
