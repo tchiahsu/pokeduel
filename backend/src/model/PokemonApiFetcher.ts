@@ -224,46 +224,6 @@ export default class PokemonApiFetcher {
   }
 
   /**
-   * Fetches and constructs a single Pokémon object with name, types 
-   * and stats.
-   *
-   * @param pokemonName The name of the Pokemon.
-   * @returns A single Pokémon object.
-   */
-  static async createOnePokemonStats(
-    pokemonName: string
-  ): Promise<PokemonType> {
-    try {
-      const response: Response = await fetch(
-        `https://pokeapi.co/api/v2/pokemon/${pokemonName}`
-      );
-      const pokemonBaseData: PokemonBaseData = await response.json();
-
-      const pokemon: Partial<PokemonType> = {
-        name: pokemonBaseData.name,
-        types: pokemonBaseData.types.map(
-          (typeData: PokemonTypeData) => typeData.type.name
-        ),
-        moves: [],
-        frontSprite: "",
-        backSprite: "",
-      };
-
-      pokemonBaseData.stats.forEach((pokemonStat: PokemonBaseStatData) => {
-        const statName = pokemonStat.stat.name as StatKeys;
-        pokemon[statName] = pokemonStat.base_stat;
-      });
-      return pokemon as PokemonType;
-    } catch (error) {
-      console.error(
-        `Failed to fetch and create the pokemon data for "${pokemonName}"`,
-        error
-      );
-      return {} as PokemonType;
-    }
-  }
-
-  /**
    * Builds and returns full move data (name, power, pp, types, etc.)
    * for all the moves in the player's selection.
    * Move data is a collection of Moves by their names as a key and the
