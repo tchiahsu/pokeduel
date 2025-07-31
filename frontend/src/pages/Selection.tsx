@@ -3,12 +3,13 @@ import { useState } from 'react';
 import selectionBg from '../assets/bg-field.jpg';
 import SearchBar from '../components/SearchBar';
 import Button from '../components/Button';
+import HoverCard from '../components/HoverCard';
 
 
 type Pokemon = {
         name: string;
         sprite: string;
-    }
+}
 
 type Props = {
 list: Pokemon[];
@@ -72,21 +73,15 @@ export default function Selection({ list }: Props) {
                         <Button onClick={handleSearch}>Search</Button>
                     </div>
                     
+                    {/* Pokemon selection table */}
                     <div className="grid grid-cols-6 gap-6 p-4">
-                        {error && (
-                            <div className="text-red-600 col-span-6">
-                                <p>{error}</p>
-                            </div>
-                        )}
-
                         {displayList.map((poke, index) => (
-                            <div
+                            <HoverCard
                                 key={index}
-                                className="flex flex-col items-center hover:bg-white hover:scale-105 transition-all rounded-md p-2 cursor-pointer"
-                            >
-                            <img src={poke.sprite} alt={poke.name} className="w-36 h-36" />
-                            <span className="text-xs mt-1 capitalize">{poke.name}</span>
-                            </div>
+                                hoverContent={`This are ${poke.name}'s stats!`}>
+                                <img src={poke.sprite} alt={poke.name} className="w-36 h-36" />
+                                <span className="text-xs mt-1 capitalize">{poke.name}</span>
+                            </HoverCard>
                         ))}
                     </div>
                 </div>
