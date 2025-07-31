@@ -30,6 +30,7 @@
   "dependencies": {
     "express": "^5.1.0",
     "readline-sync": "^1.4.10",
+    "short-unique-id": "^5.3.2",
     "socket.io": "^4.8.1"
   }
 }
