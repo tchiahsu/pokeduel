@@ -1,44 +1,72 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import selectionBg from '../assets/bg-field.jpg';
+import { useEffect } from 'react';
+
 import SearchBar from '../components/SearchBar';
 import Button from '../components/Button';
-
+import selectionBg from '../assets/bg-field.jpg';
 
 type Pokemon = {
         name: string;
         sprite: string;
-    }
+};
 
 type Props = {
 list: Pokemon[];
 };
 
+const API_URL_BASE = 'http://localhost:8000';
+
+// function to fetch a single pokemon name and sprite
+const fetchPokemonData = async (name: string): Promise<Pokemon | null> => {
+    try {
+        const res = await fetch(`${API_URL_BASE}/get-pokemon-data/${name}`);
+        const data = await res.json();
+
+        if (!data || Object.keys(data).length === 0) {
+            return null;
+        }
+
+        return {name: data.name, sprite: data.frontSprite};
+    } catch (error) {
+        console.error(`Fetch error: `, error);
+        return null;
+    }
+};
+
 export default function Selection({ list }: Props) {
-    const API_URL_BASE = 'http://localhost:8000';
     const [searchTerm, setSearchTerm] = useState('');
     const [fetchedPokemon, setFetchedPokemon] = useState<Pokemon | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     const handleSearch = async () => {
         const name = searchTerm.trim().toLowerCase();
-
-        if (name === '') {
+        
+        if (!name) {
             setFetchedPokemon(null);
             setError(null);
             return;
         }
 
-        try {
-            const res = await fetch(`${API_URL_BASE}/get-pokemon-data/${name}`);
-            const data = await res.json();
-            setFetchedPokemon({ name: data.name, sprite: data.frontSprite });
-        } catch (e) {
-            console.error('Error fetching Pokemon:', e);
+        const pokemon = await fetchPokemonData(name);
+        
+        if (pokemon) {
+            setFetchedPokemon(pokemon);
+            setError(null);
+        } else {
             setFetchedPokemon(null);
-            setError('Pokémon not found');
-        };
+            setError('Pokemon not Found');
+        }
     }
+    
+    //set fetched pokemon to null and display default pokemon
+    useEffect(() => {
+        if (searchTerm === '') {
+            setFetchedPokemon(null);
+            setError(null);
+        }
+    }, [searchTerm]);
+
     const displayList = fetchedPokemon ? [fetchedPokemon] : list
 
     return (
@@ -90,7 +118,6 @@ export default function Selection({ list }: Props) {
                         ))}
                     </div>
                 </div>
-
             </div>
         </div>
     );
