@@ -1,5 +1,10 @@
 const API_URL_BASE = 'http://localhost:8000';
 
+export type Pokemon = {
+        name: string;
+        sprite: string;
+};
+
 export const searchPokeStats = async (name: string) => {
     try {
         const res = await fetch(`${API_URL_BASE}/get-pokemon-data/${name}`);
