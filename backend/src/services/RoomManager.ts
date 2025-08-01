@@ -12,10 +12,12 @@ export default class RoomManager {
   // Tracks how many players are in each room
   private roomPlayerCount: Record<string, number> = {};
 
+  private roomIsSinglePlayer: Record<string, boolean> = {};
+
   /**
    * Checks whether a given room ID corresponds to an existing room.
    *
-   * @param roomID - The ID of the room to check.
+   * @param roomID The ID of the room to check.
    * @returns True if the room exists, false otherwise.
    */
   public isRoom(roomID: string): boolean {
@@ -25,18 +27,19 @@ export default class RoomManager {
   /**
    * Creates a new room and initializes its BattleModel.
    *
-   * @param roomID - The ID to assign to the new room.
+   * @param roomID The ID to assign to the new room.
    * @returns The BattleModel associated with the newly created room.
    */
-  public createRoom(roomID: string) {
+  public createRoom(roomID: string, isSinglePlayer: boolean) {
     this.roomToBattleModel[roomID] = new BattleModel();
+    this.roomIsSinglePlayer[roomID] = isSinglePlayer;
     this.roomPlayerCount[roomID] = 0;
   }
 
   /**
    * Deletes a room and its associated data.
    *
-   * @param roomID - The ID of the room to delete.
+   * @param roomID The ID of the room to delete.
    */
   public deleteRoom(roomID: string): void {
     delete this.roomToBattleModel[roomID];
@@ -55,7 +58,7 @@ export default class RoomManager {
   /**
    * Checks whether a room is full.
    *
-   * @param roomID - The ID of the room to check.
+   * @param roomID The ID of the room to check.
    * @returns True if the room is full, false otherwise.
    */
   public IsRoomFull(roomID: string): boolean {
@@ -65,18 +68,28 @@ export default class RoomManager {
   /**
    * Checks if the waiting room (selection screen) is empty.
    *
-   * @param roomID - The ID of the room to check.
+   * @param roomID The ID of the room to check.
    * @returns True if there are zero players, false otherwise.
    */
-  public isWaitingRoomEmpty(roomID: string) {
+  public isWaitingRoomEmpty(roomID: string): boolean {
     return this.roomPlayerCount[roomID] == 0;
+  }
+
+  /**
+   * Checks if a room is a single player room (player vs bot room)
+   *
+   * @param roomID The ID of the room to check.
+   * @returns True if the room is a single player room, false otherwise.
+   */
+  public isSinglePlayerRoom(roomID: string): boolean {
+    return this.roomIsSinglePlayer[roomID];
   }
 
   /**
    * Adds a player to a room and increments the room's player count.
    *
-   * @param playerID - The player's ID.
-   * @param roomID - The ID of the room to add the player to.
+   * @param playerID The player's ID.
+   * @param roomID The ID of the room to add the player to.
    */
   public addPlayerToRoom(playerID: string, roomID: string): void {
     this.playerToRoom[playerID] = roomID;
@@ -86,7 +99,7 @@ export default class RoomManager {
   /**
    * Returns the number of players currently in a room.
    *
-   * @param roomID - The room's ID.
+   * @param roomID The room's ID.
    * @returns The number of players in the room.
    */
   public getRoomPlayerCount(roomID: string) {
@@ -96,7 +109,7 @@ export default class RoomManager {
   /**
    * Removes a player from their room and decrements the room's player count.
    *
-   * @param playerID - The ID of the player to remove.
+   * @param playerID The ID of the player to remove.
    */
   public removePlayerFromRoom(playerID: string): void {
     const roomID: string = this.playerToRoom[playerID];
@@ -107,7 +120,7 @@ export default class RoomManager {
   /**
    * Gets the room ID that a given player is currently in.
    *
-   * @param playerID - The player's ID.
+   * @param playerID The player's ID.
    * @returns The room ID associated with the player.
    */
   public getPlayerRoom(playerID: string): string {
@@ -117,7 +130,7 @@ export default class RoomManager {
   /**
    * Gets the BattleModel instance associated with a room.
    *
-   * @param roomID - The room's ID.
+   * @param roomID The room's ID.
    * @returns The BattleModel for the room.
    */
   public getBattleModel(roomID: string): BattleModel {
