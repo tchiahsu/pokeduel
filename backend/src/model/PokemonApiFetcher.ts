@@ -144,10 +144,10 @@ export default class PokemonApiFetcher {
   }
 
   /**
-   * Fetches and returns the name of a Pokémon given its Pokédex index number.
+   * Fetches and returns the name of a Pokemon given its Pokedex index number.
    *
-   * @param pokemonIndex The numeric Pokédex index (1-based) of the Pokémon.
-   * @returns A Promise that resolves to the Pokémon's name as a string.
+   * @param pokemonIndex The numeric Pokedex index of the Pokémon.
+   * @returns A Promise that resolves to the Pokemon's name as a string.
    */
   static async getPokemonNameByIndex(pokemonIndex: number): Promise<string> {
     try {
