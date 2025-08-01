@@ -15,6 +15,36 @@ const PORT = process.env.PORT || 8000;
 app.use(express.json());
 app.use(cors());
 
+// Room routes
+app.post("/room", (req, res) => {
+  const isSinglePlayer: boolean = req.body.isSinglePlayer;
+  const { randomUUID } = new ShortUniqueId({ length: 10 });
+  let roomID: string = randomUUID();
+  while (roomManager.isRoom(roomID)) {
+    roomID = randomUUID();
+  }
+  roomManager.createRoom(roomID, isSinglePlayer);
+  res.status(201).json({ id: roomID });
+});
+
+app.delete("/room/:id", (req, res) => {
+  const roomID = req.params.id;
+  roomManager.deleteRoom(roomID);
+  res.status(200).json({ message: `Room ${roomID} deleted` });
+});
+
+app.get("/room/:id", (req, res) => {
+  const roomID = req.params.id;
+  if (!roomManager.isRoom(roomID)) {
+    return res.status(404).json({ available: false, message: `Room ${roomID} not found` });
+  } else if (roomManager.IsRoomFull(roomID)) {
+    return res.status(409).json({ available: false, message: `Room ${roomID} is full` });
+  }
+
+  return res.status(200).json({ available: true, message: `Room ${roomID} found` });
+});
+
+// Pokemon routes
 app.get("/pokemon/default", async (req, res) => {
   const defaultPokemon = await PokemonApiFetcher.getDefaultPokemon();
   res.json(defaultPokemon);
@@ -32,7 +62,7 @@ app.get("/pokemon/:name/stats", async (req, res) => {
   res.json(pokemonData);
 });
 
-// Get the moves of the selected pokemon
+// Moves route
 app.get("/moves/:name", async (req, res) => {
   const moveName = req.params.name;
 
@@ -49,20 +79,24 @@ const roomManager: RoomManager = new RoomManager();
 io.on("connection", (socket) => {
   console.log(`Player ${socket.id} has connected`);
 
-  socket.on("joinRoom", (roomID) => {
+  // Join room as soon as the player connects
+  socket.on("joinRoom", async (roomID) => {
     socket.join(roomID);
     roomManager.addPlayerToRoom(socket.id, roomID);
     if (roomManager.isSinglePlayerRoom(roomID)) {
       const battleModel: BattleModel = roomManager.getBattleModel(roomID);
-      battleModel.addBotPlayer();
+      await battleModel.addBotPlayer();
     }
     socket.emit("joinRoom", { message: `Joined room ${roomID}` });
   });
 
+  // Event to set the player
   socket.on("setPlayer", async (data) => {
     const roomID: string = roomManager.getPlayerRoom(socket.id);
     const battleModel: BattleModel = roomManager.getBattleModel(roomID);
     await battleModel.setPlayer(socket.id, data.name, data.teamSelection);
+
+    // Begin the game if there are two players
     if (battleModel.hasTwoPlayers()) {
       io.to(roomID).emit("gameStart", () => {
         console.log(`Room ${roomID}'s battle has begun`);
@@ -70,6 +104,7 @@ io.on("connection", (socket) => {
     }
   });
 
+  // Event to submit move
   socket.on("submitMove", (playerMove) => {
     const roomID: string = roomManager.getPlayerRoom(socket.id);
     const battleModel: BattleModel = roomManager.getBattleModel(roomID);
@@ -89,9 +124,11 @@ io.on("connection", (socket) => {
       io.to(player1ID).emit("turnSummary", turnSummary[player1ID]);
       io.to(player2ID).emit("turnSummary", turnSummary[player2ID]);
 
+      // Check if someone has fainted
       if (battleModel.hasFaintedPlayers()) {
         const [faintedPlayer1, faintedPlayer2] = battleModel.getFaintedPlayers();
 
+        // Handle fainting for a single player room
         if (roomManager.isSinglePlayerRoom(roomID)) {
           if (faintedPlayer1 && faintedPlayer2) {
             if (battleModel.isBotPlayer(faintedPlayer1)) {
@@ -117,6 +154,7 @@ io.on("connection", (socket) => {
           return;
         }
 
+        // Handle fainting for a multiplayer room
         if (faintedPlayer1 && faintedPlayer2) {
           io.to(faintedPlayer1).emit("requestFaintedSwitch", battleModel.getSwitchOptions(faintedPlayer1));
           io.to(faintedPlayer2).emit("requestFaintedSwitch", battleModel.getSwitchOptions(faintedPlayer2));
@@ -131,12 +169,14 @@ io.on("connection", (socket) => {
         return;
       }
 
+      // Send out the next options to each player if no pokemon has fainted
       const nextOptions = battleModel.getNextOptions();
       io.to(player1ID).emit("nextOptions", nextOptions[player1ID]);
       io.to(player2ID).emit("nextOptions", nextOptions[player2ID]);
     }
   });
 
+  // Event to handle a fainted switch
   socket.on("submitFaintedSwitch", (playerMove) => {
     const roomID: string = roomManager.getPlayerRoom(socket.id);
     const battleModel: BattleModel = roomManager.getBattleModel(roomID);
@@ -151,12 +191,14 @@ io.on("connection", (socket) => {
       io.to(player1ID).emit("turnSummary", turnSummary[player1ID]);
       io.to(player2ID).emit("turnSummary", turnSummary[player2ID]);
 
+      // Send out the next options to each player
       const nextOptions = battleModel.getNextOptions();
       io.to(player1ID).emit("nextOptions", nextOptions[player1ID]);
       io.to(player2ID).emit("nextOptions", nextOptions[player2ID]);
     }
   });
 
+  // Event to handle disconnect
   socket.on("disconnect", () => {
     const roomID: string = roomManager.getPlayerRoom(socket.id);
     const battleModel: BattleModel = roomManager.getBattleModel(roomID);
@@ -171,32 +213,4 @@ io.on("connection", (socket) => {
       roomManager.deleteRoom(roomID);
     }
   });
-});
-
-app.post("/room", (req, res) => {
-  const isSinglePlayer: boolean = req.body.isSinglePlayer;
-  const { randomUUID } = new ShortUniqueId({ length: 10 });
-  let roomID: string = randomUUID();
-  while (roomManager.isRoom(roomID)) {
-    roomID = randomUUID();
-  }
-  roomManager.createRoom(roomID, isSinglePlayer);
-  res.status(200).json({ id: roomID });
-});
-
-app.delete("/room/:id", (req, res) => {
-  const roomID = req.params.id;
-  roomManager.deleteRoom(roomID);
-  res.status(200).json({ message: `Room ${roomID} deleted` });
-});
-
-app.get("/room/:id", (req, res) => {
-  const roomID = req.params.id;
-  if (!roomManager.isRoom(roomID)) {
-    return res.status(404).json({ available: false, message: `Room ${roomID} not found` });
-  } else if (roomManager.IsRoomFull(roomID)) {
-    return res.status(409).json({ available: false, message: `Room ${roomID} is full` });
-  }
-
-  return res.status(200).json({ available: true, message: `Room ${roomID} found` });
 });
