@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react';
 import { searchPokeStats, searchPokeMoves } from '../services/pokemon';
+import type { Pokemon } from '../services/pokemon';
 
 type PokedexProps = {
-    pokeName: string;
+    pokemon: Pokemon | null;
     close: (value: boolean) => void;
 }
 
-const Pokedex = ({ pokeName, close }: PokedexProps) => {
+const Pokedex = ({ pokemon, close }: PokedexProps) => {
     const [pokeData, setPokeData] = useState<any>(null);
     const [pokeMoves, setPokeMoves] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(false);
 
     const fetchPokeData = async () => {
-        if (!pokeName || isLoading) return;
+        if (!pokemon || isLoading) return;
         
         setIsLoading(true);
 
@@ -20,10 +21,10 @@ const Pokedex = ({ pokeName, close }: PokedexProps) => {
         setPokeMoves(null);
 
         try {
-            const stats = await searchPokeStats(pokeName);
+            const stats = await searchPokeStats(pokemon.name);
             setPokeData(stats)
 
-            const moves = await searchPokeMoves(pokeName);
+            const moves = await searchPokeMoves(pokemon.name);
             setPokeMoves(moves)
         } catch (e) {
             console.error("Error fetching pokemon data: ", e);
@@ -63,8 +64,10 @@ const Pokedex = ({ pokeName, close }: PokedexProps) => {
     );
 
     useEffect(() => {
-        fetchPokeData();
-    }, [pokeName]);
+        if (pokemon?.name) {
+            fetchPokeData();
+        }
+    }, [pokemon?.name]);
 
     if (isLoading) {
         return <LoadingAnimation />
@@ -74,11 +77,8 @@ const Pokedex = ({ pokeName, close }: PokedexProps) => {
         <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
             <div className="p-6 border-b border-gray-200">
                 {pokeData ? (
-                    <div className="space-y-4 relative align-middle">
-                        <h2 className="text-2xl font-bold text-blue-950 text-center capitalize mb-6">
-                            {pokeData.name}
-                        </h2>
-                        
+                    <div className="space-y-4 relative">
+                        <h2 className="text-2xl font-bold text-blue-950 text-center capitalize">{pokemon?.name}</h2>
                         <div className="bg-gray-50 rounded-lg p-4 space-y-2">
                             <PokeStat category="Type" value={pokeData.type} />
                             <PokeStat category="HP" value={pokeData.hp} />
