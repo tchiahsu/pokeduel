@@ -95,7 +95,7 @@ export default class BattleUtils {
 
     const modifierProduct = criticalModifer * typeEffectivenessModifier * stabModifier * randomModifier;
     const bonusModifier = this.BONUS_MODIFIER * randomModifier;
-    const damage: number = Math.round((((attackerPower * movePower) / (defenderDefense * 50)) + 2) * modifierProduct) + bonusModifier;
+    const damage: number = Math.round(((((attackerPower * movePower) / (defenderDefense * 50)) + 2) * modifierProduct) + bonusModifier);
     
     return damage;
   }
