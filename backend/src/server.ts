@@ -28,10 +28,7 @@ app.get("/pokemon/:name/moves", async (req, res) => {
 // Get the stats of the selected pokemon
 app.get("/pokemon/:name/stats", async (req, res) => {
   const pokemonName = req.params.name;
-  const pokemonData = await PokemonApiFetcher.createOnePokemonData(
-    pokemonName,
-    []
-  );
+  const pokemonData = await PokemonApiFetcher.createOnePokemonData(pokemonName, []);
   res.json(pokemonData);
 });
 
@@ -54,10 +51,11 @@ io.on("connection", (socket) => {
 
   socket.on("joinRoom", (roomID) => {
     socket.join(roomID);
-    if (!roomManager.isRoom(roomID)) {
-      roomManager.createRoom(roomID);
-    }
     roomManager.addPlayerToRoom(socket.id, roomID);
+    if (roomManager.isSinglePlayerRoom(roomID)) {
+      const battleModel: BattleModel = roomManager.getBattleModel(roomID);
+      battleModel.addBotPlayer();
+    }
     socket.emit("joinRoom", { message: `Joined room ${roomID}` });
   });
 
@@ -76,6 +74,11 @@ io.on("connection", (socket) => {
     const roomID: string = roomManager.getPlayerRoom(socket.id);
     const battleModel: BattleModel = roomManager.getBattleModel(roomID);
     battleModel.addMove(socket.id, playerMove);
+
+    if (roomManager.isSinglePlayerRoom(roomID)) {
+      battleModel.addBotAttackMove();
+    }
+
     if (battleModel.isReadyToHandleTurn()) {
       battleModel.handleTurn();
       const turnSummary = battleModel.getTurnSummary();
@@ -87,23 +90,38 @@ io.on("connection", (socket) => {
       io.to(player2ID).emit("turnSummary", turnSummary[player2ID]);
 
       if (battleModel.hasFaintedPlayers()) {
-        const [faintedPlayer1, faintedPlayer2] =
-          battleModel.getFaintedPlayers();
+        const [faintedPlayer1, faintedPlayer2] = battleModel.getFaintedPlayers();
+
+        if (roomManager.isSinglePlayerRoom(roomID)) {
+          if (faintedPlayer1 && faintedPlayer2) {
+            if (battleModel.isBotPlayer(faintedPlayer1)) {
+              io.to(faintedPlayer2).emit("requestFaintedSwitch", battleModel.getSwitchOptions(faintedPlayer2));
+            } else {
+              io.to(faintedPlayer1).emit("requestFaintedSwitch", battleModel.getSwitchOptions(faintedPlayer1));
+            }
+            battleModel.addBotSwitchMove();
+          } else {
+            if (battleModel.isBotPlayer(faintedPlayer1)) {
+              battleModel.addBotSwitchMove();
+              battleModel.handleFaintedSwitch();
+              const alivePlayer = battleModel.getOppositePlayer(faintedPlayer1);
+              const turnSummary = battleModel.getTurnSummary();
+              io.to(alivePlayer).emit("turnSummary", turnSummary[alivePlayer]);
+              const nextOptions = battleModel.getNextOptions();
+              io.to(alivePlayer).emit("nextOptions", nextOptions[alivePlayer]);
+            } else {
+              io.to(faintedPlayer1).emit("requestFaintedSwitch", battleModel.getSwitchOptions(faintedPlayer1));
+            }
+          }
+
+          return;
+        }
 
         if (faintedPlayer1 && faintedPlayer2) {
-          io.to(faintedPlayer1).emit(
-            "requestFaintedSwitch",
-            battleModel.getSwitchOptions(faintedPlayer1)
-          );
-          io.to(faintedPlayer2).emit(
-            "requestFaintedSwitch",
-            battleModel.getSwitchOptions(faintedPlayer2)
-          );
+          io.to(faintedPlayer1).emit("requestFaintedSwitch", battleModel.getSwitchOptions(faintedPlayer1));
+          io.to(faintedPlayer2).emit("requestFaintedSwitch", battleModel.getSwitchOptions(faintedPlayer2));
         } else {
-          io.to(faintedPlayer1).emit(
-            "requestFaintedSwitch",
-            battleModel.getSwitchOptions(faintedPlayer1)
-          );
+          io.to(faintedPlayer1).emit("requestFaintedSwitch", battleModel.getSwitchOptions(faintedPlayer1));
           const alivePlayer = battleModel.getOppositePlayer(faintedPlayer1);
           io.to(alivePlayer).emit("waitForFaintedSwitch", {
             message: `Waiting for other player to switch pokemon`,
@@ -145,25 +163,24 @@ io.on("connection", (socket) => {
     roomManager.removePlayerFromRoom(socket.id);
     if (battleModel && battleModel.hasTwoPlayers()) {
       const remainingPlayer =
-        socket.id === battleModel.getPlayer1ID()
-          ? battleModel.getPlayer2ID()
-          : battleModel.getPlayer1ID();
+        socket.id === battleModel.getPlayer1ID() ? battleModel.getPlayer2ID() : battleModel.getPlayer1ID();
       io.to(remainingPlayer).emit("endGame", {
         message: `Opponent has disconnected`,
       });
-    } else if (roomManager.isWaitingRoomEmpty(roomID)) {
+    } else if (roomManager.isWaitingRoomEmpty(roomID) || roomManager.isSinglePlayerRoom(roomID)) {
       roomManager.deleteRoom(roomID);
     }
   });
 });
 
 app.post("/room", (req, res) => {
+  const isSinglePlayer: boolean = req.body.isSinglePlayer;
   const { randomUUID } = new ShortUniqueId({ length: 10 });
   let roomID: string = randomUUID();
   while (roomManager.isRoom(roomID)) {
     roomID = randomUUID();
   }
-  roomManager.createRoom(roomID);
+  roomManager.createRoom(roomID, isSinglePlayer);
   res.status(200).json({ id: roomID });
 });
 
@@ -176,16 +193,10 @@ app.delete("/room/:id", (req, res) => {
 app.get("/room/:id", (req, res) => {
   const roomID = req.params.id;
   if (!roomManager.isRoom(roomID)) {
-    return res
-      .status(404)
-      .json({ available: false, message: `Room ${roomID} not found` });
+    return res.status(404).json({ available: false, message: `Room ${roomID} not found` });
   } else if (roomManager.IsRoomFull(roomID)) {
-    return res
-      .status(409)
-      .json({ available: false, message: `Room ${roomID} is full` });
+    return res.status(409).json({ available: false, message: `Room ${roomID} is full` });
   }
 
-  return res
-    .status(200)
-    .json({ available: true, message: `Room ${roomID} found` });
+  return res.status(200).json({ available: true, message: `Room ${roomID} found` });
 });
