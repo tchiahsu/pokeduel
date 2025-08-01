@@ -12,7 +12,7 @@ export default class BattleUtils {
   private STAB_MODIFIER: number = 1.5;
   private CRIT_MODIFIER: number = 1.5;
   private BONUS_MODIFIER: number = 20;
-  private RANDOM_MODIFIER_UPPER_BOUND: number = 101;
+  private RANDOM_MODIFIER_UPPER_BOUND: number = 100;
   private RANDOM_MODIFIER_LOWER_BOUND: number = 85;
   private modifierMessages: string[] = [];
 
@@ -179,7 +179,7 @@ export default class BattleUtils {
    */
   private getRandomModifier(): number {
     const numerator: number = Math.random() * 
-      (this.RANDOM_MODIFIER_UPPER_BOUND - this.RANDOM_MODIFIER_LOWER_BOUND) + this.RANDOM_MODIFIER_LOWER_BOUND;
+      (this.RANDOM_MODIFIER_UPPER_BOUND - this.RANDOM_MODIFIER_LOWER_BOUND + 1) + this.RANDOM_MODIFIER_LOWER_BOUND;
     
       return numerator / 100;
   }
