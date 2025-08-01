@@ -11,9 +11,7 @@ const socket = io("http://localhost:8000/");
 const roomID = process.argv[2];
 
 async function gameRoomTest() {
-  const response: Response = await fetch(
-    `http://localhost:8000/room/${roomID}`
-  );
+  const response: Response = await fetch(`http://localhost:8000/room/${roomID}`);
   const responseJSON = await response.json();
   if (responseJSON.available) {
     socket.on("connect", () => {
@@ -50,7 +48,27 @@ async function gameRoomTest() {
 
   socket.on("turnSummary", (data) => {
     console.log(data);
+  });
+
+  socket.on("nextOptions", (data) => {
+    console.log(data);
     getMove();
+  });
+
+  function getFaintedSwitchMove() {
+    rl.question("Enter a Pokemon to switch to: ", (input) => {
+      const move = JSON.parse(input);
+      socket.emit("submitFaintedSwitch", move);
+    });
+  }
+
+  socket.on("requestFaintedSwitch", (data) => {
+    console.log(data);
+    getFaintedSwitchMove();
+  });
+
+  socket.on("waitForFaintedSwitch", (data) => {
+    console.log(data.message);
   });
 }
 
