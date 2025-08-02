@@ -254,7 +254,7 @@ export default class PokemonApiFetcher {
         power: moveBaseData.power,
         accuracy: moveBaseData.accuracy,
         pp: moveBaseData.pp,
-        effect: moveBaseData.meta?.ailment?.name ?? "none",
+        effect: moveBaseData.meta?.ailment.name ?? "none",
         effectChance: moveBaseData.meta?.ailment_chance ?? 0,
       };
 
