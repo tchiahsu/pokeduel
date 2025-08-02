@@ -30,6 +30,7 @@ function App() {
       }
       fetchPokemon();
   }, []);
+  
   return (
     <HashRouter>
       <div>

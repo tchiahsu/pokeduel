@@ -1,15 +1,12 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 import SearchBar from '../components/SearchBar';
 import Button from '../components/Button';
 import selectionBg from '../assets/bg-field.jpg';
-
-type Pokemon = {
-        name: string;
-        sprite: string;
-};
+import Pokedex from '../components/Pokedex';
+import type { Pokemon } from '../services/pokemon'
+import clsx from 'clsx'
 
 type Props = {
 list: Pokemon[];
@@ -35,8 +32,10 @@ const fetchPokemonData = async (name: string): Promise<Pokemon | null> => {
 };
 
 export default function Selection({ list }: Props) {
+    const [showPokedex, setShowPokedex] = useState(false)
     const [searchTerm, setSearchTerm] = useState('');
     const [fetchedPokemon, setFetchedPokemon] = useState<Pokemon | null>(null);
+    const [currPokemon, setCurrPokemon] = useState<Pokemon | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     const handleSearch = async () => {
@@ -58,6 +57,10 @@ export default function Selection({ list }: Props) {
             setError('Pokemon not Found');
         }
     }
+
+    const handlePokedex = async (value: boolean) => {
+        setShowPokedex(value);
+    }
     
     //set fetched pokemon to null and display default pokemon
     useEffect(() => {
@@ -68,6 +71,8 @@ export default function Selection({ list }: Props) {
     }, [searchTerm]);
 
     const displayList = fetchedPokemon ? [fetchedPokemon] : list
+
+
 
     return (
         <div className="relative min-h-screen min-w-screen flex flex-col">
@@ -100,22 +105,35 @@ export default function Selection({ list }: Props) {
                         <Button onClick={handleSearch}>Search</Button>
                     </div>
                     
-                    <div className="grid grid-cols-6 gap-6 p-4">
-                        {error && (
-                            <div className="text-red-600 col-span-6">
-                                <p>{error}</p>
-                            </div>
-                        )}
+                    {/* Pokemon selection table */}
+                    <div className="flex">
+                        <div className={clsx("grid gap-6 p-4 relative flex-1", showPokedex && "grid-cols-4", !showPokedex && "grid-cols-6")}>
+                            {error && (
+                                <div className="text-red-600 col-span-6">
+                                    <p>{error}</p>
+                                </div>
+                            )}
+                            
+                            {displayList.map((poke, index) => (
+                                <div
+                                    className="relative flex flex-col items-center rounded-lg hover:bg-gray-200 hover:scale-105 transition-all p-2 cursor-pointer"
+                                    key={index}
+                                    onClick={() => {
+                                        setShowPokedex(true);
+                                        setCurrPokemon(poke);
+                                }}>
+                                    <img src={poke.sprite} alt={poke.name} className="w-36 h-36" />
+                                    <span className="text-xs mt-1 capitalize">{poke.name}</span>
+                                </div>
+                            ))}
+                        </div>
 
-                        {displayList.map((poke, index) => (
-                            <div
-                                key={index}
-                                className="flex flex-col items-center hover:bg-white hover:scale-105 transition-all rounded-md p-2 cursor-pointer"
-                            >
-                            <img src={poke.sprite} alt={poke.name} className="w-36 h-36" />
-                            <span className="text-xs mt-1 capitalize">{poke.name}</span>
+                        {/* Pokemon Stats and Moves Sidebar Panel */}
+                        <div className={clsx("flex overflow-x-hidden mt-5 rounded-lg", showPokedex && "p-4 w-lg", !showPokedex && "p-0 w-0")}>
+                            <div className="">
+                                <Pokedex pokemon={currPokemon} close={handlePokedex}/>
                             </div>
-                        ))}
+                        </div>
                     </div>
                 </div>
             </div>
