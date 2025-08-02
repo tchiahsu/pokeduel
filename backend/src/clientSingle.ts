@@ -8,32 +8,36 @@ const rl = readline.createInterface({
 
 const socket = io("http://localhost:8000/");
 
-const roomID = process.argv[2];
-
 async function gameRoomTest() {
-  const response: Response = await fetch(`http://localhost:8000/room/${roomID}`);
-  const responseJSON = await response.json();
-  if (responseJSON.available) {
-    socket.on("connect", () => {
-      console.log(`Connected as ${socket.id}`);
-    });
+  const response: Response = await fetch("http://localhost:8000/room", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      isSinglePlayer: true,
+    }),
+  });
+  const roomJSON: Record<string, string> = await response.json();
+  const roomID: string = roomJSON.id;
 
-    socket.emit("joinRoom", roomID);
+  socket.on("connect", () => {
+    console.log(`Connected as ${socket.id}`);
+  });
 
-    socket.on("joinRoom", (data) => {
-      console.log(data.message);
-    });
+  socket.emit("joinRoom", roomID);
+
+  socket.on("joinRoom", (data) => {
+    console.log(data.message);
 
     socket.emit("setPlayer", {
-      name: "Pham",
+      name: "Harrison",
       teamSelection: {
-        alakazam: ["psychic", "shadow-ball", "recover", "calm-mind"],
-        machamp: ["dynamic-punch", "earthquake", "stone-edge", "bulk-up"],
+        charizard: ["flamethrower", "air-slash", "dragon-claw", "earthquake"],
+        blastoise: ["hydro-pump", "ice-beam", "surf", "bite"],
       },
     });
-  } else {
-    console.log(responseJSON.message);
-  }
+  });
 
   socket.on("gameStart", () => {
     getMove();

@@ -1,4 +1,4 @@
-import { PokemonType, MoveType } from "../types/entities.js";
+import { PokemonType, MoveType, TeamSelection } from "../types/types.js";
 
 // Represents the common resource type in the Pokemon API
 type NamedApiResource = {
@@ -60,16 +60,7 @@ type MovesBaseMetaData = {
 };
 
 // Represents the keys within the Pokemon object
-type StatKeys =
-  | "hp"
-  | "attack"
-  | "defense"
-  | "special-attack"
-  | "special-defense"
-  | "speed";
-
-// Represents the type for player's selection
-type PlayerSelection = Record<string, string[]>;
+type StatKeys = "hp" | "attack" | "defense" | "special-attack" | "special-defense" | "speed";
 
 // Represents the type for the pokemon data created from the Pokemon API
 type PokemonData = Record<string, PokemonType>;
@@ -96,9 +87,7 @@ export default class PokemonApiFetcher {
    */
   static async getDefaultPokemon(): Promise<DefaultPokemon[]> {
     try {
-      const response: Response = await fetch(
-        `https://pokeapi.co/api/v2/pokemon?limit=151`
-      );
+      const response: Response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=151`);
       const defaultPokemonData: DefaultPokemonData = await response.json();
 
       const defaultPokemon: DefaultPokemon[] = [];
@@ -129,9 +118,7 @@ export default class PokemonApiFetcher {
    */
   static async isPokemon(pokemonName: string): Promise<boolean> {
     try {
-      const response: Response = await fetch(
-        `https://pokeapi.co/api/v2/pokemon/${pokemonName}`
-      );
+      const response: Response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
       return response.status === 404 ? false : true;
     } catch (error) {
       console.error(`Failed to search if "${pokemonName}" is a pokemon`, error);
@@ -147,16 +134,29 @@ export default class PokemonApiFetcher {
    */
   static async getPokemonMoves(pokemonName: string): Promise<string[]> {
     try {
-      const response: Response = await fetch(
-        `https://pokeapi.co/api/v2/pokemon/${pokemonName}`
-      );
+      const response: Response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
       const pokemonBaseData: PokemonBaseData = await response.json();
-      return pokemonBaseData.moves.map(
-        (moveObject: PokemonBaseMovesData) => moveObject.move.name
-      );
+      return pokemonBaseData.moves.map((moveObject: PokemonBaseMovesData) => moveObject.move.name);
     } catch (error) {
       console.error(`Failed to fetch the moves for "${pokemonName}"`, error);
       return [];
+    }
+  }
+
+  /**
+   * Fetches and returns the name of a Pokemon given its Pokedex index number.
+   *
+   * @param pokemonIndex The numeric Pokedex index of the Pokémon.
+   * @returns A Promise that resolves to the Pokemon's name as a string.
+   */
+  static async getPokemonNameByIndex(pokemonIndex: number): Promise<string> {
+    try {
+      const response: Response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonIndex}`);
+      const pokemonBaseData: PokemonBaseData = await response.json();
+      return pokemonBaseData.name;
+    } catch (error) {
+      console.error(`Failed to fetch the name for pokemon index "${pokemonIndex}"`, error);
+      return "";
     }
   }
 
@@ -169,15 +169,10 @@ export default class PokemonApiFetcher {
    * @param playerSelection The player's selection of Pokemon and their moves.
    * @returns The Pokemon data to be used in the pokemon battle.
    */
-  static async createFullPokemonData(
-    playerSelection: PlayerSelection
-  ): Promise<PokemonData> {
+  static async createFullPokemonData(playerSelection: TeamSelection): Promise<PokemonData> {
     const pokemonData: PokemonData = {};
     for (const [pokemonName, pokemonMoves] of Object.entries(playerSelection)) {
-      pokemonData[pokemonName] = await PokemonApiFetcher.createOnePokemonData(
-        pokemonName,
-        pokemonMoves
-      );
+      pokemonData[pokemonName] = await PokemonApiFetcher.createOnePokemonData(pokemonName, pokemonMoves);
     }
     return pokemonData;
   }
@@ -190,20 +185,13 @@ export default class PokemonApiFetcher {
    * @param pokemonMoves The moves selected for the Pokemon.
    * @returns A single Pokémon object.
    */
-  static async createOnePokemonData(
-    pokemonName: string,
-    pokemonMoves: string[]
-  ): Promise<PokemonType> {
+  static async createOnePokemonData(pokemonName: string, pokemonMoves: string[]): Promise<PokemonType> {
     try {
-      const response: Response = await fetch(
-        `https://pokeapi.co/api/v2/pokemon/${pokemonName}`
-      );
+      const response: Response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
       const pokemonBaseData: PokemonBaseData = await response.json();
       const pokemon: Partial<PokemonType> = {
         name: pokemonBaseData.name,
-        types: pokemonBaseData.types.map(
-          (typeData: PokemonTypeData) => typeData.type.name
-        ),
+        types: pokemonBaseData.types.map((typeData: PokemonTypeData) => typeData.type.name),
         moves: pokemonMoves,
         frontSprite: pokemonBaseData.sprites.front_default,
         backSprite: pokemonBaseData.sprites.back_default,
@@ -215,50 +203,7 @@ export default class PokemonApiFetcher {
       });
       return pokemon as PokemonType;
     } catch (error) {
-      console.error(
-        `Failed to fetch and create the pokemon data for "${pokemonName}"`,
-        error
-      );
-      return {} as PokemonType;
-    }
-  }
-
-  /**
-   * Fetches and constructs a single Pokémon object with name, types 
-   * and stats.
-   *
-   * @param pokemonName The name of the Pokemon.
-   * @returns A single Pokémon object.
-   */
-  static async createOnePokemonStats(
-    pokemonName: string
-  ): Promise<PokemonType> {
-    try {
-      const response: Response = await fetch(
-        `https://pokeapi.co/api/v2/pokemon/${pokemonName}`
-      );
-      const pokemonBaseData: PokemonBaseData = await response.json();
-
-      const pokemon: Partial<PokemonType> = {
-        name: pokemonBaseData.name,
-        types: pokemonBaseData.types.map(
-          (typeData: PokemonTypeData) => typeData.type.name
-        ),
-        moves: [],
-        frontSprite: "",
-        backSprite: "",
-      };
-
-      pokemonBaseData.stats.forEach((pokemonStat: PokemonBaseStatData) => {
-        const statName = pokemonStat.stat.name as StatKeys;
-        pokemon[statName] = pokemonStat.base_stat;
-      });
-      return pokemon as PokemonType;
-    } catch (error) {
-      console.error(
-        `Failed to fetch and create the pokemon data for "${pokemonName}"`,
-        error
-      );
+      console.error(`Failed to fetch and create the pokemon data for "${pokemonName}"`, error);
       return {} as PokemonType;
     }
   }
@@ -272,9 +217,7 @@ export default class PokemonApiFetcher {
    * @param playerSelection The player's selection of Pokemon and their moves.
    * @returns The move data to be used in the Pokemon battle.
    */
-  static async createFullMoveData(
-    playerSelection: PlayerSelection
-  ): Promise<MoveData> {
+  static async createFullMoveData(playerSelection: TeamSelection): Promise<MoveData> {
     const moveNames: string[] = [];
     for (const pokemonMoves of Object.values(playerSelection)) {
       for (const moveName of pokemonMoves) {
@@ -302,9 +245,7 @@ export default class PokemonApiFetcher {
    */
   static async createOneMoveData(moveName: string): Promise<MoveType> {
     try {
-      const response: Response = await fetch(
-        `https://pokeapi.co/api/v2/move/${moveName}`
-      );
+      const response: Response = await fetch(`https://pokeapi.co/api/v2/move/${moveName}`);
       const moveBaseData: MoveBaseData = await response.json();
       const move: MoveType = {
         name: moveBaseData.name,
@@ -313,16 +254,13 @@ export default class PokemonApiFetcher {
         power: moveBaseData.power,
         accuracy: moveBaseData.accuracy,
         pp: moveBaseData.pp,
-        effect: moveBaseData.meta.ailment.name,
-        effectChance: moveBaseData.meta.ailment_chance,
+        effect: moveBaseData.meta?.ailment.name ?? "none",
+        effectChance: moveBaseData.meta?.ailment_chance ?? 0,
       };
 
       return move;
     } catch (error) {
-      console.error(
-        `Failed to fetch and create the move data for "${moveName}"`,
-        error
-      );
+      console.error(`Failed to fetch and create the move data for "${moveName}"`, error);
       return {} as MoveType;
     }
   }

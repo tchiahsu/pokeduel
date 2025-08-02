@@ -152,6 +152,24 @@ export default class Pokemon {
   }
 
   /**
+   * Returns the front sprite of the Pokemon.
+   *
+   * @returns The front sprite of the Pokemon.
+   */
+  public getFrontSprite() {
+    return this.frontSprite;
+  }
+
+  /**
+   * Returns the back sprite of the Pokemon.
+   *
+   * @returns The back sprite of the Pokemon.
+   */
+  public getBackSprite() {
+    return this.backSprite;
+  }
+
+  /**
    * Method to get the effect status on a pokemon
    * @returns the status effect on the pokemon
    */

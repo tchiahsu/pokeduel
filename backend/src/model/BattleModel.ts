@@ -2,8 +2,8 @@ import BattleUtils from "./BattleUtils.js";
 import Player from "./Player.js";
 import Pokemon from "./Pokemon.js";
 import PokemonFactory from "./PokemonFactory.js";
-import pokemonData from "./pokemon.json" with {"type": "json"};
 import StatusManager from "./StatusManager.js";
+import BotPlayer from "./BotPlayer.js";
 
 /**
  * An type representing a player's move.
@@ -11,55 +11,64 @@ import StatusManager from "./StatusManager.js";
 type PlayerMove = {
   action: string;
   index: number;
-}
+};
 
-type TurnContext = {
-    player1: Player;
-    player2: Player;
-    p1Move: PlayerMove;
-    p2Move: PlayerMove;
-  }
+type NextOptions = {
+  moves: Record<string, number>[];
+  pokemon: PlayerPokemon[];
+};
+
+type PlayerPokemon = {
+  name: string;
+  hp: number;
+  sprite: string;
+};
+
+type Event = {
+  user: string; // "self" | "opponent"
+  animation: string; // "attack" | "switch" | "status" | "faint" | "none"
+  message: string;
+  type: string;
+  image: string;
+  name: string;
+  pokemon?: Pokemon;
+};
+
+type EndTurnEffect = {
+  player: string;
+  effect: () => string | null;
+};
 
 /**
  * A class representing the core logic of the pokemon battle system.
  */
 export default class BattleModel {
+  // The IDs of the players (their socket IDs)
   private player1ID: string;
   private player2ID: string;
-  // Stores the messages displayed in turn summary
-  private messages: string[] = [];
-  // Temporary storage for messages generated during the current turn
-  private turnSummary: string[] = [];
-  // Stores functions that should be run after the attacks has been processed
-  private endTurnEffects: (() => string | null)[] = [];
-  private gameOver: boolean = false;
+  // Maps the IDs of the players to their in-game Player
   private players: Record<string, Player> = {};
+  // Maps the IDs of the players to their moves
   private moves: Record<string, PlayerMove> = {};
+  private endTurnEffects: EndTurnEffect[] = [];
+  private gameOver: boolean = false;
+  private events: Event[] = [];
+  private battleUtils: BattleUtils = new BattleUtils();
+  private faintedPlayers: string[] = [];
+  private botPlayer: BotPlayer;
 
-  constructor() {
+  public getPlayer1ID() {
+    return this.player1ID;
   }
 
-  // /**
-  //  * Sets player 1.
-  //  * 
-  //  * @param name The name of the player.
-  //  * @param player1Team Contains the player's pokemon team selection.
-  //  */
-  // public setPlayer1(name: string, player1Team: string[]): void {
-  //   const pokemonTeam: Pokemon[] = PokemonFactory.createTeam(player1Team);
-  //   this.player1 = new Player(name, pokemonTeam);
-  // }
+  public getPlayer2ID() {
+    return this.player2ID;
+  }
 
-  // /**
-  //  * Sets player 2.
-  //  * 
-  //  * @param name The name of the player.
-  //  * @param player2Team Contains the player's pokemon team selection.
-  //  */
-  // public setPlayer2(name: string, player2Team: string[]): void {
-  //   const pokemonTeam: Pokemon[] = PokemonFactory.createTeam(player2Team);
-  //   this.player2 = new Player(name, pokemonTeam);
-  // }
+  public getOppositePlayer(playerID: string) {
+    const oppositePlayer: string = playerID === this.player1ID ? this.player2ID : this.player1ID;
+    return oppositePlayer;
+  }
 
   public async setPlayer(playerID: string, name: string, teamSelection: Record<string, string[]>): Promise<void> {
     if (!(playerID in this.players)) {
@@ -74,409 +83,367 @@ export default class BattleModel {
     }
   }
 
-  public getPlayers(): Record<string, Player> {
-    return this.players;
-  }
-
-  public getPlayer1ID(): string {
-    return this.player1ID;
-  }
-
-  public getMoves(): Record<string, PlayerMove> {
-    return this.moves;
-  }
-
-  public checkSetStatus() {
-    return Object.keys(this.players);
+  public hasTwoPlayers() {
+    return Object.keys(this.players).length === 2;
   }
 
   public addMove(playerID: string, playerMove: PlayerMove): void {
     this.moves[playerID] = playerMove;
   }
 
-  public readyToHandleTurn(): boolean {
+  public isReadyToHandleTurn(): boolean {
     return Object.keys(this.moves).length === 2;
   }
 
-  // /**
-  //  * Handle's the actions for the players.
-  //  * 
-  //  * @param p1Move Player 1's move.
-  //  * @param p2Move Player 2's move.
-  //  */
-  // public handleTurn(p1Move: PlayerMove, p2Move: PlayerMove): void {
-  //   this.turnSummary = [];
-    
-  //   if (p1Move.action === "switch" && p2Move.action === "switch") {
-  //     this.processSwitch(this.player1, p1Move.index);
-  //     this.processSwitch(this.player2, p2Move.index);
-  //   } else if (p1Move.action === "switch" && p2Move.action === "attack") {
-  //     this.processSwitch(this.player1, p1Move.index);
-  //     this.processAttack(this.player2, p2Move.index);
-  //   } else if (p1Move.action === "attack" && p2Move.action === "switch") {
-  //     this.processSwitch(this.player2, p2Move.index);
-  //     this.processAttack(this.player1, p1Move.index);
-  //   } else {
-  //     this.handleAttack(p1Move, p2Move);
-  //   }
-
-  public getTurnContext(): TurnContext {
-    return {
-      player1: this.players[this.player1ID],
-      player2: this.players[this.player2ID],
-      p1Move: this.moves[this.player1ID],
-      p2Move: this.moves[this.player2ID],
-    }
+  public getPlayerAndMoveByID(playerID: string) {
+    return { player: this.players[playerID], playerMove: this.moves[playerID] };
   }
 
   /**
    * Handle's the actions for the players.
-   * 
-   * @param p1Move Player 1's move.
-   * @param p2Move Player 2's move.
    */
   public handleTurn(): void {
-    const {player1, player2, p1Move, p2Move} = this.getTurnContext();
-    this.turnSummary = [];
+    const { player: player1, playerMove: p1Move } = this.getPlayerAndMoveByID(this.player1ID);
+    const { player: player2, playerMove: p2Move } = this.getPlayerAndMoveByID(this.player2ID);
 
-    if (p1Move.action === "switch" && p2Move.action === "switch") {
-      this.processSwitch(player1, p1Move.index);
-      this.processSwitch(player2, p2Move.index);
-    } else if (p1Move.action === "switch" || p2Move.action === "switch") {
-      this.handleSingleSwitch();
-    } else {
+    if (p1Move.action === "attack" && p2Move.action === "attack") {
       this.handleAttack();
+    } else if (p1Move.action === "switch" && p2Move.action === "switch") {
+      this.processSwitch(this.player1ID);
+      this.processSwitch(this.player2ID);
+    } else {
+      this.handleSingleSwitch();
     }
 
-    // This effects are collected in processAttack
-    // Its meant to inflict effect damage after the attacks have been processed
-    this.endTurnEffects.forEach(effect=> {
+    // The effects collected in processAttack
+    // Inflicts effect damage after the attacks have been processed
+    this.endTurnEffects.forEach((endTurnEffect) => {
+      const player = endTurnEffect.player;
+      const effect = endTurnEffect.effect;
       const result = effect();
-      if (result) this.turnSummary.push(result);
+      if (result) this.events.push(this.createEvent(player, "status", result));
     });
     this.endTurnEffects = [];
 
-    // Checks whether any of the pokemon has fainted after all moves and status effects
+    // Checks whether any of the pokemon have fainted after all moves and status effects
     // have been applied for the turn
-    [player1, player2].forEach(player => {
+    [this.player1ID, this.player2ID].forEach((playerID) => {
+      const { player } = this.getPlayerAndMoveByID(playerID);
       const currentPokemon = player.getCurrentPokemon();
-      if (currentPokemon.getHp() <= 0 && player.hasRemainingPokemon()) {
-        this.turnSummary.push(`${currentPokemon.getName()} has fainted!`);
+      if (this.battleUtils.pokemonIsDefeated(player)) {
+        this.events.push(this.createEvent(playerID, "faint", `${currentPokemon.getName()} has fainted!`));
         player.reduceRemainingPokemon();
-        this.gameOver = !player.hasRemainingPokemon();
+        this.faintedPlayers.push(playerID);
+        this.gameOver = !player.hasRemainingPokemon() || this.gameOver;
       }
     });
 
     this.moves = {};
-    this.messages.push(...this.turnSummary);
   }
-  
-  public handleSingleSwitch() {
-    const {player1, player2, p1Move, p2Move} = this.getTurnContext();
-    const switchingPlayer = p1Move.action === "switch" ? player1 : player2;
-    const switchingPlayerMove = switchingPlayer === player1 ? p1Move : p2Move;
-    const attackingPlayer = switchingPlayer === player1 ? player2 : player1;
-    const attackingPlayerMove = switchingPlayer === player1 ? p2Move : p1Move;
 
-    this.processSwitch(switchingPlayer, switchingPlayerMove.index);
-    this.processAttack(attackingPlayer, attackingPlayerMove.index);
+  public handleSingleSwitch() {
+    const { playerMove: p1Move } = this.getPlayerAndMoveByID(this.player1ID);
+
+    const switchingPlayer = p1Move.action === "switch" ? this.player1ID : this.player2ID;
+    const attackingPlayer = switchingPlayer === this.player1ID ? this.player2ID : this.player1ID;
+
+    this.processSwitch(switchingPlayer);
+    this.processAttack(attackingPlayer);
   }
 
   /**
    * Handles the attack logic for battle.
-   * 
+   *
    * @param p1Move Player 1's move.
    * @param p2Move Player 2's move.
    * @returns void
    */
   private handleAttack(): void {
-    const {player1, player2, p1Move, p2Move} = this.getTurnContext();
+    const { player: player1, playerMove: p1Move } = this.getPlayerAndMoveByID(this.player1ID);
+    const { player: player2, playerMove: p2Move } = this.getPlayerAndMoveByID(this.player2ID);
 
     // Determine the order of attack
-    const firstPlayer: Player = BattleUtils.getFasterPlayer(player1, player2);
-    const firstPlayerMove: PlayerMove = firstPlayer === player1 ? p1Move : p2Move;
-    const secondPlayer: Player = firstPlayer === player1 ? player2 : player1;
-    const secondPlayerMove: PlayerMove = firstPlayer === player1 ? p2Move : p1Move;
+    const fasterPlayer: Player = this.battleUtils.getFasterPlayer(player1, player2);
+    const slowerPlayer: Player = fasterPlayer === player1 ? player2 : player1;
+    const firstPlayer = fasterPlayer === player1 ? this.player1ID : this.player2ID;
+    const secondPlayer = firstPlayer === this.player1ID ? this.player2ID : this.player1ID;
 
-    // Attack with the first player
-    this.processAttack(firstPlayer, firstPlayerMove.index);
-    if (BattleUtils.pokemonIsDefeated(secondPlayer)) {
+    // Attack with the first player (the faster player)
+    this.processAttack(firstPlayer);
+    if (this.battleUtils.pokemonIsDefeated(slowerPlayer)) {
       return;
     }
 
-    // Attack with the second player if pokemon has not fainted
-    this.processAttack(secondPlayer, secondPlayerMove.index);
+    // Attack with the second player (the slower player) if pokemon has not fainted
+    this.processAttack(secondPlayer);
   }
 
   /**
    * Handles switching pokemon for the player.
-   * 
+   *
    * @param player The player that wants to switch pokemon.
    * @param pokemonIndex The index of the pokemon to switch to.
    */
-  private processSwitch(player: Player, pokemonIndex: number): void {
-    player.switchPokemon(pokemonIndex);
-    this.messages.push(`${player.getName()} switched to ${player.getCurrentPokemon().getName()}!`);
+  private processSwitch(playerID: string): void {
+    const { player, playerMove } = this.getPlayerAndMoveByID(playerID);
+    player.switchPokemon(playerMove.index);
+    const message = `${player.getName()} switched to ${player.getCurrentPokemon().getName()}!`;
+    this.events.push(this.createEvent(playerID, "switch", message));
   }
-  
+
   /**
    * Handles an attack from a pokemon.
-   * 
+   *
    * @param attackingPlayer The attack player.
    * @param attackIndex The index of the move the player wants to use.
    * @returns void
    */
-  private processAttack(attackingPlayer: Player, attackIndex: number): void {
-    const {player1, player2} = this.getTurnContext();
+  private processAttack(playerID: string): void {
+    const { player: player1, playerMove: p1Move } = this.getPlayerAndMoveByID(this.player1ID);
+    const { player: player2, playerMove: p2Move } = this.getPlayerAndMoveByID(this.player2ID);
+    const attackingPlayer = this.players[playerID];
+    const { playerMove } = this.getPlayerAndMoveByID(this.player1ID);
+
     // Determine which player is attacking and defending
     const defendingPlayer: Player = attackingPlayer === player1 ? player2 : player1;
     const attackingPokemon: Pokemon = attackingPlayer.getCurrentPokemon();
     const defendingPokemon: Pokemon = defendingPlayer.getCurrentPokemon();
-    const move = attackingPokemon.getMove(attackIndex);
+    const move = attackingPokemon.getMove(playerMove.index);
 
     // Check whether the attacking pokemon is able to move this turn
     // Add the message associated to the effect that is applied
-    const statusMessage = StatusManager.checkIfCanMove(attackingPokemon);
-    if (statusMessage.message) {
-      this.turnSummary.push(statusMessage.message);
+    const pokemonStatus = StatusManager.checkIfCanMove(attackingPokemon);
+    if (pokemonStatus.message) {
+      this.events.push(this.createEvent(playerID, "status", pokemonStatus.message));
     }
 
-    // Add the message associated to the effect that happens at the end of the turn
-    if (statusMessage.endTurnEffect) {
-      this.endTurnEffects.push(statusMessage.endTurnEffect)
+    // Add the message associated with the effect that happens at the end of the turn
+    if (pokemonStatus.endTurnEffect) {
+      this.endTurnEffects.push({
+        player: playerID,
+        effect: pokemonStatus.endTurnEffect,
+      });
     }
 
-    // If the effect prevents the pokemon from moving/attacking, then this skips the attack
-    if (!statusMessage.canMove) {
-      // Starts the fainting flow if the effect lowers pokemon HP to 0
-      if (attackingPokemon.getHp() <= 0) {
-        this.turnSummary.push(`${attackingPokemon.getName()} has fainted!`);
-        attackingPlayer.reduceRemainingPokemon();
-        this.gameOver = !attackingPlayer.hasRemainingPokemon();
-      }
-      // Return if the pokemon can't attack and hasn't fainted
+    // If the effect prevents the pokemon from moving/attacking, then this skips the attack (confuse, sleep, etc.)
+    if (!pokemonStatus.canMove) {
       return;
     }
 
     // Add attack message from pokemon
-    this.turnSummary.push(`${attackingPokemon.getName()} used ${move.getName()}!`)
+    const message = `${attackingPokemon.getName()} used ${move.getName()}!`;
+    this.events.push(this.createEvent(playerID, "attack", message));
 
     // Attack flow
-    const damage: number = BattleUtils.calculateDamage(attackingPokemon, move, defendingPokemon);
+    const damage: number = this.battleUtils.calculateDamage(attackingPokemon, move, defendingPokemon);
     move.reducePP();
     defendingPokemon.takeDamage(damage);
 
-    // Display pokemon HP after each attack
-    const hp = defendingPokemon.getHp() < 0 ? 0 : defendingPokemon.getHp();
-    this.turnSummary.push(`  >> ${defendingPokemon.getName()} took ${damage} damage! It has ${hp} hp left!`);
-
     // Display messages related to attack damage
-    BattleUtils.getModiferMessages().forEach((modifierMessage: string) => this.turnSummary.push(modifierMessage));
+    this.battleUtils.getModiferMessages().forEach((modifierMessage: string) => {
+      this.events.push(this.createEvent(playerID, "none", modifierMessage));
+    });
 
     // New status effects may be inflicted based on the move used
-    const effectMessage = StatusManager.tryApplyEffect(attackingPokemon, defendingPokemon, move);
-    if (effectMessage) this.turnSummary.push(effectMessage)
-    
-    // Handle pokemon fainting
-    if (BattleUtils.pokemonIsDefeated(defendingPlayer)) {
-      this.turnSummary.push(`${defendingPokemon.getName()} has fainted!`);
-      defendingPlayer.reduceRemainingPokemon();
-      this.gameOver = defendingPlayer.hasRemainingPokemon() ? false : true;
+    // const effectMessage = StatusManager.tryApplyEffect(
+    //   attackingPokemon,
+    //   defendingPokemon,
+    //   move
+    // );
+    // if (effectMessage) this.messages.push(effectMessage); ///////////////
+  }
+
+  public hasFaintedPlayers(): boolean {
+    return this.faintedPlayers.length != 0;
+  }
+
+  public getFaintedPlayers(): string[] {
+    return this.faintedPlayers;
+  }
+
+  public isReadyToHandleFaintedSwitch(): boolean {
+    return this.faintedPlayers.length === Object.keys(this.moves).length;
+  }
+
+  public handleFaintedSwitch(): void {
+    const [faintedPlayer1, faintedPlayer2] = this.faintedPlayers;
+    if (faintedPlayer1 && faintedPlayer2) {
+      this.processSwitch(faintedPlayer1);
+      this.processSwitch(faintedPlayer2);
+    } else {
+      this.processSwitch(faintedPlayer1);
     }
+    this.faintedPlayers = [];
   }
 
-  /**
-   * Returns the available options for the players.
-   * 
-   * @returns The available options for the players.
-   */
-  public getPlayerOptions(): string[] {
-    const {player1, player2, p1Move, p2Move} = this.getTurnContext();
-
-    const player1Options: string = `${player1.getName()}'s options: \n` +
-    `Attack with ${player1.getCurrentPokemon().getName()}: ${BattleUtils.getAllMoves(player1)}\n` +
-    `Switch Pokemon: ${BattleUtils.getRemainingPokemon(player1)}\n`
-
-    const player2Options: string = `${player2.getName()}'s options: \n` +
-    `Attack with ${player2.getCurrentPokemon().getName()}: ${BattleUtils.getAllMoves(player2)}\n` +
-    `Switch Pokemon: ${BattleUtils.getRemainingPokemon(player2)}\n`
-
-    return [player1Options, player2Options];
-  }
-
-  /**
-   * Returns the messages representing what happened in this turn.
-   * 
-   * @returns The messages representing what happened in this turn.
-   */
-  public getMessages(): string[] {
-    const messages: string[] = [...this.messages, ""];
-    this.messages = [];
-    return messages;
-  }
-
-  /**
-   * Returns whether one of the current pokemon has fainted.
-   * 
-   * @returns Whether one of the current pokemon has fainted.
-   */
-  public aPokemonHasFainted(): boolean {
-    const {player1, player2} = this.getTurnContext();
-
-    return BattleUtils.pokemonIsDefeated(player1) || BattleUtils.pokemonIsDefeated(player2);
-  }
-
-  /**
-   * Returns the player's remaining pokemon.
-   * 
-   * @returns The player's remaining pokemon.
-   */
-  public getRemainingPokemon() {
-    const {player1, player2} = this.getTurnContext();
-
-    const faintedPlayer: Player = BattleUtils.pokemonIsDefeated(player1) ? player1 : player2;
-    return `${faintedPlayer.getName()}'s Pokemons: ${BattleUtils.getRemainingPokemon(faintedPlayer)}`;
-  }
-  
-  /**
-   * Handles switching out a fainted pokemon and returns a message notifying the player has switched pokemon.
-   * 
-   * @param switchMove The player's move with the index of the pokemon to switch to.
-   * @returns A message notifying the fainted player has switched pokemon.
-   */
-  public handleFaintedPokemon(switchMove: PlayerMove): string {
-    const {player1, player2} = this.getTurnContext();
-
-    const faintedPlayer: Player = BattleUtils.pokemonIsDefeated(player1) ? player1 : player2;
-    //faintedPlayer.updateTeam(faintedPlayer.getCurrentPokemonIndex());
-    faintedPlayer.switchPokemon(switchMove.index);
-    return `${faintedPlayer.getName()} switched to ${faintedPlayer.getCurrentPokemon().getName()}!\n`;
-  }
-  
   /**
    * Returns a boolean indicating whether the game is over or not.
-   * 
+   *
    * @returns A boolean indicating whether the game is over or not.
    */
   public isGameOver(): boolean {
     return this.gameOver;
   }
-  
-  /**
-   * Returns the game's ending message with the winner.
-   * 
-   * @returns The game's ending message with the winner.
-   */
-  public getEndingMessage(): string {
-    const {player1, player2} = this.getTurnContext();
 
-    const faintedPlayer: Player = player1.hasRemainingPokemon() ? player2 : player1;
-    const otherPlayer: Player = faintedPlayer === player1 ? player2 : player1;
-    
-    return `${faintedPlayer.getName()} is out of Pokemon! ${otherPlayer.getName()} wins!`
+  /**
+   * Creates an event object describing an action taken by a player.
+   * The event includes metadata like the Pokemon's image, name, and type.
+   *
+   * @param currentPlayer - The ID of the player taking the action.
+   * @param action - The type of action (e.g., "attack", "switch", "status").
+   * @param message - The message that displays during the event.
+   * @returns An Event object.
+   */
+  private createEvent(currentPlayer: string, action: string, message: string): Event {
+    const { player, playerMove } = this.getPlayerAndMoveByID(currentPlayer);
+    const playerPokemon = player.getCurrentPokemon();
+
+    const event: Event = {
+      user: currentPlayer,
+      animation: action,
+      message: message,
+      type: "",
+      image: "",
+      name: "",
+      pokemon: playerPokemon,
+    };
+
+    if (action === "attack") {
+      event.type = playerPokemon.getMove(playerMove.index).getType();
+    } else if (action === "status") {
+      event.type = playerPokemon.getStatus();
+    }
+
+    return event;
   }
 
   /**
-   * Returns all the pokemon that can be used in the game.
-   * 
-   * @returns All the pokemon that can be used in the game.
+   * Personalizes the event list for a specific player by changing the event
+   * metadata to be from the perspective of "self" vs "opponent", and updates
+   * images and names accordingly for switch events.
+   *
+   * @param playerID - The ID of the player viewing the events.
+   * @returns A list of personalized Event objects.
    */
-  public getAllPokemon(): string {
-    let allPokemon: string = "";
+  private personalizeEvents(playerID: string): Event[] {
+    const personalizedEvents: Event[] = this.events.map((event: Event) => {
+      const personalizedEvent: Event = {
+        user: playerID === event.user ? "self" : "opponent",
+        animation: event.animation,
+        message: event.message,
+        type: event.type,
+        image: event.image,
+        name: event.name,
+      };
 
-    Object.keys(pokemonData).forEach((key, index) => {
-      allPokemon += key + " ";
-      if ((index + 1) % 5 === 0) {
-        allPokemon += "\n";
+      if (event.animation === "switch" && event.pokemon) {
+        personalizedEvent.image =
+          personalizedEvent.user === "self" ? event.pokemon.getBackSprite() : event.pokemon.getFrontSprite();
+        personalizedEvent.name = event.pokemon.getName();
       }
+      return personalizedEvent;
     });
-    return allPokemon;
+    return personalizedEvents;
   }
 
   /**
-   * Determine which player's pokemon has fainted
+   * Returns a summary of the turn for both players, with events personalized
+   * to each player's perspective. Also clears the internal event list.
+   *
+   * @returns A mapping of player IDs to their respective personalized Events in an array.
    */
-  public getFaintedPlayer(): number {
-    const {player1, player2} = this.getTurnContext();
-
-    if (BattleUtils.pokemonIsDefeated(player1)) return 1;
-    if (BattleUtils.pokemonIsDefeated(player2)) return 2;
-    throw new Error("No player has fainted.");
-  }
-
-  public getPlayerObject(playerNumber: number): Player {
-    const {player1, player2} = this.getTurnContext();
-
-    return playerNumber === 1 ? player1 : player2;
+  public getTurnSummary(): Record<string, Event[]> {
+    const turnSummary: Record<string, Event[]> = {};
+    turnSummary[this.player1ID] = this.personalizeEvents(this.player1ID);
+    turnSummary[this.player2ID] = this.personalizeEvents(this.player2ID);
+    this.events = [];
+    return turnSummary;
   }
 
   /**
-   * Checks if the player's move is invalid.
-   * A move is invalid if the player tries to switch to their currently active Pokémon.
-   * 
-   * @param player The player number (1 or 2).
-   * @param playerMove The move the player wants to make.
-   * @returns True if the move is invalid, false otherwise.
+   * Returns the current Pokemon's moves for the given player.
+   *
+   * @param playerID - The ID of the player.
+   * @returns An array of objects, each mapping a move name to its PP.
    */
-  public isInvalidMove(player: number, playerMove: PlayerMove): boolean {
-    const {player1, player2} = this.getTurnContext();
-
-    const currentPlayer: Player = player === 1 ? player1 : player2;
-
-    if (playerMove.action === 'switch') {
-      return playerMove.index === currentPlayer.getCurrentPokemonIndex();
+  private getPlayerMoveOptions(playerID: string): Record<string, number>[] {
+    const { player } = this.getPlayerAndMoveByID(playerID);
+    const currentPokemon = player.getCurrentPokemon();
+    const playerMoves: Record<string, number>[] = [];
+    for (const move of currentPokemon.getMoves()) {
+      playerMoves.push({ [move.getName()]: move.getPP() });
     }
-
-    if (playerMove.action === 'attack') {
-      const move = currentPlayer.getCurrentPokemon().getMove(playerMove.index);
-      return move.getPP() === 0;
-    }
-
-    return false;
+    return playerMoves;
   }
 
   /**
-   * Check the user inputs a valid action
-   * 
-   * @param action The action selected by the user.
+   * Returns the team of Pokémon for the given player.
+   *
+   * @param playerID - The ID of the player.
+   * @returns An array of PlayerPokemon objects with basic info.
    */
-  public isInvalidAction(action: string): boolean {
-    return !(action === 'attack' || action === 'switch')
+  private getPlayerPokemonOptions(playerID: string): PlayerPokemon[] {
+    const { player } = this.getPlayerAndMoveByID(playerID);
+    const playerTeam: PlayerPokemon[] = [];
+    for (const pokemon of player.getTeam()) {
+      const playerPokemon: PlayerPokemon = {
+        name: pokemon.getName(),
+        hp: pokemon.getHp(),
+        sprite: pokemon.getFrontSprite(),
+      };
+      playerTeam.push(playerPokemon);
+    }
+    return playerTeam;
   }
 
-  /**
-   * Check the pokemons the user has selected are valid
-   * 
-   * @param team A list of pokemons in a player's team
-   * @param allPokemon A list of all pokemons in the game
-   */
-  public isInvalidPokemon(team: string[], allPokemon: string): boolean {
-    // convert allPokemon into an array of pokemon names
-    const allPokemonArray = allPokemon.split(/\s+/).map(name => name.trim());
-
-    for (let pokemon of team) {
-      if (!allPokemonArray.includes(pokemon)) {
-        return true
-      }
-    }
-    return false
+  public getSwitchOptions(playerID: string): PlayerPokemon[] {
+    return this.getPlayerPokemonOptions(playerID);
   }
 
-  /**
-   * Check the given action argument is valid.
-   * For attack - make sure the argument is within indexes 1-4
-   * For switch - make sure the argument is valid for the team size
-   * 
-   * @param action The action selected by the user
-   * @param argument The index for the action the user want to perform
-   * @param team A list of pokemons in a player's team
-   */
-  public isInvalidIndex(action: string, argument: number, team: string[], ): boolean {
-    if (action === 'attack') {
-      return !(argument >= 1 && argument <= 4)
-    } else {
-      const teamLength = team.length
-      return !(argument >= 1 && argument <= teamLength)
-    }
+  public buildPlayerNextOptions(playerID: string): NextOptions {
+    const nextOptions: NextOptions = {
+      moves: this.getPlayerMoveOptions(playerID),
+      pokemon: this.getPlayerPokemonOptions(playerID),
+    };
+
+    return nextOptions;
+  }
+
+  public getNextOptions(): Record<string, NextOptions> {
+    const nextOptions: Record<string, NextOptions> = {};
+    nextOptions[this.player1ID] = this.buildPlayerNextOptions(this.player1ID);
+    nextOptions[this.player2ID] = this.buildPlayerNextOptions(this.player2ID);
+    return nextOptions;
+  }
+
+  public async addBotPlayer(): Promise<void> {
+    this.botPlayer = new BotPlayer();
+    await this.botPlayer.generateRandomTeam();
+    await this.setPlayer(this.botPlayer.getID(), this.botPlayer.getName(), this.botPlayer.getTeam());
+  }
+
+  public addBotAttackMove() {
+    const moveIndex: number = this.botPlayer.selectAttackMove();
+    this.addMove(this.botPlayer.getID(), {
+      action: "attack",
+      index: moveIndex,
+    });
+  }
+
+  public addBotSwitchMove() {
+    const switchIndex: number = this.botPlayer.selectSwitchMove();
+    this.addMove(this.botPlayer.getID(), {
+      action: "switch",
+      index: switchIndex,
+    });
+  }
+
+  public isBotPlayer(playerID: string): boolean {
+    return playerID === this.botPlayer.getID();
   }
 }
+
+const genericTeam = {
+  venusaur: ["solar-beam", "sludge-bomb", "sleep-powder", "earthquake"],
+  charizard: ["flamethrower", "air-slash", "dragon-claw", "earthquake"],
+};

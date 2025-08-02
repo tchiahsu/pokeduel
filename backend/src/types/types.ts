@@ -24,3 +24,6 @@ export type MoveType = {
   effect: string;
   effectChance: number;
 };
+
+// Represents the type for player's selection
+export type TeamSelection = Record<string, string[]>;
