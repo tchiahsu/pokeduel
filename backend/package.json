@@ -5,8 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "npx tsc && node dist/GameEngine.js",
-    "endpointDev": "npx tsc && nodemon dist/server.js"
+    "dev": "npx tsc && nodemon dist/server.js"
   },
   "repository": {
     "type": "git",
