@@ -8,7 +8,7 @@ export default function Home() {
             
             <img
                 src={homeBg}
-                className="absolute inset-0 w-full h-full object-cover opacity-50"
+                className="absolute inset-0 w-full h-full object-cover opacity-50 pointer-events-none"
             />
 
             <div className="relative gap-5">

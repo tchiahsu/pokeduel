@@ -82,7 +82,7 @@ export default function Selection({ list }: Props) {
             />
             {/* Team Selection Title */}
             <div className="relative flex justify-between items-start max-h-[15vh] pr-2">
-                <h3 className="text-3xl pokemon-h3 m-10 text-left">
+                <h3 className="text-3xl pokemon-h3 m-10  text-left">
                     Team Selection:
                 </h3>
                 <Link to='/multiplayer' className='m-8'>
