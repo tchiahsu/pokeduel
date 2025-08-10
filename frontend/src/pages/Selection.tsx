@@ -17,7 +17,7 @@ const API_URL_BASE = 'http://localhost:8000';
 // function to fetch a single pokemon name and sprite
 const fetchPokemonData = async (name: string): Promise<Pokemon | null> => {
     try {
-        const res = await fetch(`${API_URL_BASE}/get-pokemon-data/${name}`);
+        const res = await fetch(`${API_URL_BASE}/pokemon/${name}/stats`);
         const data = await res.json();
 
         if (!data || Object.keys(data).length === 0) {
