@@ -194,21 +194,20 @@ export default class BattleModel {
   /**
    * Handles an attack from a pokemon.
    *
-   * @param attackingPlayer The attack player.
-   * @param attackIndex The index of the move the player wants to use.
+   * @param playerID the playerID of the attacking player.
    * @returns void
    */
   private processAttack(playerID: string): void {
     const { player: player1, playerMove: p1Move } = this.getPlayerAndMoveByID(this.player1ID);
     const { player: player2, playerMove: p2Move } = this.getPlayerAndMoveByID(this.player2ID);
     const attackingPlayer = this.players[playerID];
-    const { playerMove } = this.getPlayerAndMoveByID(this.player1ID);
+    const { playerMove } = this.getPlayerAndMoveByID(playerID);
 
     // Determine which player is attacking and defending
     const defendingPlayer: Player = attackingPlayer === player1 ? player2 : player1;
     const attackingPokemon: Pokemon = attackingPlayer.getCurrentPokemon();
     const defendingPokemon: Pokemon = defendingPlayer.getCurrentPokemon();
-    const move = attackingPokemon.getMove(playerMove.index);
+    const move = attackingPokemon.getMove(playerMove.index); 
 
     // Check whether the attacking pokemon is able to move this turn
     // Add the message associated to the effect that is applied

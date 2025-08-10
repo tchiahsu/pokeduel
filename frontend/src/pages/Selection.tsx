@@ -17,7 +17,7 @@ const API_URL_BASE = 'http://localhost:8000';
 // function to fetch a single pokemon name and sprite
 const fetchPokemonData = async (name: string): Promise<Pokemon | null> => {
     try {
-        const res = await fetch(`${API_URL_BASE}/get-pokemon-data/${name}`);
+        const res = await fetch(`${API_URL_BASE}/pokemon/${name}/stats`);
         const data = await res.json();
 
         if (!data || Object.keys(data).length === 0) {
@@ -82,7 +82,7 @@ export default function Selection({ list }: Props) {
             />
             {/* Team Selection Title */}
             <div className="relative flex justify-between items-start max-h-[15vh] pr-2">
-                <h3 className="text-3xl pokemon-h3 m-10 text-left">
+                <h3 className="text-3xl pokemon-h3 m-10  text-left">
                     Team Selection:
                 </h3>
                 <Link to='/multiplayer' className='m-8'>

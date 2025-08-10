@@ -3,6 +3,7 @@ import { HashRouter, Routes, Route } from 'react-router-dom';
 import { useState, useEffect } from 'react'
 import Home from './pages/Home';
 import Multiplayer from './pages/Multiplayer';
+import SinglePlayer from './pages/SinglePlayer';
 import Selection from './pages/Selection';
 import Battle from './pages/Battle';
 import './App.css'
@@ -21,7 +22,7 @@ function App() {
   useEffect(() => {
       async function fetchPokemon() {
           try {
-              const res = await fetch(`${API_URL_BASE}/get-default-pokemon`);
+              const res = await fetch(`${API_URL_BASE}/pokemon/default`);
               const data = await res.json();
               setPokemonList(data);
           } catch (e) {
@@ -39,6 +40,7 @@ function App() {
           <Route path="/multiplayer" element={<Multiplayer />} />
           <Route path="/team-selection" element={<Selection list={pokemonList}/>} />
           <Route path="/battle" element={<Battle />} />
+          <Route path="/single-player" element={<SinglePlayer />} />
         </Routes>
       </div>
     </HashRouter>

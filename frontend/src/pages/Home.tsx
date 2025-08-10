@@ -3,12 +3,15 @@ import homeBg from '../assets/bg-forrest.jpg';
 import Button from '../components/Button';
 
 export default function Home() {
+
+
+
     return (
         <div className="relative min-h-screen min-w-screen flex flex-col items-center justify-center">
             
             <img
                 src={homeBg}
-                className="absolute inset-0 w-full h-full object-cover opacity-50"
+                className="absolute inset-0 w-full h-full object-cover opacity-50 pointer-events-none"
             />
 
             <div className="relative gap-5">
@@ -17,7 +20,7 @@ export default function Home() {
                 </h1>
                 <p className='m-3'>Battle Friends, Become a Champion</p>
                 <div>
-                    <Link to='/multiplayer' className='m-4'>
+                    <Link to='/single-player' className='m-4'>
                         <Button>Solo Battle</Button>
                     </Link>
                     <Link to='/multiplayer' className='m-4'>
