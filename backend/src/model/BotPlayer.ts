@@ -2,7 +2,7 @@ import PokemonApiFetcher from "./PokemonApiFetcher.js";
 import { TeamSelection } from "../types/types.js";
 
 /**
- * A class representing a bot Pokémon trainer that can randomly generate a team
+ * A class representing a bot Pokemon trainer that can randomly generate a team
  * and make automated decisions during a battle.
  */
 export default class BotPlayer {
@@ -10,20 +10,30 @@ export default class BotPlayer {
   private ID: string = "BOT_PLAYER_ID";
   private NAME: string = "BOT_PLAYER";
 
-  // The range of pokemon the bot can have
+  // The range of Pokemon the bot can have
   private MIN_TEAM_AMOUNT = 4;
   private MAX_TEAM_AMOUNT = 6;
 
-  // The range of pokemon from the entire list of pokemon the bot can use
+  // The range of Pokemon from the entire list of Pokemon the bot can use
   private MIN_POKEMON_SEARCH_RANGE = 1;
   private MAX_POKEMON_SEARCH_RANGE = 1025;
 
   // The bot's team selection
   private team: TeamSelection = {};
-  // Maps the current pokemon to the number of moves they have
+  // Maps the current Pokemon to the number of moves they have
   private pokemonToNumMoves: Record<number, number> = {};
-  // The current pokemon of the bot (used for switching)
+  // The current Pokemon of the bot (used for switching)
   private currentPokemonIndex = 0;
+
+  // Generic team used as a fallback in case the creation of a team fails.
+  private genericTeam = {
+    pikachu: ["volt-tackle", "iron-tail", "quick-attack", "thunderbolt"],
+    charizard: ["flare-blitz", "air-slash", "blast-burn", "dragon-pulse"],
+    venusaur: ["sludge-bomb", "giga-drain", "sleep-powder", "frenzy-plant"],
+    blastoise: ["focus-blast", "hydro-cannon", "blizzard", "flash-cannon"],
+    lapras: ["blizzard", "brine", "psychic", "body-slam"],
+    snorlax: ["shadow-ball", "crunch", "blizzard", "giga-impact"],
+  };
 
   /**
    * Returns the bot's ID.
@@ -58,21 +68,25 @@ export default class BotPlayer {
    * @returns A void promise.
    */
   public async generateRandomTeam(): Promise<void> {
-    const teamSelection: TeamSelection = {};
-    const teamAmount: number = Math.floor(
-      Math.random() * (this.MAX_TEAM_AMOUNT - this.MIN_TEAM_AMOUNT + 1) + this.MIN_TEAM_AMOUNT
-    );
+    try {
+      const teamSelection: TeamSelection = {};
+      const teamAmount: number = Math.floor(
+        Math.random() * (this.MAX_TEAM_AMOUNT - this.MIN_TEAM_AMOUNT + 1) + this.MIN_TEAM_AMOUNT
+      );
 
-    for (let i = 0; i < teamAmount; i++) {
-      const pokemonIndex = this.generateRandomPokemonIndex();
-      const pokemonName: string = await PokemonApiFetcher.getPokemonNameByIndex(pokemonIndex);
-      const pokemonMoves = await PokemonApiFetcher.getPokemonMoves(pokemonName);
-      const moveSelection = this.generateRandomMoves(pokemonMoves);
-      this.pokemonToNumMoves[i] = moveSelection.length;
-      teamSelection[pokemonName] = moveSelection;
+      for (let i = 0; i < teamAmount; i++) {
+        const pokemonIndex = this.generateRandomPokemonIndex();
+        const pokemonName: string = await PokemonApiFetcher.getPokemonNameByIndex(pokemonIndex);
+        const pokemonMoves = await PokemonApiFetcher.getPokemonMoves(pokemonName);
+        const moveSelection = this.generateRandomMoves(pokemonMoves);
+        this.pokemonToNumMoves[i] = moveSelection.length;
+        teamSelection[pokemonName] = moveSelection;
+      }
+
+      this.team = teamSelection;
+    } catch (error) {
+      this.team = this.genericTeam;
     }
-
-    this.team = teamSelection;
   }
 
   /**
@@ -90,7 +104,7 @@ export default class BotPlayer {
   /**
    * Randomly selects up to 4 unique moves from the provided list of possible moves.
    *
-   * @param pokemonMoves The full list of possible moves for a Pokémon.
+   * @param pokemonMoves The full list of possible moves for a Pokemon.
    * @returns An array of 1–4 randomly selected move names.
    */
   private generateRandomMoves(pokemonMoves: string[]): string[] {
@@ -119,7 +133,7 @@ export default class BotPlayer {
   }
 
   /**
-   * Selects the next Pokémon to switch to. Increments the internal index.
+   * Selects the next Pokemon to switch to. Increments the internal index.
    *
    * @returns The index of the next Pokemon in the team.
    */
