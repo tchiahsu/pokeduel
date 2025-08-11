@@ -6,24 +6,35 @@ import StatusManager from "./StatusManager.js";
 import BotPlayer from "./BotPlayer.js";
 
 /**
- * An type representing a player's move.
+ * A type representing a player's move.
  */
 type PlayerMove = {
   action: string;
   index: number;
 };
 
+/**
+ * A type representing the set of possible actions a player can take on their next turn.
+ */
 type NextOptions = {
   moves: Record<string, number>[];
   pokemon: PlayerPokemon[];
 };
 
+/**
+ * A type representing the basic information of a Pokemon available to a player.
+ * Used for displaying switch options in NextOptions.
+ */
 type PlayerPokemon = {
   name: string;
   hp: number;
   sprite: string;
 };
 
+/**
+ * A type representing an event in the battle (attack, switch, faint, or status effect).
+ * Used to animate battle actions and display messages to the players.
+ */
 type Event = {
   user: string; // "self" | "opponent"
   animation: string; // "attack" | "switch" | "status" | "faint" | "none"
@@ -34,13 +45,17 @@ type Event = {
   pokemon?: Pokemon;
 };
 
+/**
+ * A type representing an effect that triggers at the end of a turn.
+ */
 type EndTurnEffect = {
   player: string;
   effect: () => string | null;
 };
 
 /**
- * A class representing the core logic of the pokemon battle system.
+ * A class representing the core logic of the Pokemon battle system.
+ * Handles player setup, move registration, turn resolution state, and battle events.
  */
 export default class BattleModel {
   // The IDs of the players (their socket IDs)
@@ -50,32 +65,62 @@ export default class BattleModel {
   private players: Record<string, Player> = {};
   // Maps the IDs of the players to their moves
   private moves: Record<string, PlayerMove> = {};
+  // Effects that should trigger at the end of a turn
   private endTurnEffects: EndTurnEffect[] = [];
+  // Indicates whether the battle has concluded
   private gameOver: boolean = false;
+  // A log of events that occurred during a turn
   private events: Event[] = [];
+  // Utility functions and helpers for battle mechanics
   private battleUtils: BattleUtils = new BattleUtils();
+  // List of player IDs whose active Pokemon have fainted this turn
   private faintedPlayers: string[] = [];
+  // Reference to the bot player instance (used if playing against AI)
   private botPlayer: BotPlayer;
 
+  /** Returns the ID of player 1.
+   *
+   * @returns The ID of player 1.
+   */
   public getPlayer1ID() {
     return this.player1ID;
   }
 
+  /** Returns the ID of player 2.
+   *
+   * @returns The ID of player 2.
+   */
   public getPlayer2ID() {
     return this.player2ID;
   }
 
-  public getOppositePlayer(playerID: string) {
+  /**
+   * Returns the ID of the opponent of the given player.
+   *
+   * @param playerID The socket ID of the current player.
+   * @returns The opponent's ID.
+   */
+  public getOppositePlayer(playerID: string): string {
     const oppositePlayer: string = playerID === this.player1ID ? this.player2ID : this.player1ID;
     return oppositePlayer;
   }
 
+  /**
+   * Adds a player to the battle and creates their team from their team selection.
+   *
+   * @param playerID The ID of the player.
+   * @param name The name of the player.
+   * @param teamSelection The player's team selection where the keys are the names of the selected Pokemon
+   *                      and the values are that selected Pokemon's moves.
+   */
   public async setPlayer(playerID: string, name: string, teamSelection: Record<string, string[]>): Promise<void> {
+    // Create a new player if they haven't already been added
     if (!(playerID in this.players)) {
       const pokemonTeam: Pokemon[] = await PokemonFactory.createTeam(teamSelection);
       this.players[playerID] = new Player(name, pokemonTeam);
     }
 
+    // Assign them as player 1 if they're the first to join, otherwise player 2
     if (Object.keys(this.players).length === 1) {
       this.player1ID = playerID;
     } else {
@@ -83,18 +128,40 @@ export default class BattleModel {
     }
   }
 
-  public hasTwoPlayers() {
+  /** Returns a boolean indicating if two players have joined the battle.
+   *
+   * @returns true if two players have been added to the battle, false otherwise.
+   */
+  public hasTwoPlayers(): boolean {
     return Object.keys(this.players).length === 2;
   }
 
+  /**
+   * Records the move chosen by a player for the current turn by adding it to
+   * the moves object.
+   *
+   * @param playerID The ID of the player submitting the move.
+   * @param playerMove The move the player chooses to perform.
+   */
   public addMove(playerID: string, playerMove: PlayerMove): void {
     this.moves[playerID] = playerMove;
   }
 
+  /**
+   * Returns a boolean indicating whether both players have submitted their moves
+   * for the turn.
+   *
+   * @returns true if both players have submitted a move, false otherwise.
+   */
   public isReadyToHandleTurn(): boolean {
     return Object.keys(this.moves).length === 2;
   }
 
+  /**
+   * Returns the Player instance and chosen move for a given player ID.
+   *
+   * @param playerID The ID of the player.
+   */
   public getPlayerAndMoveByID(playerID: string) {
     return { player: this.players[playerID], playerMove: this.moves[playerID] };
   }
@@ -103,8 +170,8 @@ export default class BattleModel {
    * Handle's the actions for the players.
    */
   public handleTurn(): void {
-    const { player: player1, playerMove: p1Move } = this.getPlayerAndMoveByID(this.player1ID);
-    const { player: player2, playerMove: p2Move } = this.getPlayerAndMoveByID(this.player2ID);
+    const { playerMove: p1Move } = this.getPlayerAndMoveByID(this.player1ID);
+    const { playerMove: p2Move } = this.getPlayerAndMoveByID(this.player2ID);
 
     if (p1Move.action === "attack" && p2Move.action === "attack") {
       this.handleAttack();
@@ -141,6 +208,10 @@ export default class BattleModel {
     this.moves = {};
   }
 
+  /**
+   * Handles a turn where exactly one player has chosen to switch Pokemon, while
+   * the other attacks.
+   */
   public handleSingleSwitch() {
     const { playerMove: p1Move } = this.getPlayerAndMoveByID(this.player1ID);
 
@@ -159,8 +230,8 @@ export default class BattleModel {
    * @returns void
    */
   private handleAttack(): void {
-    const { player: player1, playerMove: p1Move } = this.getPlayerAndMoveByID(this.player1ID);
-    const { player: player2, playerMove: p2Move } = this.getPlayerAndMoveByID(this.player2ID);
+    const { player: player1 } = this.getPlayerAndMoveByID(this.player1ID);
+    const { player: player2 } = this.getPlayerAndMoveByID(this.player2ID);
 
     // Determine the order of attack
     const fasterPlayer: Player = this.battleUtils.getFasterPlayer(player1, player2);
@@ -194,12 +265,12 @@ export default class BattleModel {
   /**
    * Handles an attack from a pokemon.
    *
-   * @param playerID the playerID of the attacking player.
+   * @param playerID The playerID of the attacking player.
    * @returns void
    */
   private processAttack(playerID: string): void {
-    const { player: player1, playerMove: p1Move } = this.getPlayerAndMoveByID(this.player1ID);
-    const { player: player2, playerMove: p2Move } = this.getPlayerAndMoveByID(this.player2ID);
+    const { player: player1 } = this.getPlayerAndMoveByID(this.player1ID);
+    const { player: player2 } = this.getPlayerAndMoveByID(this.player2ID);
     const attackingPlayer = this.players[playerID];
     const { playerMove } = this.getPlayerAndMoveByID(playerID);
 
@@ -207,7 +278,7 @@ export default class BattleModel {
     const defendingPlayer: Player = attackingPlayer === player1 ? player2 : player1;
     const attackingPokemon: Pokemon = attackingPlayer.getCurrentPokemon();
     const defendingPokemon: Pokemon = defendingPlayer.getCurrentPokemon();
-    const move = attackingPokemon.getMove(playerMove.index); 
+    const move = attackingPokemon.getMove(playerMove.index);
 
     // Check whether the attacking pokemon is able to move this turn
     // Add the message associated to the effect that is applied
@@ -252,18 +323,37 @@ export default class BattleModel {
     // if (effectMessage) this.messages.push(effectMessage); ///////////////
   }
 
+  /**
+   * Returns a boolean indicating if a player has fainted in the current turn.
+   *
+   * @returns true if there is at least one fainted player, false otherwise.
+   */
   public hasFaintedPlayers(): boolean {
     return this.faintedPlayers.length != 0;
   }
 
+  /**
+   * Returns the list of player IDs whose Pokemon have fainted in the current turn.
+   *
+   * @returns The list of player IDs whose Pokemon have fainted in the current turn.
+   */
   public getFaintedPlayers(): string[] {
     return this.faintedPlayers;
   }
 
+  /**
+   * Returns a boolean indicating if all the fainted players have submitted their Pokemon
+   * switch choice.
+   *
+   * @returns true if all of the fainted players have submitted a switch choice, false otherwise.
+   */
   public isReadyToHandleFaintedSwitch(): boolean {
     return this.faintedPlayers.length === Object.keys(this.moves).length;
   }
 
+  /**
+   * Handles switching in new Pokemon for players whose current Pokemon have fainted.
+   */
   public handleFaintedSwitch(): void {
     const [faintedPlayer1, faintedPlayer2] = this.faintedPlayers;
     if (faintedPlayer1 && faintedPlayer2) {
@@ -288,9 +378,9 @@ export default class BattleModel {
    * Creates an event object describing an action taken by a player.
    * The event includes metadata like the Pokemon's image, name, and type.
    *
-   * @param currentPlayer - The ID of the player taking the action.
-   * @param action - The type of action (e.g., "attack", "switch", "status").
-   * @param message - The message that displays during the event.
+   * @param currentPlayer The ID of the player taking the action.
+   * @param action The type of action (e.g., "attack", "switch", "status").
+   * @param message The message that displays during the event.
    * @returns An Event object.
    */
   private createEvent(currentPlayer: string, action: string, message: string): Event {
@@ -321,7 +411,7 @@ export default class BattleModel {
    * metadata to be from the perspective of "self" vs "opponent", and updates
    * images and names accordingly for switch events.
    *
-   * @param playerID - The ID of the player viewing the events.
+   * @param playerID The ID of the player viewing the events.
    * @returns A list of personalized Event objects.
    */
   private personalizeEvents(playerID: string): Event[] {
@@ -362,7 +452,7 @@ export default class BattleModel {
   /**
    * Returns the current Pokemon's moves for the given player.
    *
-   * @param playerID - The ID of the player.
+   * @param playerID The ID of the player.
    * @returns An array of objects, each mapping a move name to its PP.
    */
   private getPlayerMoveOptions(playerID: string): Record<string, number>[] {
@@ -378,7 +468,7 @@ export default class BattleModel {
   /**
    * Returns the team of Pokémon for the given player.
    *
-   * @param playerID - The ID of the player.
+   * @param playerID The ID of the player.
    * @returns An array of PlayerPokemon objects with basic info.
    */
   private getPlayerPokemonOptions(playerID: string): PlayerPokemon[] {
@@ -395,10 +485,22 @@ export default class BattleModel {
     return playerTeam;
   }
 
+  /**
+   * Returns the list of Pokemon the given player can switch to.
+   *
+   * @param playerID The ID of the player.
+   * @returns The list of Pokemon the given player can switch to.
+   */
   public getSwitchOptions(playerID: string): PlayerPokemon[] {
     return this.getPlayerPokemonOptions(playerID);
   }
 
+  /**
+   * Builds the set of available moves and Pokemon to switch to for the given player.
+   *
+   * @param playerID The ID of the player.
+   * @returns An object containing the available moves and Pokemon to switch for the given player.
+   */
   public buildPlayerNextOptions(playerID: string): NextOptions {
     const nextOptions: NextOptions = {
       moves: this.getPlayerMoveOptions(playerID),
@@ -408,6 +510,12 @@ export default class BattleModel {
     return nextOptions;
   }
 
+  /**
+   * Builds the set of available moves and Pokemon switches for both players.
+   *
+   * @returns An object mapping the player ID to an object containing the avaiable moves
+   *          and Pokemon that player can switch to.
+   */
   public getNextOptions(): Record<string, NextOptions> {
     const nextOptions: Record<string, NextOptions> = {};
     nextOptions[this.player1ID] = this.buildPlayerNextOptions(this.player1ID);
@@ -415,12 +523,19 @@ export default class BattleModel {
     return nextOptions;
   }
 
+  /**
+   * Adds a bot player to the battle and generates a random team for it.
+   * Used for single-player battles.
+   */
   public async addBotPlayer(): Promise<void> {
     this.botPlayer = new BotPlayer();
     await this.botPlayer.generateRandomTeam();
     await this.setPlayer(this.botPlayer.getID(), this.botPlayer.getName(), this.botPlayer.getTeam());
   }
 
+  /**
+   * Adds an attack move for the bot.
+   */
   public addBotAttackMove() {
     const moveIndex: number = this.botPlayer.selectAttackMove();
     this.addMove(this.botPlayer.getID(), {
@@ -429,6 +544,9 @@ export default class BattleModel {
     });
   }
 
+  /**
+   * Adds a switch move for the bot.
+   */
   public addBotSwitchMove() {
     const switchIndex: number = this.botPlayer.selectSwitchMove();
     this.addMove(this.botPlayer.getID(), {
@@ -437,12 +555,13 @@ export default class BattleModel {
     });
   }
 
+  /**
+   * Returns a boolean indicating whether the given ID belongs to the bot player.
+   *
+   * @param playerID The ID of the player.
+   * @returns true if the ID belongs to the bot, false otherwise.
+   */
   public isBotPlayer(playerID: string): boolean {
     return playerID === this.botPlayer.getID();
   }
 }
-
-const genericTeam = {
-  venusaur: ["solar-beam", "sludge-bomb", "sleep-powder", "earthquake"],
-  charizard: ["flamethrower", "air-slash", "dragon-claw", "earthquake"],
-};
