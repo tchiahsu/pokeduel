@@ -1,6 +1,6 @@
 import Pokemon from "./Pokemon.js";
 import Move from "./Move.js";
-import PokemonApiFetcher from "./PokemonApiFetcher.js";
+import PokemonApiFetcher from "../services/PokemonApiFetcher.js";
 import { PokemonType, MoveType } from "../types/types.js";
 /**
  * Class for creating a team of Pokemon from just their name.
@@ -11,22 +11,14 @@ export default class PokemonFactory {
    * @param teamSelection An object mapping the player's selection of Pokemon to their moves.
    * @returns An Array of Pokemon objects.
    */
-  static async createTeam(
-    teamSelection: Record<string, string[]>
-  ): Promise<Pokemon[]> {
-    const pokemonData = await PokemonApiFetcher.createFullPokemonData(
-      teamSelection
-    );
+  static async createTeam(teamSelection: Record<string, string[]>): Promise<Pokemon[]> {
+    const pokemonData = await PokemonApiFetcher.createFullPokemonData(teamSelection);
     const moveData = await PokemonApiFetcher.createFullMoveData(teamSelection);
 
     const team: Pokemon[] = [];
 
     for (const pokemonName of Object.keys(teamSelection)) {
-      const pokemon: Pokemon = PokemonFactory.createPokemon(
-        pokemonName,
-        pokemonData,
-        moveData
-      );
+      const pokemon: Pokemon = PokemonFactory.createPokemon(pokemonName, pokemonData, moveData);
       team.push(pokemon);
     }
     // let team = pokemonNames.map((pokemonName) => this.createPokemon(pokemonName.toLowerCase()));
@@ -46,9 +38,7 @@ export default class PokemonFactory {
     moveData: Record<string, MoveType>
   ) {
     const data = pokemonData[pokemonName as keyof typeof pokemonData];
-    const moves = data.moves.map((moveName: string) =>
-      PokemonFactory.createMove(moveName, moveData)
-    );
+    const moves = data.moves.map((moveName: string) => PokemonFactory.createMove(moveName, moveData));
     let pokemon = new Pokemon(
       data.name,
       data.types,
