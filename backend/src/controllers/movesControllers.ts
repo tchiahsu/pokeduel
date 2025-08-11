@@ -1,4 +1,4 @@
-import PokemonApiFetcher from "../model/PokemonApiFetcher.js";
+import PokemonApiFetcher from "../services/PokemonApiFetcher.js";
 import { Request, Response } from "express";
 
 // Gets the data for a move

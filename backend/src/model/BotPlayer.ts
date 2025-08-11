@@ -1,4 +1,4 @@
-import PokemonApiFetcher from "./PokemonApiFetcher.js";
+import PokemonApiFetcher from "../services/PokemonApiFetcher.js";
 import { TeamSelection } from "../types/types.js";
 
 /**

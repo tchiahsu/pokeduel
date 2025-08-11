@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import PokemonApiFetcher from "../model/PokemonApiFetcher.js";
+import PokemonApiFetcher from "../services/PokemonApiFetcher.js";
 
 // Gets the default Pokemon
 // GET /pokemon/default
