@@ -82,12 +82,22 @@ export default function Selection({ list }: Props) {
             />
             {/* Team Selection Title */}
             <div className="relative flex justify-between items-start max-h-[15vh] pr-2">
-                <h3 className="text-3xl pokemon-h3 m-10  text-left">
+                <h3 className="text-3xl pokemon-h3 m-10  text-left select-none">
                     Team Selection:
                 </h3>
-                <Link to='/multiplayer' className='m-8'>
-                    <Button>Back</Button>
-                </Link>
+                <div className='flex mt-8 ml-8 mr-5 gap-3'>
+                    <Link to='/multiplayer'>
+                        <Button>Back</Button>
+                    </Link>
+                    <Link to='/battle'>
+                        <button 
+                        className={`bg-amber-200 text-red-500 border-2 rounded-lg py-2 px-4 cursor-pointer 
+                                    hover:bg-red-300 hover:text-yellow-300`}>
+                            Go
+                        </button>
+                    </Link>
+                </div>
+
             </div>
 
             {/* Pokemon Selection Screen */}           
