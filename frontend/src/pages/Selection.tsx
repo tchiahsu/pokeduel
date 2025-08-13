@@ -132,7 +132,7 @@ export default function Selection({ list }: Props) {
                                         setShowPokedex(true);
                                         setCurrPokemon(poke);
                                 }}>
-                                    <img src={poke.sprite} alt={poke.name} className="w-36 h-36" />
+                                    <img src={poke.sprite} alt={poke.name} className="w-36 h-36 pointer-events-none" />
                                     <span className="text-xs mt-1 capitalize">{poke.name}</span>
                                 </div>
                             ))}

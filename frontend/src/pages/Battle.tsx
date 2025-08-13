@@ -17,7 +17,7 @@ export default function Battle() {
             {/* Background Image */}
             <img
                 src={battleBg}
-                className="absolute inset-0 opacity-50 w-full h-full object-cover pointer-events-none"
+                className="absolute inset-0 w-full h-full object-cover pointer-events-none"
                 alt="Battle Background"
             />
             {/* Oppenent stats card */}
