@@ -91,9 +91,9 @@ export default function Selection({ list }: Props) {
                     </Link>
                     <Link to='/battle'>
                         <button 
-                        className={`bg-amber-200 text-red-500 border-2 rounded-lg py-2 px-4 cursor-pointer 
-                                    hover:bg-red-300 hover:text-yellow-300`}>
-                            Go
+                        className={`bg-amber-100 text-yellow-400 border-2 rounded-lg py-2 px-4 cursor-pointer 
+                                    hover:bg-yellow-400 hover:text-yellow-100`}>
+                            Start Game
                         </button>
                     </Link>
                 </div>
