@@ -7,7 +7,7 @@ export type Pokemon = {
 
 export const searchPokeStats = async (name: string) => {
     try {
-        const res = await fetch(`${API_URL_BASE}/get-pokemon-data/${name}`);
+        const res = await fetch(`${API_URL_BASE}/pokemon/${name}/stats`);
         const data = await res.json();
         return data;
     } catch (e) {
@@ -17,7 +17,7 @@ export const searchPokeStats = async (name: string) => {
 
 export const searchPokeMoves = async (name: string) => {
     try {
-        const res = await fetch(`${API_URL_BASE}/get-pokemon-moves/${name}`);
+        const res = await fetch(`${API_URL_BASE}/pokemon/${name}/moves`);
         const data = await res.json();
         return data;
     } catch (e) {
