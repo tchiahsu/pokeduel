@@ -1,5 +1,3 @@
-import movesData from "./moves.json" with {"type": "json"};
-
 /**
  * Creates a Move with the passed in stats.
  */
