@@ -92,7 +92,7 @@ export default function Multiplayer() {
                 alt="background"
             />
 
-            <div className="relative gap-5 flex flex-col gap-5 items-center">
+            <div className="relative gap-5 flex flex-col gap-5 items-center select-none">
                 <h3 className="text-3xl pokemon-h3 m-5 text-center">Multiplayer</h3>
                 <h1 className="text-8xl pb-6 tracking-[-8px] pokemon-h1">PokeDuel</h1>
             </div>
@@ -119,7 +119,7 @@ export default function Multiplayer() {
 
                     {mode === 'create' && (
                         <div className="flex flex-col items-center gap-1 pb-5">
-                            <p className='text-gray-700 p-7'>Share the code to battle your friends!</p>
+                            <p className='text-gray-700 p-7 select-none'>Share the code to battle your friends!</p>
                             <div className="flex items-center gap-2">
                                 <span className="bg-gray-200 border-2 border-gray-400 rounded-lg py-2 px-20 text-gray-700">{roomId}</span>
                                 <button onClick={copy} className="border-2 border-blue-600 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:border-blue">Copy</button>

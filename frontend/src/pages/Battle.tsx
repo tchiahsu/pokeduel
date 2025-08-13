@@ -20,8 +20,8 @@ export default function Battle() {
                 className="absolute inset-0 opacity-50 w-full h-full object-cover pointer-events-none"
                 alt="Battle Background"
             />
-
-            <div className="absolute top-6 left-6 z-10">
+            {/* Oppenent stats card */}
+            <div className="absolute top-6 left-6 z-10 select-none pointer-events-none">
                 <StatsCard 
                     name="Gardevoir" 
                     image="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/282.png"
@@ -29,8 +29,8 @@ export default function Battle() {
                     maxHp={140}
                 />
             </div>
-
-            <div className="absolute bottom-6 right-6 z-10">
+            {/* Player stats card */}
+            <div className="absolute bottom-6 right-6 z-10 select-none pointer-events-none">
                 <StatsCard 
                     name="Sceptile" 
                     image="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/254.png"
@@ -63,7 +63,7 @@ export default function Battle() {
                     <div className='basis-2/5'></div>
                     <div className='relative basis-3/5 flex justify-baseline'>
                         <img 
-                            className="absolute bottom-0 w-200 h-200 overflow-hidden"
+                            className="absolute bottom-0 w-200 h-200 overflow-hidden select-none pointer-events-none"
                             src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/4.png" 
                             alt="Charmender" />
                     </div>
@@ -73,7 +73,7 @@ export default function Battle() {
             <div className='basis-2/5 flex flex-col'>
                 <div className='relative basis-5/9 flex justify-center-safe'>
                     <img 
-                        className='absolute bottom-10 w-100 h-100'
+                        className='absolute bottom-10 w-100 h-100 select-none pointer-events-none'
                         src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/282.png" 
                         alt="Gardevoir" />
                 </div>
