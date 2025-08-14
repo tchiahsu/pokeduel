@@ -4,7 +4,7 @@ import battleBg from '../assets/bg-battle.jpg';
 import StatsCard from '../components/StatsCard';
 import BattleActionsPanel from '../components/BattleActionsPanel';
 import BattleDisplayPanel from '../components/BattleDisplayPanel';
-import PokeBar from '../components/PokeBar';
+import ActivePokeCount from '../components/ActivePokeCount';
 
 interface Move {
   name: string;
@@ -42,7 +42,7 @@ export default function Battle() {
 
             {/* Opponent PokeBalls Bar */}
             <div className="absolute top-56 left-6 z-10">
-                <PokeBar team={team} />
+                <ActivePokeCount team={team} />
             </div>
             {/* Oppenent stats card */}
             <div className="absolute top-6 left-6 z-10 select-none pointer-events-none">
@@ -56,7 +56,7 @@ export default function Battle() {
 
             {/* Player PokeBalls Bar */}
             <div className="absolute bottom-56 right-6 z-10">
-                <PokeBar team={team} />
+                <ActivePokeCount team={team} />
             </div>
             {/* Player stats card */}
             <div className="absolute bottom-6 right-6 z-10 select-none pointer-events-none">

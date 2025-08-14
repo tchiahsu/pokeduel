@@ -8,11 +8,11 @@ interface Pokemon {
   maxHp: number;
 }
 
-interface PokeBarProps {
+interface ActivePokeProps {
   team: Pokemon[];
 }
 
-const PokeBar: React.FC<PokeBarProps> = ({ team }) => {
+const ActivePokeCount: React.FC<ActivePokeProps> = ({ team }) => {
   return (
     <div className="flex gap-2 p-2">
       {team.map((poke, index) => {
@@ -32,4 +32,4 @@ const PokeBar: React.FC<PokeBarProps> = ({ team }) => {
   );
 };
 
-export default PokeBar;
+export default ActivePokeCount;
