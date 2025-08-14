@@ -103,7 +103,7 @@ const Pokedex = ({ pokemon, close }: PokedexProps) => {
                 
                 {pokeMoves ? (
                     pokeMoves.length > 0 ? (
-                        <div className="flex flex-wrap gap-2 cursor-pointer overflow-y-auto max-h-[20vh] text-xs">
+                        <div className="flex flex-wrap gap-2 cursor-pointer overflow-y-auto max-h-[30vh] text-xs">
                             {pokeMoves.map((move) => (
                                 <PokeMove move={move} />
                             ))}

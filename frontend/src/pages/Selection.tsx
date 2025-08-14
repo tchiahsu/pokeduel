@@ -118,16 +118,18 @@ export default function Selection({ list }: Props) {
                     {/* Pokemon selection table */}
                     <div className="flex flex-1 overflow-hidden">
                         {/* Table of Pokemon */}
-                        <div className={clsx("grid gap-6 p-4 relative flex-1 overflow-y-auto scrollbar-hide", showPokedex && "grid-cols-4", !showPokedex && "grid-cols-6")}>
+                        <div className={clsx("grid gap-6 p-4 relative flex-1 overflow-y-auto scrollbar-hide",
+                                             "item-start justify-items-center auto-rows-min", 
+                                             showPokedex? "grid-cols-5" : "grid-cols-7")}>
                             {error && (
-                                <div className="text-red-600 col-span-6">
+                                <div className="text-red-600 col-span-7">
                                     <p>{error}</p>
                                 </div>
                             )}
                             
                             {displayList.map((poke, index) => (
                                 <div
-                                    className="relative flex flex-col items-center rounded-lg hover:bg-gray-200 hover:scale-105 transition-all p-2 cursor-pointer"
+                                    className="relative flex flex-col items-center rounded-lg hover:bg-gray-200 hover:scale-105 transition-all py-6 px-8 cursor-pointer"
                                     key={index}
                                     onClick={() => {
                                         setShowPokedex(true);
