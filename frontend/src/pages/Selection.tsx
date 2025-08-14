@@ -110,7 +110,7 @@ export default function Selection({ list }: Props) {
                 {/* Right Panel */}
                 <div className="flex flex-col flex-12 relative bg-gray-300 mr-6 ml-2 mb-6 rounded-lg opacity-80 min-h-[80vh]">
                     {/* Search Pokemon Bar */}
-                    <div className='flex sticky top-0 bg-gray-300 z-10 p-4 gap-2'>
+                    <div className='flex sticky top-0 bg-gray-300 z-10 p-4 gap-2 rounded-lg'>
                         <SearchBar value = {searchTerm} onChange={setSearchTerm}></SearchBar>
                         <Button onClick={handleSearch}>Search</Button>
                     </div>

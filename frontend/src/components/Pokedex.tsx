@@ -45,7 +45,7 @@ const Pokedex = ({ pokemon, close }: PokedexProps) => {
     const PokeStat = ({ category, value }) => (
         <div className="flex text-xs justify-between items-center py-1 border-b border-gray-100 last:border-b-0">
             <span className="font-medium text-gray-700">{category}:</span>
-            <span className="text-blue-950 font-semibold">{value || "-"}</span>
+            <span className="text-blue-950 font-semibold">{value || "NOT WORKING"}</span>
         </div>
     );
 
@@ -74,14 +74,14 @@ const Pokedex = ({ pokemon, close }: PokedexProps) => {
     }
 
     return (
-        <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="relative w-full bg-white rounded-xl shadow-lg overflow-hidden">
             {/* Pokemon Name and Stats */}
             <div className="p-4 border-b border-gray-200">
                 {pokeData ? (
                     <div className="space-y-3 relative">
                         <h2 className="text-md font-bold text-blue-950 text-center capitalize">{pokemon?.name}</h2>
-                        <div className="bg-gray-50 rounded-lg pl-4 pr-4 space-y-1">
-                            <PokeStat category="Type" value={pokeData.type} />
+                        <div className="bg-gray-50 rounded-lg pl-4 pr-4 space-y-1 capitalize">
+                            <PokeStat category="Type" value={Array.isArray(pokeData.types) ? pokeData.types.join(" & ") : pokeData.types} />
                             <PokeStat category="HP" value={pokeData.hp} />
                             <PokeStat category="Attack" value={pokeData.attack} />
                             <PokeStat category="Defense" value={pokeData.defense} />
@@ -103,7 +103,7 @@ const Pokedex = ({ pokemon, close }: PokedexProps) => {
                 
                 {pokeMoves ? (
                     pokeMoves.length > 0 ? (
-                        <div className="flex flex-wrap gap-2 cursor-pointer overflow-y-auto max-h-[15vh] text-xs">
+                        <div className="flex flex-wrap gap-2 cursor-pointer overflow-y-auto max-h-[20vh] text-xs">
                             {pokeMoves.map((move) => (
                                 <PokeMove move={move} />
                             ))}
@@ -121,19 +121,17 @@ const Pokedex = ({ pokemon, close }: PokedexProps) => {
             </div>
 
             {/* Stats Card Action Items */}
-            <div className="p-6 bg-gray-50 border-t border-gray-200">
-                <div className="flex gap-3 justify-center">
-                    <button
-                        onClick={() => close(false)}
-                        className="px-6 py-2 bg-gray-500 hover:bg-gray-700 text-white text-sm font-medium rounded-lg cursor-pointer"
-                    >
-                        Close
-                    </button>
-                    <button
-                        className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg cursor-pointer">
-                        Add to Team
-                    </button>
-                </div>
+            <div className="absolute flex gap-2 w-full justify-center bottom-0 p-3">
+                <button
+                    onClick={() => close(false)}
+                    className="px-6 py-2 bg-gray-500 hover:bg-gray-700 text-white text-sm font-medium rounded-lg cursor-pointer"
+                >
+                    Close
+                </button>
+                <button
+                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg cursor-pointer">
+                    Add to Team
+                </button>
             </div>
 
         </div>
