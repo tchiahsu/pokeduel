@@ -92,7 +92,7 @@ export default function Multiplayer() {
                 alt="background"
             />
 
-            <div className="relative gap-5 flex flex-col gap-5 items-center select-none">
+            <div className="relative gap-5 flex flex-col items-center select-none">
                 <h3 className="text-3xl pokemon-h3 m-5 text-center">Multiplayer</h3>
                 <h1 className="text-8xl pb-6 tracking-[-8px] pokemon-h1">PokeDuel</h1>
             </div>
