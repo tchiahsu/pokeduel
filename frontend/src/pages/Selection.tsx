@@ -72,8 +72,6 @@ export default function Selection({ list }: Props) {
 
     const displayList = fetchedPokemon ? [fetchedPokemon] : list
 
-
-
     return (
         <div className="relative min-h-screen min-w-screen flex flex-col">
             <img
@@ -111,7 +109,7 @@ export default function Selection({ list }: Props) {
                 <div className="flex flex-col flex-12 relative bg-gray-300 mr-6 ml-2 mb-6 rounded-lg opacity-80 min-h-[80vh]">
                     {/* Search Pokemon Bar */}
                     <div className='flex sticky top-0 bg-gray-300 z-10 p-4 gap-2 rounded-lg'>
-                        <SearchBar value = {searchTerm} onChange={setSearchTerm}></SearchBar>
+                        <SearchBar value = {searchTerm} onChange={setSearchTerm} onEnter={handleSearch}></SearchBar>
                         <Button onClick={handleSearch}>Search</Button>
                     </div>
                     
@@ -120,9 +118,9 @@ export default function Selection({ list }: Props) {
                         {/* Table of Pokemon */}
                         <div className={clsx("grid gap-6 p-4 relative flex-1 overflow-y-auto scrollbar-hide",
                                              "item-start justify-items-center auto-rows-min", 
-                                             showPokedex? "grid-cols-5" : "grid-cols-7")}>
+                                             showPokedex? "grid-cols-4" : "grid-cols-6")}>
                             {error && (
-                                <div className="text-red-600 col-span-7">
+                                <div className="text-red-600 col-span-6">
                                     <p>{error}</p>
                                 </div>
                             )}

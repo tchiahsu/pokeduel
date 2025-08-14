@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { searchPokeStats, searchPokeMoves } from '../services/pokemon';
+import PokeMove from '../components/PokeMove';
+import PokeStat from '../components/PokeStat';
 import type { Pokemon } from '../services/pokemon';
 
 type PokedexProps = {
@@ -35,34 +37,6 @@ const Pokedex = ({ pokemon, close }: PokedexProps) => {
         }
     }
 
-    const LoadingAnimation = () => (
-        <div className="max-w-2xl mx-auto overflow-hidden flex items-start">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-950"></div>
-            <span className="ml-2 text-blue-950">Loading Pokemon Data...</span>
-        </div>
-    );
-
-    const PokeStat = ({ category, value }) => (
-        <div className="flex text-xs justify-between items-center py-1 border-b border-gray-100 last:border-b-0">
-            <span className="font-medium text-gray-700">{category}:</span>
-            <span className="text-blue-950 font-semibold">{value || "NOT WORKING"}</span>
-        </div>
-    );
-
-    const PokeMove = ({ move }) => {
-        const moveName = String(move?.name ?? move ?? "").replace(/-/g, " ");
-        return (
-            <div 
-                className="flex bg-blue-50 text-blue-800 px-3 py-1 rounded-full font-medium capitalize hover:bg-blue-100 w-full text-left">
-                <div className="flex-1">{moveName}</div>
-                <div className="flex gap-2">
-                    <button>-</button>
-                    <button>+</button>
-                </div>
-        </div>
-        )
-    };
-
     useEffect(() => {
         if (pokemon?.name) {
             fetchPokeData();
@@ -70,7 +44,12 @@ const Pokedex = ({ pokemon, close }: PokedexProps) => {
     }, [pokemon?.name]);
 
     if (isLoading) {
-        return <LoadingAnimation />
+        return (
+            <div className="max-w-2xl mx-auto overflow-hidden flex items-start">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-950"></div>
+                <span className="ml-2 text-blue-950">Loading Pokemon Data...</span>
+            </div>            
+        )
     }
 
     return (
@@ -104,7 +83,7 @@ const Pokedex = ({ pokemon, close }: PokedexProps) => {
                 {pokeMoves ? (
                     pokeMoves.length > 0 ? (
                         <div className="flex flex-wrap gap-2 cursor-pointer overflow-y-auto max-h-[30vh] text-xs">
-                            {pokeMoves.map((move) => (
+                            {pokeMoves.map((move: string | { name: string }) => (
                                 <PokeMove move={move} />
                             ))}
                         </div>
