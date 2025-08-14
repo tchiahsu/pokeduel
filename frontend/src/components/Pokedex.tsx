@@ -43,25 +43,25 @@ const Pokedex = ({ pokemon, close }: PokedexProps) => {
     );
 
     const PokeStat = ({ category, value }) => (
-        <div className="flex justify-between items-center py-1 border-b border-gray-100 last:border-b-0">
+        <div className="flex text-xs justify-between items-center py-1 border-b border-gray-100 last:border-b-0">
             <span className="font-medium text-gray-700">{category}:</span>
             <span className="text-blue-950 font-semibold">{value || "-"}</span>
         </div>
     );
 
-    const PokeMove = ({ move }) => (
-        <div 
-            className="flex bg-blue-50 text-blue-800 px-3 py-1 rounder-full text-sm font-medium capitalize hover:bg-blue-100 w-full text-left"
-        >
-            <div className="flex-1">
-                {move.name || move}
-            </div>
-            <div className="flex gap-2">
-                <button>-</button>
-                <button>+</button>
-            </div>
+    const PokeMove = ({ move }) => {
+        const moveName = String(move?.name ?? move ?? "").replace(/-/g, " ");
+        return (
+            <div 
+                className="flex bg-blue-50 text-blue-800 px-3 py-1 rounded-full font-medium capitalize hover:bg-blue-100 w-full text-left">
+                <div className="flex-1">{moveName}</div>
+                <div className="flex gap-2">
+                    <button>-</button>
+                    <button>+</button>
+                </div>
         </div>
-    );
+        )
+    };
 
     useEffect(() => {
         if (pokemon?.name) {
@@ -76,11 +76,11 @@ const Pokedex = ({ pokemon, close }: PokedexProps) => {
     return (
         <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
             {/* Pokemon Name and Stats */}
-            <div className="p-6 border-b border-gray-200">
+            <div className="p-4 border-b border-gray-200">
                 {pokeData ? (
-                    <div className="space-y-4 relative">
-                        <h2 className="text-2xl font-bold text-blue-950 text-center capitalize">{pokemon?.name}</h2>
-                        <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+                    <div className="space-y-3 relative">
+                        <h2 className="text-md font-bold text-blue-950 text-center capitalize">{pokemon?.name}</h2>
+                        <div className="bg-gray-50 rounded-lg pl-4 pr-4 space-y-1">
                             <PokeStat category="Type" value={pokeData.type} />
                             <PokeStat category="HP" value={pokeData.hp} />
                             <PokeStat category="Attack" value={pokeData.attack} />
@@ -98,12 +98,12 @@ const Pokedex = ({ pokemon, close }: PokedexProps) => {
             </div>
             
             {/* Pokemon Moves Table */}
-            <div className="p-6">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Available Moves</h3>
+            <div className="p-4">
+                <h3 className="text-md font-semibold text-gray-800 mb-4">Available Moves</h3>
                 
                 {pokeMoves ? (
                     pokeMoves.length > 0 ? (
-                        <div className="flex flex-wrap gap-2 cursor-pointer overflow-y-auto max-h-80">
+                        <div className="flex flex-wrap gap-2 cursor-pointer overflow-y-auto max-h-[15vh] text-xs">
                             {pokeMoves.map((move) => (
                                 <PokeMove move={move} />
                             ))}
@@ -125,12 +125,12 @@ const Pokedex = ({ pokemon, close }: PokedexProps) => {
                 <div className="flex gap-3 justify-center">
                     <button
                         onClick={() => close(false)}
-                        className="px-6 py-2 bg-gray-500 hover:bg-gray-700 text-white font-medium rounded-lg cursor-pointer"
+                        className="px-6 py-2 bg-gray-500 hover:bg-gray-700 text-white text-sm font-medium rounded-lg cursor-pointer"
                     >
                         Close
                     </button>
                     <button
-                        className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg cursor-pointer">
+                        className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg cursor-pointer">
                         Add to Team
                     </button>
                 </div>

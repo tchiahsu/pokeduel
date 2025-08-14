@@ -140,7 +140,7 @@ export default function Selection({ list }: Props) {
                         </div>
 
                         {/* Pokemon Stats and Moves Sidebar Panel */}
-                        <div className={clsx("flex overflow-x-hidden rounded-lg", showPokedex && "p-4 w-lg", !showPokedex && "p-0 w-0")}>
+                        <div className={clsx("flex overflow-x-hidden rounded-lg", showPokedex && "p-4 w-md", !showPokedex && "p-0 w-0")}>
                             <Pokedex pokemon={currPokemon} close={handlePokedex}/>
                         </div>
 
