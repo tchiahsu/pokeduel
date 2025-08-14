@@ -36,7 +36,7 @@ const Pokedex = ({ pokemon, close }: PokedexProps) => {
     }
 
     const LoadingAnimation = () => (
-        <div className="flex items-center justify-center p-4  bg-white rounded-lg">
+        <div className="max-w-2xl mx-auto overflow-hidden flex items-start">
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-950"></div>
             <span className="ml-2 text-blue-950">Loading Pokemon Data...</span>
         </div>
@@ -75,6 +75,7 @@ const Pokedex = ({ pokemon, close }: PokedexProps) => {
 
     return (
         <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+            {/* Pokemon Name and Stats */}
             <div className="p-6 border-b border-gray-200">
                 {pokeData ? (
                     <div className="space-y-4 relative">
@@ -96,12 +97,13 @@ const Pokedex = ({ pokemon, close }: PokedexProps) => {
                 )}
             </div>
             
-            <div className="p-6 overflow-y-auto">
+            {/* Pokemon Moves Table */}
+            <div className="p-6">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Available Moves</h3>
                 
                 {pokeMoves ? (
                     pokeMoves.length > 0 ? (
-                        <div className="flex flex-wrap gap-2 cursor-pointer">
+                        <div className="flex flex-wrap gap-2 cursor-pointer overflow-y-auto max-h-80">
                             {pokeMoves.map((move) => (
                                 <PokeMove move={move} />
                             ))}
@@ -118,6 +120,7 @@ const Pokedex = ({ pokemon, close }: PokedexProps) => {
                 )}
             </div>
 
+            {/* Stats Card Action Items */}
             <div className="p-6 bg-gray-50 border-t border-gray-200">
                 <div className="flex gap-3 justify-center">
                     <button
@@ -132,6 +135,7 @@ const Pokedex = ({ pokemon, close }: PokedexProps) => {
                     </button>
                 </div>
             </div>
+
         </div>
     );
 };

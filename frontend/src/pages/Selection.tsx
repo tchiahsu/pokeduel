@@ -91,9 +91,9 @@ export default function Selection({ list }: Props) {
                     </Link>
                     <Link to='/battle'>
                         <button 
-                        className={`bg-amber-200 text-red-500 border-2 rounded-lg py-2 px-4 cursor-pointer 
-                                    hover:bg-red-300 hover:text-yellow-300`}>
-                            Go
+                        className={`bg-amber-100 text-yellow-400 border-2 rounded-lg py-2 px-4 cursor-pointer 
+                                    hover:bg-yellow-400 hover:text-yellow-100`}>
+                            Start Game
                         </button>
                     </Link>
                 </div>
@@ -108,16 +108,17 @@ export default function Selection({ list }: Props) {
                 </div>
 
                 {/* Right Panel */}
-                <div className="flex-12 relative bg-gray-300 mr-6 ml-2 mb-6 rounded-lg opacity-80 overflow-y-auto min-h-[80vh]">
+                <div className="flex flex-col flex-12 relative bg-gray-300 mr-6 ml-2 mb-6 rounded-lg opacity-80 min-h-[80vh]">
                     {/* Search Pokemon Bar */}
-                    <div className='flex sticky top-0 bg-gray-300 z-10 pt-4 pl-4 pr-4 gap-2'>
+                    <div className='flex sticky top-0 bg-gray-300 z-10 p-4 gap-2'>
                         <SearchBar value = {searchTerm} onChange={setSearchTerm}></SearchBar>
                         <Button onClick={handleSearch}>Search</Button>
                     </div>
                     
                     {/* Pokemon selection table */}
-                    <div className="flex">
-                        <div className={clsx("grid gap-6 p-4 relative flex-1", showPokedex && "grid-cols-4", !showPokedex && "grid-cols-6")}>
+                    <div className="flex flex-1 overflow-hidden">
+                        {/* Table of Pokemon */}
+                        <div className={clsx("grid gap-6 p-4 relative flex-1 overflow-y-auto scrollbar-hide", showPokedex && "grid-cols-4", !showPokedex && "grid-cols-6")}>
                             {error && (
                                 <div className="text-red-600 col-span-6">
                                     <p>{error}</p>
@@ -139,13 +140,14 @@ export default function Selection({ list }: Props) {
                         </div>
 
                         {/* Pokemon Stats and Moves Sidebar Panel */}
-                        <div className={clsx("flex overflow-x-hidden mt-5 rounded-lg", showPokedex && "p-4 w-lg", !showPokedex && "p-0 w-0")}>
-                            <div className="">
-                                <Pokedex pokemon={currPokemon} close={handlePokedex}/>
-                            </div>
+                        <div className={clsx("flex overflow-x-hidden rounded-lg", showPokedex && "p-4 w-lg", !showPokedex && "p-0 w-0")}>
+                            <Pokedex pokemon={currPokemon} close={handlePokedex}/>
                         </div>
+
                     </div>
+
                 </div>
+
             </div>
         </div>
     );
