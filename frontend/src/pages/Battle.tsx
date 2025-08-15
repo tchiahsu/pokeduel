@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import battleBg from '../assets/bg-battle.jpg';
 
+import battleBg from '../assets/bg-battle.jpg';
 import StatsCard from '../components/StatsCard';
 import BattleActionsPanel from '../components/BattleActionsPanel';
 import BattleDisplayPanel from '../components/BattleDisplayPanel';
@@ -93,7 +93,7 @@ export default function Battle() {
                 <div className='relative basis-5/9 flex justify-center-safe'>
                 {/* Opponent Current Pokemon */}
                     <img 
-                        className='absolute bottom-10 w-100 h-100 select-none pointer-events-none'
+                        className='absolute bottom-10 w-80 h-80 select-none pointer-events-none'
                         src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/282.png" 
                         alt="Gardevoir" />
                 </div>
