@@ -1,19 +1,30 @@
 import { useState, useEffect } from 'react';
-import { searchPokeStats, searchPokeMoves } from '../services/DataSearch';
+import { searchPokeStats, searchPokeMoves } from '../services/SearchAPI';
 import PokeMove from '../components/PokeMove';
 import PokeStat from '../components/PokeStat';
-import type { Pokemon } from '../services/DataSearch';
+import type { Pokemon } from '../types/pokemon';
 
+/**
+ * Props for the Pokedex component:
+ * - pokemon: the currently selected pokemon or null if none selected
+ * - close: callback to hide the Pokedex and deselect pokemon
+ */
 type PokedexProps = {
     pokemon: Pokemon | null;
     close: (value: boolean) => void;
 }
 
+/**
+ * Display detailed stats and available moves for a selected pokemon
+ */
 const Pokedex = ({ pokemon, close }: PokedexProps) => {
     const [pokeData, setPokeData] = useState<any>(null);
     const [pokeMoves, setPokeMoves] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(false);
 
+    /**
+     * Fetch Pokemon stats and moves from the API
+     */
     const fetchPokeData = async () => {
         if (!pokemon || isLoading) return;
         
@@ -37,12 +48,16 @@ const Pokedex = ({ pokemon, close }: PokedexProps) => {
         }
     }
 
+    /**
+     * Refetch Pokemon data whenever the selected pokemon changes
+     */
     useEffect(() => {
         if (pokemon?.name) {
             fetchPokeData();
         }
     }, [pokemon?.name]);
 
+    // Loading animation while data is being fetched
     if (isLoading) {
         return (
             <div className="max-w-2xl mx-auto overflow-hidden flex items-start">

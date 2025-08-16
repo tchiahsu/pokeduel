@@ -5,18 +5,24 @@ import SearchBar from '../components/SearchBar';
 import Button from '../components/Button';
 import selectionBg from '../assets/bg-field.jpg';
 import Pokedex from '../components/Pokedex';
-import type { Pokemon } from '../services/DataSearch'
+import type { Pokemon } from '../types/pokemon'
 import clsx from 'clsx'
 
-import pokeBall from '../assets/pokeball3.png';
-
-type Props = {
-list: Pokemon[];
+/**
+ * Props for the Selection page:
+ * - list: initial list of Pokemon to render
+ */
+type SelectionProps = {
+    list: Pokemon[];
 };
 
 const API_URL_BASE = 'http://localhost:8000';
 
-// function to fetch a single pokemon name and sprite
+/**
+ * Fetch a single pokemon data by name
+ * @param name : name of the pokemon
+ * @returns a pokemon object { name, sprite } or null due to error
+ */
 const fetchPokemonData = async (name: string): Promise<Pokemon | null> => {
     try {
         const res = await fetch(`${API_URL_BASE}/pokemon/${name}/stats`);
@@ -33,14 +39,17 @@ const fetchPokemonData = async (name: string): Promise<Pokemon | null> => {
     }
 };
 
-export default function Selection({ list }: Props) {
+// Team Selection Screen
+export default function Selection({ list }: SelectionProps) {
     const [showPokedex, setShowPokedex] = useState(false)
     const [searchTerm, setSearchTerm] = useState('');
     const [fetchedPokemon, setFetchedPokemon] = useState<Pokemon | null>(null);
     const [currPokemon, setCurrPokemon] = useState<Pokemon | null>(null);
-    // const [currTeam, setCurrTeam] = useState<Pokemon[] | null>(null);
     const [error, setError] = useState<string | null>(null);
 
+    /**
+     * Searches the information for the given pokemon name
+     */
     const handleSearch = async () => {
         const name = searchTerm.trim().toLowerCase();
         
@@ -61,12 +70,19 @@ export default function Selection({ list }: Props) {
         }
     }
 
+    /**
+     * Opens/closes the Pokedex panel on the right
+     * Clears currently selected pokemon when the Pokedex closes
+     */
     const handlePokedex = async (value: boolean) => {
         setShowPokedex(value);
         setCurrPokemon(null);
     }
     
-    //set fetched pokemon to null and display default pokemon
+    /**
+     * When the search box is cleared, reset fetches result.
+     * This ensures the main list reappears as soon as the input is empty.
+     */
     useEffect(() => {
         if (searchTerm === '') {
             setFetchedPokemon(null);
@@ -74,6 +90,7 @@ export default function Selection({ list }: Props) {
         }
     }, [searchTerm]);
 
+    // Display the single pokemon fetches the list of pokemon
     const displayList = fetchedPokemon ? [fetchedPokemon] : list
 
     return (

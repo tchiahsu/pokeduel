@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import homeBg from '../assets/bg-forrest.jpg';
 import Button from '../components/Button';
 
+// Home Screen
 export default function Home() {
     return (
         <div className="relative min-h-screen min-w-screen flex flex-col items-center justify-center">

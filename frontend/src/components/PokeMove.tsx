@@ -1,18 +1,30 @@
 import { useState } from 'react';
-import { searchMoveStats } from '../services/DataSearch';
+import { searchMoveStats } from '../services/SearchAPI';
 
+/**
+ * Props for the PokeMove component:
+ * - move: either a string or an object with a name property
+ */
 type PokeMoveProps = {
     move: string | { name: string };
 };
 
+/**
+ * Represents a single Pokemon move in the Pokedex move list.
+ */
 const PokeMove = ({ move }: PokeMoveProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const [moveData, setMoveData] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(false);
 
+    // Normalize move input into a consistent string form
     const moveName = typeof move === "string" ? move : move.name;
+    // Remove dashes from move names made up of 2+ words
     const formattedName = moveName.replace(/-/g, " ");
 
+    /**
+     * Fetches detailed stats for the current move from the API
+     */
     const fetchMoveStats = async () => {
         if (moveData || isLoading) return;
         
@@ -28,6 +40,10 @@ const PokeMove = ({ move }: PokeMoveProps) => {
         }
     }   
 
+    /**
+     * Toggles the dropdown open/close
+     * If opening it fetches move details from API
+     */
     const toggleDropdown = () => {
         fetchMoveStats();
         setIsOpen(!isOpen);
