@@ -40,9 +40,9 @@ export default function Battle() {
                 alt="Battle Background"
             />
             {/* Top Section */}
-            <div className="relative grid grid-cols-6 border-2 items-end p-4">
+            <div className="relative grid grid-cols-6 border-2">
                 {/* Opponent Info */}
-                <div className="flex flex-col">
+                <div className="flex flex-col ml-4 mt-4">
                 <StatsCard
                     name="Gardevoir"
                     image="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/282.png"
@@ -55,9 +55,9 @@ export default function Battle() {
                 <div></div>
                 <div></div>
                 {/* Opponent Pokémon */}
-                <div className='border-2'>
+                <div className='relative border-2'>
                 <img
-                    className="w-100 h-auto select-none pointer-events-none"
+                    className="absolute w-80 h-auto select-none pointer-events-none"
                     src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/282.png"
                     alt="Gardevoir"
                 />
@@ -70,9 +70,9 @@ export default function Battle() {
                 <div></div>
                 
                 {/* Player Pokémon */}
-                <div className="flex justify-start border-3">
+                <div className="relative flex justify-start border-3">
                 <img
-                    className="w-200 h-auto select-none pointer-events-none"
+                    className="absolute w-200 h-150 select-none pointer-events-none"
                     src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/4.png"
                     alt="Charmander"
                 />
@@ -84,23 +84,15 @@ export default function Battle() {
             {/* Bottom Section (Controls + Player Stats) */} 
             <div className=" relative flex flex-row justify-between items-end gap-4 p-4 w-full">
                 {/* Battle Display Panel */}
-                <div className="flex-1 border-2 min-w-[250px] max-w-[500px]">
+                <div className="relative flex-1 border-2 min-w-[250px] max-w-[500px]">
                     <BattleDisplayPanel mode={mode} moves={moves} team={team} />
                 </div>
-
-                {/* Battle Actions Panel */}
-                {/* <div className="flex-1 border-2 min-w-[200px] max-w-[400px] justufy-end">
-                    <BattleActionsPanel onSelect={setMode} />
-                </div> */}
-                
-                
-
-                {/* Player Stats */}
-                <div className="flex flex-row gap-3">
-                    <div className="flex flex-col justify-end items-center border-2 min-w-[100px] max-w-[200px]">
+                {/* Player Stats and Action panel */}
+                <div className="relative flex flex-row gap-3">
+                    <div className="relative flex flex-col justify-end items-center border-2 min-w-[100px] max-w-[200px]">
                         <BattleActionsPanel onSelect={setMode} />
                     </div>
-                    <div className="flex flex-col border-2 items-end min-w-[200px]">
+                    <div className="relative flex flex-col border-2 items-end min-w-[200px]">
                         
                         <ActivePokeCount team={team} />
                         <StatsCard
@@ -111,16 +103,6 @@ export default function Battle() {
                         />
                     </div>
                 </div>
-                    {/* <div className="flex flex-col border-2 items-end min-w-[200px]">
-                        
-                        <ActivePokeCount team={team} />
-                        <StatsCard
-                        name="Sceptile"
-                        image="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/254.png"
-                        hp={75}
-                        maxHp={150}
-                        />
-                    </div> */}
             </div>
         </div>
 
