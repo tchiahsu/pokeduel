@@ -40,7 +40,7 @@ export default function Battle() {
                 alt="Battle Background"
             />
             {/* Top Section */}
-            <div className="relative grid grid-cols-6 border-2">
+            <div className="relative grid grid-cols-6">
                 {/* Opponent Info */}
                 <div className="flex flex-col ml-4 mt-4">
                 <StatsCard
