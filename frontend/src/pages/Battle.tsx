@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
 import battleBg from '../assets/bg-battle.jpg';
-import StatsCard from '../components/TeamSelection/StatsCard';
-import BattleActionsPanel from '../components/BattleActionsPanel';
+import StatsCard from '../components/BattlePage/StatsCard';
+import BattleActionsPanel from '../components/BattlePage/BattleActionsPanel';
 import BattleDisplayPanel from '../components/BattlePage/BattleDisplayPanel';
 import ActivePokeCount from '../components/BattlePage/ActivePokeCount';
 
