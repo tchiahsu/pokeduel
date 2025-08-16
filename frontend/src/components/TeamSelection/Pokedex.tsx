@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { searchPokeStats, searchPokeMoves } from '../services/SearchAPI';
-import PokeMove from '../components/PokeMove';
-import PokeStat from '../components/PokeStat';
-import type { Pokemon } from '../types/pokemon';
+import { searchPokeStats, searchPokeMoves } from '../../services/SearchAPI';
+import PokeMove from './PokeMove';
+import PokeStat from './PokeStat';
+import type { Pokemon } from '../../types/pokemon';
 
 /**
  * Props for the Pokedex component:

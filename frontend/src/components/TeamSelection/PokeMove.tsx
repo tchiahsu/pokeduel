@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import MoveStat from './MoveStat'
-import { searchMoveStats } from '../services/SearchAPI';
-import { IoMdAdd, IoMdRemove } from "react-icons/io";
+import { searchMoveStats } from '../../services/SearchAPI';
 
 
 /**
@@ -61,8 +60,8 @@ const PokeMove = ({ move }: PokeMoveProps) => {
                     {formattedName}
                 </div>
                 <div className="flex gap-2">
-                    <button className="rounded-full px-0.5 text-[#2563eb] hover:scale-120">-</button>
-                    <button className="rounded-full px-0.5 text-[#2563eb] hover:scale-120">+</button>
+                    <button className="rounded-full px-0.5 text-[#2563eb] hover:scale-120 hover:text-red-500">-</button>
+                    <button className="rounded-full px-0.5 text-[#2563eb] hover:scale-120 hover:text-green-600">+</button>
                 </div>
             </div>
 

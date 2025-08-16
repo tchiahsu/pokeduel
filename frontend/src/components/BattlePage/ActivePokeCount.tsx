@@ -1,5 +1,5 @@
 import React from 'react';
-import pokeBall from '../assets/poke_pixel.png';
+import pokeBall from '../../assets/poke_pixel.png';
 
 interface Pokemon {
   name: string;
