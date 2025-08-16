@@ -24,3 +24,14 @@ export const searchPokeMoves = async (name: string) => {
         console.error('Error fetching Pokemon stats', e)
     }
 };
+
+export const searchMoveStats = async (name: string) => {
+    try {
+        console.log(name);
+        const res = await fetch(`${API_URL_BASE}/moves/${name}`);
+        const data = await res.json();
+        return data;
+    } catch (e) {
+        console.error('Error fetching move data', e)
+    }
+}
