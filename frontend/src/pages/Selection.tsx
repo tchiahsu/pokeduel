@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
-import SearchBar from '../components/SearchBar';
+import SearchBar from '../components/TeamSelection/SearchBar';
 import Button from '../components/Button';
 import selectionBg from '../assets/bg-field.jpg';
-import Pokedex from '../components/Pokedex';
+import Pokedex from '../components/TeamSelection/Pokedex';
 import type { Pokemon } from '../types/pokemon'
 import clsx from 'clsx'
 

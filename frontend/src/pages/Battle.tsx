@@ -1,10 +1,10 @@
 import { useState } from 'react';
 
 import battleBg from '../assets/bg-battle.jpg';
-import StatsCard from '../components/StatsCard';
+import StatsCard from '../components/TeamSelection/StatsCard';
 import BattleActionsPanel from '../components/BattleActionsPanel';
-import BattleDisplayPanel from '../components/BattleDisplayPanel';
-import ActivePokeCount from '../components/ActivePokeCount';
+import BattleDisplayPanel from '../components/BattlePage/BattleDisplayPanel';
+import ActivePokeCount from '../components/BattlePage/ActivePokeCount';
 
 interface Move {
   name: string;
