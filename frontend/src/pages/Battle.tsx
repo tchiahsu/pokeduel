@@ -55,7 +55,7 @@ export default function Battle() {
                 <div></div>
                 <div></div>
                 {/* Opponent Pokémon */}
-                <div className='relative border-2'>
+                <div className='relative'>
                 <img
                     className="absolute w-80 h-auto select-none pointer-events-none"
                     src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/282.png"
@@ -66,11 +66,11 @@ export default function Battle() {
             </div>
 
             {/* Middle Section Player Pokémon */}
-            <div className="relative grid grid-cols-4 border-2">
+            <div className="relative grid grid-cols-4">
                 <div></div>
                 
                 {/* Player Pokémon */}
-                <div className="relative flex justify-start border-3">
+                <div className="relative flex justify-start">
                 <img
                     className="absolute w-200 h-150 select-none pointer-events-none"
                     src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/4.png"
@@ -84,15 +84,15 @@ export default function Battle() {
             {/* Bottom Section (Controls + Player Stats) */} 
             <div className=" relative flex flex-row justify-between items-end gap-4 p-4 w-full">
                 {/* Battle Display Panel */}
-                <div className="relative flex-1 border-2 min-w-[250px] max-w-[500px]">
+                <div className="relative flex-1 min-w-[250px] max-w-[500px]">
                     <BattleDisplayPanel mode={mode} moves={moves} team={team} />
                 </div>
                 {/* Player Stats and Action panel */}
                 <div className="relative flex flex-row gap-3">
-                    <div className="relative flex flex-col justify-end items-center border-2 min-w-[100px] max-w-[200px]">
+                    <div className="relative flex flex-col justify-end items-center min-w-[100px] max-w-[200px]">
                         <BattleActionsPanel onSelect={setMode} />
                     </div>
-                    <div className="relative flex flex-col border-2 items-end min-w-[200px]">
+                    <div className="relative flex flex-col items-end min-w-[200px]">
                         
                         <ActivePokeCount team={team} />
                         <StatsCard
