@@ -38,6 +38,7 @@ export default function Selection({ list }: Props) {
     const [searchTerm, setSearchTerm] = useState('');
     const [fetchedPokemon, setFetchedPokemon] = useState<Pokemon | null>(null);
     const [currPokemon, setCurrPokemon] = useState<Pokemon | null>(null);
+    // const [currTeam, setCurrTeam] = useState<Pokemon[] | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     const handleSearch = async () => {
@@ -62,6 +63,7 @@ export default function Selection({ list }: Props) {
 
     const handlePokedex = async (value: boolean) => {
         setShowPokedex(value);
+        setCurrPokemon(null);
     }
     
     //set fetched pokemon to null and display default pokemon
@@ -98,13 +100,7 @@ export default function Selection({ list }: Props) {
             {/* Pokemon Selection Screen */}           
             <div className="flex max-h-[87vh]">
                 {/* Left Panel */}
-                <div className="flex-1 flex flex-col bg-gray-300 ml-6 mr-2 mb-6 rounded-lg opacity-80 gap-7 items-center pt-6">
-                    <img src={pokeBall} alt="PokéBall" className="w-16 h-16 select-none cursor-pointer"/>
-                    <img src={pokeBall} alt="PokéBall" className="w-16 h-16 select-none cursor-pointer"/>
-                    <img src={pokeBall} alt="PokéBall" className="w-16 h-16 select-none cursor-pointer"/>
-                    <img src={pokeBall} alt="PokéBall" className="w-16 h-16 select-none cursor-pointer"/>
-                    <img src={pokeBall} alt="PokéBall" className="w-16 h-16 select-none cursor-pointer"/> 
-                    <img src={pokeBall} alt="PokéBall" className="w-16 h-16 select-none cursor-pointer"/>                                                           
+                <div className="flex-1 flex flex-col bg-gray-300 ml-6 mr-2 mb-6 rounded-lg opacity-80 gap-7 items-center pt-6">                                                          
                 </div>
 
                 {/* Right Panel */}
@@ -129,7 +125,8 @@ export default function Selection({ list }: Props) {
                             
                             {displayList.map((poke, index) => (
                                 <div
-                                    className="relative flex flex-col items-center rounded-lg hover:bg-gray-200 hover:scale-105 transition-all py-3 px-6 cursor-pointer"
+                                    className={clsx("relative flex flex-col items-center rounded-lg hover:bg-gray-200 hover:scale-105 transition-all py-3 px-6 cursor-pointer",
+                                                    currPokemon === poke ? "bg-gray-200 scale-105" : "")}
                                     key={index}
                                     onClick={() => {
                                         setShowPokedex(true);
