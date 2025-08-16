@@ -146,8 +146,13 @@ export default function Selection({ list }: SelectionProps) {
                                                     currPokemon === poke ? "bg-gray-200 scale-105" : "")}
                                     key={index}
                                     onClick={() => {
-                                        setShowPokedex(true);
-                                        setCurrPokemon(poke);
+                                        if (showPokedex && currPokemon === poke) {
+                                            setShowPokedex(false)
+                                            setCurrPokemon(null)
+                                        } else {
+                                            setShowPokedex(true);
+                                            setCurrPokemon(poke);
+                                        }
                                 }}>
                                     <img src={poke.sprite} alt={poke.name} className="w-36 h-36 pointer-events-none" />
                                     <span className="text-xs mt-1 capitalize">{poke.name}</span>
@@ -156,7 +161,7 @@ export default function Selection({ list }: SelectionProps) {
                         </div>
 
                         {/* Pokemon Stats and Moves Sidebar Panel */}
-                        <div className={clsx("flex overflow-x-hidden rounded-lg", showPokedex ? "px-4 pb-2 w-sm" : "p-0 w-0")}>
+                        <div className={clsx("flex overflow-x-hidden rounded-lg pb-2", showPokedex && "px-4 w-sm", !showPokedex && "px-0 w-0")}>
                             <Pokedex pokemon={currPokemon} close={handlePokedex}/>
                         </div>
 
