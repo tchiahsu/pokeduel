@@ -5,8 +5,10 @@ import SearchBar from '../components/SearchBar';
 import Button from '../components/Button';
 import selectionBg from '../assets/bg-field.jpg';
 import Pokedex from '../components/Pokedex';
-import type { Pokemon } from '../services/pokemon'
+import type { Pokemon } from '../services/DataSearch'
 import clsx from 'clsx'
+
+import pokeBall from '../assets/pokeball3.png';
 
 type Props = {
 list: Pokemon[];
@@ -79,30 +81,30 @@ export default function Selection({ list }: Props) {
                 className="absolute inset-0 w-full h-full object-cover opacity-50 z-0"
             />
             {/* Team Selection Title */}
-            <div className="relative flex justify-between items-start max-h-[15vh] pr-2">
-                <h3 className="text-3xl pokemon-h3 m-10  text-left select-none">
+            <div className="relative flex justify-between items-center max-h-[13vh] pr-2">
+                <h3 className="text-4xl pokemon-h3 m-10 text-left select-none flex justify-center items-center">
                     Team Selection:
                 </h3>
-                <div className='flex mt-8 ml-8 mr-5 gap-3'>
+                <div className='flex justify-center items-center mr-4 gap-3'>
                     <Link to='/multiplayer'>
                         <Button>Back</Button>
                     </Link>
                     <Link to='/battle'>
-                        <button 
-                        className={`bg-amber-100 text-yellow-400 border-2 rounded-lg py-2 px-4 cursor-pointer 
-                                    hover:bg-yellow-400 hover:text-yellow-100`}>
-                            Start Game
-                        </button>
+                        <Button>Start Game</Button>
                     </Link>
                 </div>
-
             </div>
 
             {/* Pokemon Selection Screen */}           
-            <div className="flex max-h-[85vh]">
+            <div className="flex max-h-[87vh]">
                 {/* Left Panel */}
-                <div className="flex-1 bg-gray-300 ml-6 mr-2 mb-6 rounded-lg opacity-80">
-                    pokemon team go here
+                <div className="flex-1 flex flex-col bg-gray-300 ml-6 mr-2 mb-6 rounded-lg opacity-80 gap-7 items-center pt-6">
+                    <img src={pokeBall} alt="PokéBall" className="w-16 h-16 select-none cursor-pointer"/>
+                    <img src={pokeBall} alt="PokéBall" className="w-16 h-16 select-none cursor-pointer"/>
+                    <img src={pokeBall} alt="PokéBall" className="w-16 h-16 select-none cursor-pointer"/>
+                    <img src={pokeBall} alt="PokéBall" className="w-16 h-16 select-none cursor-pointer"/>
+                    <img src={pokeBall} alt="PokéBall" className="w-16 h-16 select-none cursor-pointer"/> 
+                    <img src={pokeBall} alt="PokéBall" className="w-16 h-16 select-none cursor-pointer"/>                                                           
                 </div>
 
                 {/* Right Panel */}
@@ -116,8 +118,8 @@ export default function Selection({ list }: Props) {
                     {/* Pokemon selection table */}
                     <div className="flex flex-1 overflow-hidden">
                         {/* Table of Pokemon */}
-                        <div className={clsx("grid gap-6 p-4 relative flex-1 overflow-y-auto scrollbar-hide",
-                                             "item-start justify-items-center auto-rows-min", 
+                        <div className={clsx("grid gap-2 p-2 relative flex-1 overflow-y-auto no-scrollbar",
+                                             "item-start justify-items-center auto-rows-min",
                                              showPokedex? "grid-cols-4" : "grid-cols-6")}>
                             {error && (
                                 <div className="text-red-600 col-span-6">
@@ -127,7 +129,7 @@ export default function Selection({ list }: Props) {
                             
                             {displayList.map((poke, index) => (
                                 <div
-                                    className="relative flex flex-col items-center rounded-lg hover:bg-gray-200 hover:scale-105 transition-all py-6 px-8 cursor-pointer"
+                                    className="relative flex flex-col items-center rounded-lg hover:bg-gray-200 hover:scale-105 transition-all py-3 px-6 cursor-pointer"
                                     key={index}
                                     onClick={() => {
                                         setShowPokedex(true);
@@ -140,7 +142,7 @@ export default function Selection({ list }: Props) {
                         </div>
 
                         {/* Pokemon Stats and Moves Sidebar Panel */}
-                        <div className={clsx("flex overflow-x-hidden rounded-lg", showPokedex && "p-4 w-md", !showPokedex && "p-0 w-0")}>
+                        <div className={clsx("flex overflow-x-hidden rounded-lg", showPokedex ? "px-4 pb-2 w-sm" : "p-0 w-0")}>
                             <Pokedex pokemon={currPokemon} close={handlePokedex}/>
                         </div>
 
