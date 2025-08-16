@@ -1,6 +1,13 @@
 import React from "react";
 import { clsx } from "clsx";
 
+/**
+ * Props for the Button component:
+ * - children: content inside the button
+ * - onClick: optional click handler function
+ * - size: controls the size of the text inside the button
+ * - disabled: disables the button and updates it style (optional)
+ */
 type ButtonProps = {
     children: React.ReactNode;
     onClick?: () => void;
