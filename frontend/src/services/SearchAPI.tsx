@@ -1,3 +1,5 @@
+import type { Pokemon } from '../types/pokemon'
+
 // Base URL for the backend server
 const API_URL_BASE = 'http://localhost:8000';
 
@@ -46,3 +48,24 @@ export const searchMoveStats = async (name: string) => {
         console.error('Error fetching move data', e)
     }
 }
+
+/**
+ * Fetch a single pokemon data by name
+ * @param name : name of the pokemon
+ * @returns a pokemon object { name, sprite } or null due to error
+ */
+export const fetchPokemonData = async (name: string): Promise<Pokemon | null> => {
+    try {
+        const res = await fetch(`${API_URL_BASE}/pokemon/${name}/stats`);
+        const data = await res.json();
+
+        if (!data || Object.keys(data).length === 0) {
+            return null;
+        }
+
+        return {name: data.name, sprite: data.frontSprite};
+    } catch (error) {
+        console.error(`Fetch error: `, error);
+        return null;
+    }
+};

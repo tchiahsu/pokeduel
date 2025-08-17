@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import MoveStat from './MoveStat'
 import { searchMoveStats } from '../../services/SearchAPI';
 
+import MoveStat from './MoveStat'
+import clsx from 'clsx';
 
 /**
  * Props for the PokeMove component:
@@ -9,12 +10,14 @@ import { searchMoveStats } from '../../services/SearchAPI';
  */
 type PokeMoveProps = {
     move: string | { name: string };
+    moves: string[];
+    setMoves: (moves: string[]) => void;
 };
 
 /**
  * Represents a single Pokemon move in the Pokedex move list.
  */
-const PokeMove = ({ move }: PokeMoveProps) => {
+const PokeMove = ({ move, moves, setMoves }: PokeMoveProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const [moveData, setMoveData] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -23,6 +26,8 @@ const PokeMove = ({ move }: PokeMoveProps) => {
     const moveName = typeof move === "string" ? move : move.name;
     // Remove dashes from move names made up of 2+ words
     const formattedName = moveName.replace(/-/g, " ");
+    // Check if move has been selected
+    const isSelected = moves.includes(moveName);
 
     /**
      * Fetches detailed stats for the current move from the API
@@ -50,18 +55,49 @@ const PokeMove = ({ move }: PokeMoveProps) => {
         fetchMoveStats();
         setIsOpen(!isOpen);
     };
+
+    /**
+     * Handles the logic for adding a move to Pokemon
+     * Prevents the same move from getting added twice
+     * Prevents from exceeding the maximum of 4 moves
+     */
+    const handleAdd = () => {
+        if (!isSelected && moves.length < 4) setMoves([...moves, moveName]);
+    };
+
+    /**
+     * Handles the logic for removing a move from a Pokemon
+     * Prevents user from removing a mode that was never added
+     */
+    const handleRemove = () => {
+        if (isSelected) setMoves(moves.filter(move => move !== moveName));
+    };
     
     return (
-        <div className="flex flex-col bg-blue-50 text-blue-800 px-2 rounded-sm font-medium capitalize hover:bg-blue-100 w-full text-left justify-center">
+        <div className={clsx("flex flex-col px-2 rounded-sm font-medium capitalize w-full text-left justify-center",
+                              isSelected ? " bg-yellow-200 text-orange-500 hover:bg-yellow-300" : "bg-blue-50 text-blue-800 hover:bg-blue-100")}>
 
             {/* Pokemon Move Button */}
             <div className="flex py-1">
-                <div className="flex flex-1 text-[10px] justify-left items-center" onClick={toggleDropdown}>   
+                <div className="flex flex-1 text-[10px] justify-left items-center"
+                     onClick={toggleDropdown}>   
                     {formattedName}
                 </div>
                 <div className="flex gap-2">
-                    <button className="rounded-full px-0.5 text-[#2563eb] hover:scale-120 hover:text-red-500">-</button>
-                    <button className="rounded-full px-0.5 text-[#2563eb] hover:scale-120 hover:text-green-600">+</button>
+                    <button
+                        className={clsx("rounded-full px-0.5 hover:scale-120 hover:text-red-500",
+                                        isSelected ? "text-orange-500" : "text-[#2563eb]")}
+                        onClick={handleRemove}
+                    >
+                        -
+                    </button>
+                    <button
+                        className={clsx("rounded-full px-0.5 hover:scale-120 hover:text-green-600",
+                                        isSelected ? "text-orange-500" : "text-[#2563eb]")}
+                        onClick={handleAdd}
+                    >
+                        +
+                    </button>
                 </div>
             </div>
 

@@ -1,5 +1,7 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { fetchPokemonData } from '../services/SearchAPI';
+import { useSocket } from "../contexts/SocketContext";
 
 import SearchBar from '../components/TeamSelection/SearchBar';
 import Button from '../components/Button';
@@ -16,28 +18,6 @@ type SelectionProps = {
     list: Pokemon[];
 };
 
-const API_URL_BASE = 'http://localhost:8000';
-
-/**
- * Fetch a single pokemon data by name
- * @param name : name of the pokemon
- * @returns a pokemon object { name, sprite } or null due to error
- */
-const fetchPokemonData = async (name: string): Promise<Pokemon | null> => {
-    try {
-        const res = await fetch(`${API_URL_BASE}/pokemon/${name}/stats`);
-        const data = await res.json();
-
-        if (!data || Object.keys(data).length === 0) {
-            return null;
-        }
-
-        return {name: data.name, sprite: data.frontSprite};
-    } catch (error) {
-        console.error(`Fetch error: `, error);
-        return null;
-    }
-};
 
 // Team Selection Screen
 export default function Selection({ list }: SelectionProps) {
@@ -46,6 +26,15 @@ export default function Selection({ list }: SelectionProps) {
     const [fetchedPokemon, setFetchedPokemon] = useState<Pokemon | null>(null);
     const [currPokemon, setCurrPokemon] = useState<Pokemon | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [pokemonTeam, setPokemonTeam] = useState<Record<string, string[]>>({});
+    const [teamSprites, setTeamSprites] = useState<Record<string, string>>({});
+
+    const socket = useSocket();
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const { playerName } = location.state || {}
+    const initialMovesForCurrent = currPokemon ? (pokemonTeam[currPokemon.name] ?? []) : [];
 
     /**
      * Searches the information for the given pokemon name
@@ -68,6 +57,8 @@ export default function Selection({ list }: SelectionProps) {
             setFetchedPokemon(null);
             setError('Pokemon not Found');
         }
+
+        handlePokedex(false);
     }
 
     /**
@@ -78,7 +69,60 @@ export default function Selection({ list }: SelectionProps) {
         setShowPokedex(value);
         setCurrPokemon(null);
     }
-    
+
+    /**
+     * Handler to accept one TeamEntry and add it to the team
+     */
+    const handleAddToTeam = (entry: { pokemon: string; moves: string[] }) => {
+        setPokemonTeam( prev => {
+            if (entry.moves.length !== 4) return prev;
+
+            const size = Object.keys(prev).length;
+            const alreadyInTeam = !prev[entry.pokemon];
+
+            if (alreadyInTeam && size >= 6) return prev;
+        
+            return { ...prev, [entry.pokemon]: entry.moves.slice(0,4) };
+        });
+
+        if (!teamSprites[entry.pokemon]) {
+            const fromCurrent = currPokemon?.name === entry.pokemon ? currPokemon.sprite : undefined;
+            if (fromCurrent) {
+                setTeamSprites(prev => ({ ...prev, [entry.pokemon]: fromCurrent }));
+            } else {
+                void (async () => {
+                    const poke = await fetchPokemonData(entry.pokemon);
+                    if (poke?.sprite) {
+                        setTeamSprites(prev => ({ ...prev, [entry.pokemon]: poke.sprite! }));
+                    }
+                })();
+            }
+        }
+    };
+
+    const removeFromTeam = (name: string) => {
+        setPokemonTeam(prev => {
+            const { [name]: _, ...rest } = prev;
+            return rest;
+        });
+
+        setTeamSprites(prev => {
+            const { [name]: _, ...rest } = prev;
+            return rest;
+        });
+    }
+
+    /**
+     * Sends the team selection to the backend client
+     * - team : the pokemon team selected by the player
+     * - playerName : name of the player
+     */
+    const emitTeamSelection = async () => {
+        console.log("emit setPlayer", { name: playerName, teamSelection: pokemonTeam })
+        socket.emit("setPlayer", { name: playerName, teamSelection: pokemonTeam });
+        navigate("/battle");
+    };
+
     /**
      * When the search box is cleared, reset fetches result.
      * This ensures the main list reappears as soon as the input is empty.
@@ -101,6 +145,7 @@ export default function Selection({ list }: SelectionProps) {
             />
             {/* Team Selection Title */}
             <div className="relative flex justify-between items-center max-h-[13vh] pr-2">
+
                 <h3 className="text-4xl pokemon-h3 m-10 text-left select-none flex justify-center items-center">
                     Team Selection:
                 </h3>
@@ -108,17 +153,41 @@ export default function Selection({ list }: SelectionProps) {
                     <Link to='/multiplayer'>
                         <Button>Back</Button>
                     </Link>
-                    <Link to='/battle'>
-                        <Button>Start Game</Button>
-                    </Link>
+                    <Button onClick={emitTeamSelection}>Start Game</Button>
                 </div>
             </div>
 
             {/* Pokemon Selection Screen */}           
             <div className="flex max-h-[87vh]">
+
                 {/* Left Panel */}
-                <div className="flex-1 flex flex-col bg-gray-300 ml-6 mr-2 mb-6 rounded-lg opacity-80 gap-7 items-center pt-6">                                                          
+                <div className="flex-1 flex flex-col bg-gray-300 ml-6 mr-2 mb-6 rounded-lg opacity-80 gap-7 items-center pt-6">                                                     
+                    <h4 className="text-lg font-bold">Your Team</h4>
+                    {Object.keys(teamSprites).length > 0 && (
+                        <div className="grid grid-rows-6 gap-3">
+                            {Object.entries(teamSprites).map(([poke, sprite]) => (
+                                <div
+                                    key={poke}
+                                    className="relative bg-white rounded-lg shadow-sm p-2">
+                                        <div className="relative group w-24 h-24 flex items-center justify-center">
+                                            <img
+                                                className="w-24 h-24 pointer-events-none select-none"
+                                                src={sprite}
+                                                alt={poke}
+                                            />
+                                            <button
+                                                className="absolute top-0 right-0 text-center text-white bg-red-500 rounded-full w-8 h-8 invisible group-hover:visible"
+                                                onClick={() => removeFromTeam(poke)}
+                                            >
+                                                x
+                                            </button>
+                                        </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
+
 
                 {/* Right Panel */}
                 <div className="flex flex-col flex-12 relative bg-gray-300 mr-6 ml-2 mb-6 rounded-lg opacity-80 min-h-[80vh]">
@@ -140,11 +209,11 @@ export default function Selection({ list }: SelectionProps) {
                                 </div>
                             )}
                             
-                            {displayList.map((poke, index) => (
+                            {displayList.map((poke) => (
                                 <div
                                     className={clsx("relative flex flex-col items-center rounded-lg hover:bg-gray-200 hover:scale-105 transition-all py-3 px-6 cursor-pointer",
                                                     currPokemon === poke ? "bg-gray-200 scale-105" : "")}
-                                    key={index}
+                                    key={poke.name}
                                     onClick={() => {
                                         if (showPokedex && currPokemon === poke) {
                                             setShowPokedex(false)
@@ -162,7 +231,12 @@ export default function Selection({ list }: SelectionProps) {
 
                         {/* Pokemon Stats and Moves Sidebar Panel */}
                         <div className={clsx("flex overflow-x-hidden rounded-lg pb-2", showPokedex && "px-4 w-sm", !showPokedex && "px-0 w-0")}>
-                            <Pokedex pokemon={currPokemon} close={handlePokedex}/>
+                            <Pokedex
+                                pokemon={currPokemon}
+                                close={handlePokedex}
+                                initialMoves={initialMovesForCurrent}
+                                onConfirm={handleAddToTeam}
+                            />
                         </div>
 
                     </div>
