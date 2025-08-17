@@ -75,8 +75,6 @@ export default function Selection({ list }: SelectionProps) {
      */
     const handleAddToTeam = (entry: { pokemon: string; moves: string[] }) => {
         setPokemonTeam( prev => {
-            if (entry.moves.length !== 4) return prev;
-
             const size = Object.keys(prev).length;
             const alreadyInTeam = !prev[entry.pokemon];
 
@@ -164,12 +162,12 @@ export default function Selection({ list }: SelectionProps) {
                 <div className="flex-1 flex flex-col bg-gray-300 ml-6 mr-2 mb-6 rounded-lg opacity-80 gap-7 items-center pt-6">                                                     
                     <h4 className="text-lg font-bold">Your Team</h4>
                     {Object.keys(teamSprites).length > 0 && (
-                        <div className="grid grid-rows-6 gap-3">
+                        <div className="grid grid-rows-6 gap-3 p-3">
                             {Object.entries(teamSprites).map(([poke, sprite]) => (
                                 <div
                                     key={poke}
                                     className="relative bg-white rounded-lg shadow-sm p-2">
-                                        <div className="relative group w-24 h-24 flex items-center justify-center">
+                                        <div className="relative group w-full h-24 flex items-center justify-center">
                                             <img
                                                 className="w-24 h-24 pointer-events-none select-none"
                                                 src={sprite}

@@ -52,7 +52,7 @@ const Pokedex = ({ pokemon, close, initialMoves, onConfirm }: PokedexProps) => {
     }
 
     const addPokemonToTeam = () => {
-        if (!pokemon || moves.length !== 4) return;
+        if (!pokemon || moves.length < 1) return;
         onConfirm({ pokemon: pokemon.name, moves: [...moves] })
     }
 
