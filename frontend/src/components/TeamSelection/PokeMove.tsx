@@ -85,14 +85,14 @@ const PokeMove = ({ move, moves, setMoves }: PokeMoveProps) => {
                 </div>
                 <div className="flex gap-2">
                     <button
-                        className={clsx("rounded-full px-0.5 hover:scale-120 hover:text-red-500",
+                        className={clsx("rounded-full px-0.5 hover:scale-120 hover:text-red-500 cursor-pointer",
                                         isSelected ? "text-orange-500" : "text-[#2563eb]")}
                         onClick={handleRemove}
                     >
                         -
                     </button>
                     <button
-                        className={clsx("rounded-full px-0.5 hover:scale-120 hover:text-green-600",
+                        className={clsx("rounded-full px-0.5 hover:scale-120 hover:text-green-600 cursor-pointer",
                                         isSelected ? "text-orange-500" : "text-[#2563eb]")}
                         onClick={handleAdd}
                     >
