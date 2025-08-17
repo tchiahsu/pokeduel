@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { searchPokeStats, searchPokeMoves } from '../../services/SearchAPI';
 import PokeMove from './PokeMove';
 import PokeStat from './PokeStat';
-import type { Pokemon } from '../../types/pokemon';
+import type { Pokemon, TeamEntry } from '../../types/pokemon';
 
 /**
  * Props for the Pokedex component:
@@ -12,6 +12,7 @@ import type { Pokemon } from '../../types/pokemon';
 type PokedexProps = {
     pokemon: Pokemon | null;
     close: (value: boolean) => void;
+    addToTeam: () => void;
 }
 
 /**
@@ -105,7 +106,10 @@ const Pokedex = ({ pokemon, close }: PokedexProps) => {
                     pokeMoves.length > 0 ? (
                         <div className="flex flex-col gap-2 cursor-pointer">
                             {pokeMoves.map((move: string | { name: string }) => (
-                                <PokeMove move={move} />
+                                <PokeMove
+                                    key={typeof move === "string" ? move : move.name}
+                                    move={move}
+                                />
                             ))}
                         </div>
                     ) : (

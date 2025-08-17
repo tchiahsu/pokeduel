@@ -1,11 +1,13 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { fetchPokemonData } from '../services/SearchAPI';
+import { useSocket } from "../contexts/SocketContext";
 
 import SearchBar from '../components/TeamSelection/SearchBar';
 import Button from '../components/Button';
 import selectionBg from '../assets/bg-field.jpg';
 import Pokedex from '../components/TeamSelection/Pokedex';
-import type { Pokemon } from '../types/pokemon'
+import type { Pokemon, TeamEntry } from '../types/pokemon'
 import clsx from 'clsx'
 
 /**
@@ -16,28 +18,6 @@ type SelectionProps = {
     list: Pokemon[];
 };
 
-const API_URL_BASE = 'http://localhost:8000';
-
-/**
- * Fetch a single pokemon data by name
- * @param name : name of the pokemon
- * @returns a pokemon object { name, sprite } or null due to error
- */
-const fetchPokemonData = async (name: string): Promise<Pokemon | null> => {
-    try {
-        const res = await fetch(`${API_URL_BASE}/pokemon/${name}/stats`);
-        const data = await res.json();
-
-        if (!data || Object.keys(data).length === 0) {
-            return null;
-        }
-
-        return {name: data.name, sprite: data.frontSprite};
-    } catch (error) {
-        console.error(`Fetch error: `, error);
-        return null;
-    }
-};
 
 // Team Selection Screen
 export default function Selection({ list }: SelectionProps) {
@@ -46,6 +26,11 @@ export default function Selection({ list }: SelectionProps) {
     const [fetchedPokemon, setFetchedPokemon] = useState<Pokemon | null>(null);
     const [currPokemon, setCurrPokemon] = useState<Pokemon | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [pokemonTeam, setPokemonTeam] = useState<TeamEntry[]>([]);
+    const [playerName, setPlayerName] = useState<string | null>(null);
+
+    const socket = useSocket();
+    const navigate = useNavigate();
 
     /**
      * Searches the information for the given pokemon name
@@ -78,7 +63,26 @@ export default function Selection({ list }: SelectionProps) {
         setShowPokedex(value);
         setCurrPokemon(null);
     }
-    
+
+    /**
+     * Sends the team selection to the backend client
+     * @param team : the pokemon team selected by the player
+     * @param playerName : name of the player
+     */
+    const emitTeamSelection = async () => {
+        const teamSelection: Record<string, string[]> = {};
+        for (const { pokemon, moves } of pokemonTeam) {
+            teamSelection[pokemon] = moves;
+        }
+
+        socket.emit("setPlayer", {
+            name: playerName,
+            teamSelection,
+        });
+
+        navigate("/battle");
+    };
+
     /**
      * When the search box is cleared, reset fetches result.
      * This ensures the main list reappears as soon as the input is empty.
@@ -101,6 +105,7 @@ export default function Selection({ list }: SelectionProps) {
             />
             {/* Team Selection Title */}
             <div className="relative flex justify-between items-center max-h-[13vh] pr-2">
+
                 <h3 className="text-4xl pokemon-h3 m-10 text-left select-none flex justify-center items-center">
                     Team Selection:
                 </h3>
@@ -108,16 +113,14 @@ export default function Selection({ list }: SelectionProps) {
                     <Link to='/multiplayer'>
                         <Button>Back</Button>
                     </Link>
-                    <Link to='/battle'>
-                        <Button>Start Game</Button>
-                    </Link>
+                    <Button onClick={emitTeamSelection}>Start Game</Button>
                 </div>
             </div>
 
             {/* Pokemon Selection Screen */}           
             <div className="flex max-h-[87vh]">
                 {/* Left Panel */}
-                <div className="flex-1 flex flex-col bg-gray-300 ml-6 mr-2 mb-6 rounded-lg opacity-80 gap-7 items-center pt-6">                                                          
+                <div className="flex-1 flex flex-col bg-gray-300 ml-6 mr-2 mb-6 rounded-lg opacity-80 gap-7 items-center pt-6">                                                     
                 </div>
 
                 {/* Right Panel */}
@@ -162,7 +165,7 @@ export default function Selection({ list }: SelectionProps) {
 
                         {/* Pokemon Stats and Moves Sidebar Panel */}
                         <div className={clsx("flex overflow-x-hidden rounded-lg pb-2", showPokedex && "px-4 w-sm", !showPokedex && "px-0 w-0")}>
-                            <Pokedex pokemon={currPokemon} close={handlePokedex}/>
+                            <Pokedex pokemon={currPokemon} close={handlePokedex} addToTeam={setPokemonTeam}/>
                         </div>
 
                     </div>
