@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
 import battleBg from '../assets/bg-battle.jpg';
-import StatsCard from '../components/TeamSelection/StatsCard';
-import BattleActionsPanel from '../components/BattleActionsPanel';
+import StatsCard from '../components/BattlePage/StatsCard';
+import BattleActionsPanel from '../components/BattlePage/BattleActionsPanel';
 import BattleDisplayPanel from '../components/BattlePage/BattleDisplayPanel';
 import ActivePokeCount from '../components/BattlePage/ActivePokeCount';
 
@@ -40,9 +40,9 @@ export default function Battle() {
                 alt="Battle Background"
             />
             {/* Top Section */}
-            <div className="grid grid-cols-5 items-end p-4">
+            <div className="relative grid grid-cols-6">
                 {/* Opponent Info */}
-                <div className="flex flex-col">
+                <div className="flex flex-col ml-4 mt-4">
                 <StatsCard
                     name="Gardevoir"
                     image="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/282.png"
@@ -53,10 +53,11 @@ export default function Battle() {
                 </div>
                 <div></div>
                 <div></div>
+                <div></div>
                 {/* Opponent Pokémon */}
-                <div>
+                <div className='relative'>
                 <img
-                    className="w-80 h-auto select-none pointer-events-none"
+                    className="absolute w-80 h-auto select-none pointer-events-none"
                     src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/282.png"
                     alt="Gardevoir"
                 />
@@ -65,12 +66,13 @@ export default function Battle() {
             </div>
 
             {/* Middle Section Player Pokémon */}
-            <div className="grid grid-cols-4 items-end">
+            <div className="relative grid grid-cols-4">
                 <div></div>
+                
                 {/* Player Pokémon */}
-                <div className="flex justify-start">
+                <div className="relative flex justify-start">
                 <img
-                    className="w-[100vw] max-w-[200px] h-auto select-none pointer-events-none"
+                    className="absolute w-200 h-150 select-none pointer-events-none"
                     src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/4.png"
                     alt="Charmander"
                 />
@@ -80,26 +82,26 @@ export default function Battle() {
             </div>
 
             {/* Bottom Section (Controls + Player Stats) */} 
-            <div className="flex flex-row justify-between items-end gap-4 p-4 w-full">
+            <div className=" relative flex flex-row justify-between items-end gap-4 p-4 w-full">
                 {/* Battle Display Panel */}
-                <div className="flex-1 min-w-[250px] max-w-[500px]">
+                <div className="relative flex-1 min-w-[250px] max-w-[500px]">
                     <BattleDisplayPanel mode={mode} moves={moves} team={team} />
                 </div>
-
-                {/* Battle Actions Panel */}
-                <div className="flex-1 min-w-[200px] max-w-[400px]">
-                    <BattleActionsPanel onSelect={setMode} />
-                </div>
-
-                {/* Player Stats */}
-                <div className="flex flex-col items-end min-w-[200px]">
-                    <ActivePokeCount team={team} />
-                    <StatsCard
-                    name="Sceptile"
-                    image="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/254.png"
-                    hp={75}
-                    maxHp={150}
-                    />
+                {/* Player Stats and Action panel */}
+                <div className="relative flex flex-row gap-3">
+                    <div className="relative flex flex-col justify-end items-center min-w-[100px] max-w-[200px]">
+                        <BattleActionsPanel onSelect={setMode} />
+                    </div>
+                    <div className="relative flex flex-col items-end min-w-[200px]">
+                        
+                        <ActivePokeCount team={team} />
+                        <StatsCard
+                        name="Sceptile"
+                        image="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/254.png"
+                        hp={75}
+                        maxHp={150}
+                        />
+                    </div>
                 </div>
             </div>
         </div>
