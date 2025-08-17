@@ -1,5 +1,11 @@
 import React from "react";
 
+/**
+ * Props for the InputBox component:
+ * - placeholder: optional placeholder text
+ * - value: the current string value bound to the input field
+ * - onChange: event handler
+ */
 type InputBoxProps = {
     placeholder?: string;
     value: string;
