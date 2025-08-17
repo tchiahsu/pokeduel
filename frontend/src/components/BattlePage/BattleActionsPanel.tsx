@@ -6,9 +6,10 @@ import { IoMdExit } from "react-icons/io";
 
 interface BattleActionsPanelProps {
   onSelect: (mode: 'none' | 'attack' | 'switch') => void;
+  onQuit: () => void;
 }
 
-const BattleActionsPanel: React.FC<BattleActionsPanelProps> = ({ onSelect }) => {
+const BattleActionsPanel: React.FC<BattleActionsPanelProps> = ({ onSelect, onQuit }) => {
   return (
     <div className="flex flex-col w-20 h-50 rounded-lg bg-gray-300/80 p-1 justify-center items-center gap-2">
       <button
@@ -24,7 +25,7 @@ const BattleActionsPanel: React.FC<BattleActionsPanelProps> = ({ onSelect }) => 
         <RiExchange2Line className="text-white text-3xl" />
       </button>
       <button
-        onClick={() => onSelect('none')}
+        onClick={onQuit}
         className="w-13 h-13 bg-[#FF0000]/80 hover:bg-gray-500/80 rounded-full flex items-center justify-center"
       >
         <IoMdExit className="text-white text-3xl" />
