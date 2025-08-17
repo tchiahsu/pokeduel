@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import battleBg from '../assets/bg-battle.jpg';
 import StatsCard from '../components/BattlePage/StatsCard';
 import BattleActionsPanel from '../components/BattlePage/BattleActionsPanel';
 import BattleDisplayPanel from '../components/BattlePage/BattleDisplayPanel';
 import ActivePokeCount from '../components/BattlePage/ActivePokeCount';
+import QuitBattleBox from '../components/BattlePage/QuitBattleBox';
 
 interface Move {
   name: string;
@@ -15,6 +17,21 @@ interface Move {
 
 export default function Battle() {
     const [mode, setMode] = useState<'none' | 'attack' | 'switch'>('none');
+    const [status, setStatus] = useState<string>('Select an action to begin...');
+    const [showQuitConfirm, setShowQuitConfirm] = useState(false);
+    const navigate = useNavigate();
+
+    const handleQuit = () => {
+    setShowQuitConfirm(true);
+    };
+
+    const confirmQuit = () => {
+    navigate('/'); 
+    };
+
+    const cancelQuit = () => {
+    setShowQuitConfirm(false);
+    };
 
     //Created team and moves for testing
     const team = [
@@ -84,13 +101,30 @@ export default function Battle() {
             {/* Bottom Section (Controls + Player Stats) */} 
             <div className=" relative flex flex-row justify-between items-end gap-4 p-4 w-full">
                 {/* Battle Display Panel */}
-                <div className="relative flex-1 min-w-[250px] max-w-[500px]">
-                    <BattleDisplayPanel mode={mode} moves={moves} team={team} />
+                <div className="relative whitespace-pre-line flex-1 min-w-[250px] max-w-[500px]">
+                    <BattleDisplayPanel 
+                        mode={mode} 
+                        moves={moves} 
+                        team={team} 
+                        status={status} 
+                        // socket.emit("submitMove", {"action": attack, "index": index})
+                        onMoveSelect={(index) => {
+                            console.log('Selected move:', index);
+                            setStatus(`You selected ${moves[index].name}\nWaiting for opponent...`);
+                            setMode('none');
+                        }}
+                        onSwitchSelect={(index) => {
+                            console.log('Selected switch with index:', index);
+                            // socket.emit("submitMove", {"action": switch, "index": index})
+                            setStatus(`You switched to ${team[index].name}\nWaiting for opponent...`);
+                            setMode('none');
+                        }}
+                    />
                 </div>
                 {/* Player Stats and Action panel */}
                 <div className="relative flex flex-row gap-3">
                     <div className="relative flex flex-col justify-end items-center min-w-[100px] max-w-[200px]">
-                        <BattleActionsPanel onSelect={setMode} />
+                        <BattleActionsPanel onSelect={setMode} onQuit={handleQuit} />
                     </div>
                     <div className="relative flex flex-col items-end min-w-[200px]">
                         
@@ -104,6 +138,9 @@ export default function Battle() {
                     </div>
                 </div>
             </div>
+            {showQuitConfirm && (
+                <QuitBattleBox onConfirm={confirmQuit} onCancel={cancelQuit} />
+            )}
         </div>
 
 
