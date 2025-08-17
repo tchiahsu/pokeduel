@@ -27,6 +27,7 @@ export default function Selection({ list }: SelectionProps) {
     const [currPokemon, setCurrPokemon] = useState<Pokemon | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [pokemonTeam, setPokemonTeam] = useState<Record<string, string[]>>({});
+    const [teamSprites, setTeamSprites] = useState<Record<string, string>>({});
 
     const socket = useSocket();
     const navigate = useNavigate();
@@ -56,6 +57,8 @@ export default function Selection({ list }: SelectionProps) {
             setFetchedPokemon(null);
             setError('Pokemon not Found');
         }
+
+        handlePokedex(false);
     }
 
     /**
@@ -81,7 +84,33 @@ export default function Selection({ list }: SelectionProps) {
         
             return { ...prev, [entry.pokemon]: entry.moves.slice(0,4) };
         });
+
+        if (!teamSprites[entry.pokemon]) {
+            const fromCurrent = currPokemon?.name === entry.pokemon ? currPokemon.sprite : undefined;
+            if (fromCurrent) {
+                setTeamSprites(prev => ({ ...prev, [entry.pokemon]: fromCurrent }));
+            } else {
+                void (async () => {
+                    const poke = await fetchPokemonData(entry.pokemon);
+                    if (poke?.sprite) {
+                        setTeamSprites(prev => ({ ...prev, [entry.pokemon]: poke.sprite! }));
+                    }
+                })();
+            }
+        }
     };
+
+    const removeFromTeam = (name: string) => {
+        setPokemonTeam(prev => {
+            const { [name]: _, ...rest } = prev;
+            return rest;
+        });
+
+        setTeamSprites(prev => {
+            const { [name]: _, ...rest } = prev;
+            return rest;
+        });
+    }
 
     /**
      * Sends the team selection to the backend client
@@ -134,10 +163,31 @@ export default function Selection({ list }: SelectionProps) {
                 {/* Left Panel */}
                 <div className="flex-1 flex flex-col bg-gray-300 ml-6 mr-2 mb-6 rounded-lg opacity-80 gap-7 items-center pt-6">                                                     
                     <h4 className="text-lg font-bold">Your Team</h4>
-                    <pre className="text-xs bg-white p-2 overflow-x-auto">
-                        {JSON.stringify({ name: playerName, teamSelection: pokemonTeam }, null, 2)}
-                    </pre>
+                    {Object.keys(teamSprites).length > 0 && (
+                        <div className="grid grid-rows-6 gap-3">
+                            {Object.entries(teamSprites).map(([poke, sprite]) => (
+                                <div
+                                    key={poke}
+                                    className="relative bg-white rounded-lg shadow-sm p-2">
+                                        <div className="relative group w-24 h-24 flex items-center justify-center">
+                                            <img
+                                                className="w-24 h-24 pointer-events-none select-none"
+                                                src={sprite}
+                                                alt={poke}
+                                            />
+                                            <button
+                                                className="absolute top-0 right-0 text-center text-white bg-red-500 rounded-full w-8 h-8 invisible group-hover:visible"
+                                                onClick={() => removeFromTeam(poke)}
+                                            >
+                                                x
+                                            </button>
+                                        </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
+
 
                 {/* Right Panel */}
                 <div className="flex flex-col flex-12 relative bg-gray-300 mr-6 ml-2 mb-6 rounded-lg opacity-80 min-h-[80vh]">
