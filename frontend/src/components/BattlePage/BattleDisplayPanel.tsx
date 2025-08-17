@@ -18,6 +18,9 @@ interface BattleDisplayPanelProps {
   mode: 'none' | 'attack' | 'switch';
   moves: Move[];
   team: Pokemon[];
+  status?: string;
+  onMoveSelect?: (index: number) => void;
+  onSwitchSelect?: (index: number) => void;
 }
 
 // Background color can be modified - can separately go in services too
@@ -42,7 +45,7 @@ const typeColorMap: Record<string, string> = {
   fairy: 'bg-fuchsia-300',
 };
 
-const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({ mode, moves, team }) => {
+const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({ mode, moves, team, status, onMoveSelect, onSwitchSelect }) => {
   return (
     <div className="w-258 h-50 bg-gray-300/80 rounded-lg p-4">
       {mode === 'attack' && (
@@ -53,7 +56,7 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({ mode, moves, te
               <button
                 key={i}
                 className={`p-2 mt-2 w-full border border-gray-700 rounded ${bgColor} text-white font-bold hover:brightness-110`}
-                onClick={() => console.log(`Used ${move.name}`)}
+                onClick={() => onMoveSelect?.(i)}
               >
                 <div>{move.name}</div>
                 <div className="text-sm">{move.pp}/{move.maxPp} PP</div>
@@ -66,8 +69,10 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({ mode, moves, te
       {mode === 'switch' && (
         <div className="grid grid-cols-3 gap-1 place-items-center h-full">
           {team.map((poke, i) => (
-            <div
+            <button
               key={i}
+              disabled={poke.hp <= 0}
+              onClick={() => onSwitchSelect?.(i)}
               className={`flex w-80 items-center justify-between p-3 border rounded-md ${
                 poke.hp <= 0
                   ? 'bg-gray-200 text-gray-500'
@@ -79,15 +84,16 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({ mode, moves, te
                 <span className="font-bold">{poke.name}</span>
               </div>
               <span className="font-bold">{poke.hp}/{poke.maxHp}</span>
-            </div>
+            </button>
           ))}
         </div>
       )}
       {/* To be modified */}
       {mode === 'none' && (
-        <div className="text-gray-600 mt-18 text-left text-xl italic select-none pointer-events-none">Select an action to begin...</div>
+        <div className="text-gray-600 flex justify-left items-center h-full text-xl italic select-none pointer-events-none">
+          {status || "Select an action to begin..."}
+        </div>
       )}
-      {/* Functionality for Quit to be added */}
     </div>
   );
 };
