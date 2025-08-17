@@ -12,15 +12,18 @@ import type { Pokemon } from '../../types/pokemon';
 type PokedexProps = {
     pokemon: Pokemon | null;
     close: (value: boolean) => void;
+    initialMoves: string[];
+    onConfirm: (entry: { pokemon: string; moves: string[] }) => void;
 }
 
 /**
  * Display detailed stats and available moves for a selected pokemon
  */
-const Pokedex = ({ pokemon, close }: PokedexProps) => {
+const Pokedex = ({ pokemon, close, initialMoves, onConfirm }: PokedexProps) => {
     const [pokeData, setPokeData] = useState<any>(null);
     const [pokeMoves, setPokeMoves] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [moves, setMoves] = useState<string[]>(initialMoves)
 
     /**
      * Fetch Pokemon stats and moves from the API
@@ -48,6 +51,11 @@ const Pokedex = ({ pokemon, close }: PokedexProps) => {
         }
     }
 
+    const addPokemonToTeam = () => {
+        if (!pokemon || moves.length !== 4) return;
+        onConfirm({ pokemon: pokemon.name, moves: [...moves] })
+    }
+
     /**
      * Refetch Pokemon data whenever the selected pokemon changes
      */
@@ -56,6 +64,13 @@ const Pokedex = ({ pokemon, close }: PokedexProps) => {
             fetchPokeData();
         }
     }, [pokemon?.name]);
+
+    /**
+     * Reset local draft of the pokemon when we switch pokemons
+     */
+    useEffect(() => {
+        setMoves(initialMoves ?? []);
+    }, [pokemon?.name, initialMoves]);
 
     // Loading animation while data is being fetched
     if (isLoading) {
@@ -98,14 +113,19 @@ const Pokedex = ({ pokemon, close }: PokedexProps) => {
             <div className="relative px-4 pb-4 flex-1 flex flex-col overflow-y-auto text-xs no-scrollbar">
                 <div className="sticky top-0 flex justify-between items-center bg-white py-3">
                     <h3 className="text-[13px] font-semibold text-gray-800 text-left indent-0.5">Select Moves</h3>
-                    <span className="text-[10px]">0/4</span>
+                    <span className="text-[10px]">{moves.length}/4</span>
                 </div>
                 
                 {pokeMoves ? (
                     pokeMoves.length > 0 ? (
                         <div className="flex flex-col gap-2 cursor-pointer">
                             {pokeMoves.map((move: string | { name: string }) => (
-                                <PokeMove move={move} />
+                                <PokeMove
+                                    key={typeof move === "string" ? move : move.name}
+                                    move={move}
+                                    moves={moves}
+                                    setMoves={setMoves}
+                                />
                             ))}
                         </div>
                     ) : (
@@ -129,7 +149,8 @@ const Pokedex = ({ pokemon, close }: PokedexProps) => {
                     Close
                 </button>
                 <button
-                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg cursor-pointer">
+                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg cursor-pointer"
+                    onClick={addPokemonToTeam}>
                     Add to Team
                 </button>
             </div>

@@ -57,7 +57,7 @@ export default function Multiplayer() {
     }
 
     socket.emit("joinRoom", roomID);
-    navigate("/team-selection");
+    navigate("/team-selection", { state: { playerName } });
   };
 
   // Handles deleting a room
