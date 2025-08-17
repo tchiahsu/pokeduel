@@ -70,7 +70,7 @@ export default function SinglePlayer() {
           <InputBox placeholder="Enter your name" value={playerName} onChange={(e) => setPlayerName(e.target.value)} />
           <div className="flex gap-2">
             <Link to="/">
-              <Button>Back to Home</Button>
+              <Button onClick={handleDeleteRoom}>Back to Home</Button>
             </Link>
             <Link to="/team-selection">
               <Button onClick={createRoomID} disabled={!playerName}>
