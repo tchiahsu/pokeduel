@@ -25,9 +25,13 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
 
       // Begin the game if there are two players
       if (battleModel.hasTwoPlayers()) {
-        io.to(roomID).emit("gameStart", () => {
-          console.log(`Room ${roomID}'s battle has begun`);
-        });
+        console.log(`Room ${roomID}'s battle has begun`);
+        const player1ID = battleModel.getPlayer1ID();
+        const player2ID = battleModel.getPlayer2ID();
+
+        const nextOptions = battleModel.getNextOptions();
+        io.to(player1ID).emit("nextOptions", nextOptions[player1ID]);
+        io.to(player2ID).emit("nextOptions", nextOptions[player2ID]);
       }
     });
 
