@@ -145,7 +145,7 @@ export default function Battle() {
                 <div className="relative flex justify-start">
                 <img
                     className="absolute w-200 h-150 select-none pointer-events-none"
-                    src={selfActive.image}
+                    src={getBackSpriteUrl(selfActive.image)}
                     alt={selfActive.name}
                 />
                 </div>
@@ -265,4 +265,9 @@ export default function Battle() {
         //     </div>
         // </div>
     );
+    function getBackSpriteUrl(frontUrl: string): string {
+        const match = frontUrl.match(/\/(\d+)\.png$/);
+        const id = match ? match[1] : '0';
+        return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/${id}.png`;
+    }
 }
