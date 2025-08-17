@@ -72,7 +72,7 @@ export default function SinglePlayer() {
             <Link to="/">
               <Button>Back to Home</Button>
             </Link>
-            <Link to="/team-selection">
+            <Link to="/team-selection" state={{ playerName }}>
               <Button onClick={createRoomID} disabled={!playerName}>
                 Start Game
               </Button>
