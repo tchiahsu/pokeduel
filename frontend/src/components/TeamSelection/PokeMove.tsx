@@ -84,20 +84,6 @@ const PokeMove = ({ move, moves, setMoves }: PokeMoveProps) => {
                     {formattedName}
                 </div>
                 <div className="flex gap-2 justify-right items-center">
-                    {/* <button
-                        className={clsx("flex justify-center items-center rounded-sm px-0.5 bg-[#2563eb] text-white hover:scale-110 cursor-pointer hover:bg-red-700",
-                                        isSelected ? "text-orange-500" : "text-[#2563eb]")}
-                        onClick={handleRemove}
-                    >
-                        -
-                    </button>
-                    <button
-                        className={clsx("flex justify-center items-center rounded-sm px-0.5 bg-[#2563eb] text-white hover:scale-110 cursor-pointer  hover:bg-green-700",
-                                        isSelected ? "text-orange-500" : "text-[#2563eb]")}
-                        onClick={handleAdd}
-                    >
-                        +
-                    </button> */}
                     <button
                         className={clsx("flex rounded-sm bg-[#2563eb] text-white hover:scale-110 cursor-pointer h-full",
                                         "justify-center items-center w-5",
