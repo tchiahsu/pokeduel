@@ -8,6 +8,7 @@ import Selection from "./pages/Selection";
 import Battle from "./pages/Battle";
 import { SocketContext } from "./contexts/SocketContext";
 import "./App.css";
+import TestAnimation from "./testAnimations/animations";
 
 const API_URL_BASE = "http://localhost:8000";
 const socket: Socket = io(API_URL_BASE);
@@ -35,19 +36,20 @@ function App() {
   }, []);
 
   return (
-    <SocketContext.Provider value={socket}>
-      <HashRouter>
-        <div>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/multiplayer" element={<Multiplayer />} />
-            <Route path="/team-selection" element={<Selection list={pokemonList} />} />
-            <Route path="/battle" element={<Battle />} />
-            <Route path="/single-player" element={<SinglePlayer />} />
-          </Routes>
-        </div>
-      </HashRouter>
-    </SocketContext.Provider>
+    // <SocketContext.Provider value={socket}>
+    //   <HashRouter>
+    //     <div>
+    //       <Routes>
+    //         <Route path="/" element={<Home />} />
+    //         <Route path="/multiplayer" element={<Multiplayer />} />
+    //         <Route path="/team-selection" element={<Selection list={pokemonList} />} />
+    //         <Route path="/battle" element={<Battle />} />
+    //         <Route path="/single-player" element={<SinglePlayer />} />
+    //       </Routes>
+    //     </div>
+    //   </HashRouter>
+    // </SocketContext.Provider>
+    <TestAnimation pokemon="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/330.png"></TestAnimation>
   );
 }
 //initial loading component

@@ -42,7 +42,7 @@ export default class BattleUtils {
    * @returns true if the Pokémon has 0 or less HP, otherwise false.
    */
   public pokemonIsDefeated(player: Player): boolean {
-    return player.getCurrentPokemon().getHp() <= 0;
+    return player.getCurrentPokemon().getHP() <= 0;
   }
 
   /**

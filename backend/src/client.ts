@@ -39,8 +39,8 @@ async function gameRoomTest() {
     },
   });
 
-  socket.on("gameStart", () => {
-    getMove();
+  socket.on("currentState", (data) => {
+    console.log(data);
   });
 
   function getMove() {
