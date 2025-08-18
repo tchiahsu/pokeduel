@@ -14,6 +14,28 @@ type PlayerMove = {
 };
 
 /**
+ * A type representing an effect that triggers at the end of a turn.
+ */
+type EndTurnEffect = {
+  player: string;
+  effect: () => string | null;
+};
+
+/**
+ * A type representing an event in the battle (attack, switch, faint, or status effect).
+ * Used to animate battle actions and display messages to the players.
+ */
+type Event = {
+  user: string; // "self" | "opponent"
+  animation: string; // "attack" | "switch" | "status" | "faint" | "none"
+  message: string;
+  type: string;
+  image: string;
+  name: string;
+  pokemon?: Pokemon;
+};
+
+/**
  * A type representing the set of possible actions a player can take on their next turn.
  */
 type NextOptions = {
@@ -44,25 +66,23 @@ type PokemonOptions = {
 };
 
 /**
- * A type representing an event in the battle (attack, switch, faint, or status effect).
- * Used to animate battle actions and display messages to the players.
+ * A type representing the overall state of the battle visible to a player.
  */
-type Event = {
-  user: string; // "self" | "opponent"
-  animation: string; // "attack" | "switch" | "status" | "faint" | "none"
-  message: string;
-  type: string;
-  image: string;
-  name: string;
-  pokemon?: Pokemon;
+type CurrentState = {
+  self: PlayerState;
+  opponent: PlayerState;
 };
 
 /**
- * A type representing an effect that triggers at the end of a turn.
+ * A type representing exact state of a player.
  */
-type EndTurnEffect = {
-  player: string;
-  effect: () => string | null;
+type PlayerState = {
+  name: string;
+  hp: number;
+  maxHP: number;
+  sprite: string;
+  remainingPokemon: number;
+  teamCount: number;
 };
 
 /**
@@ -549,6 +569,12 @@ export default class BattleModel {
     return nextOptions;
   }
 
+  /**
+   * Builds the current state information for both players.
+   * This includes details about their own Pokemon and their opponent’s Pokemon.
+   *
+   * @returns A mapping from each player ID to their current state.
+   */
   public getCurrentState(): Record<string, CurrentState> {
     const currentState: Record<string, CurrentState> = {};
     currentState[this.player1ID] = this.buildPlayerCurrentState(this.player1ID);
@@ -556,6 +582,13 @@ export default class BattleModel {
     return currentState;
   }
 
+  /**
+   * Builds the current state for a specific player.
+   * Includes information about the player’s active Pokemon and the opponent’s active Pokemon.
+   *
+   * @param playerID The ID of the player.
+   * @returns A CurrentState object containing self and opponent details
+   */
   public buildPlayerCurrentState(playerID: string): CurrentState {
     const { player } = this.getPlayerAndMoveByID(playerID);
     const playerPokemon: Pokemon = player.getCurrentPokemon();
@@ -628,17 +661,3 @@ export default class BattleModel {
     return playerID === this.botPlayer.getID();
   }
 }
-
-type CurrentState = {
-  self: PlayerState;
-  opponent: PlayerState;
-};
-
-type PlayerState = {
-  name: string;
-  hp: number;
-  maxHP: number;
-  sprite: string;
-  remainingPokemon: number;
-  teamCount: number;
-};
