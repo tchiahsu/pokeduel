@@ -74,29 +74,37 @@ const PokeMove = ({ move, moves, setMoves }: PokeMoveProps) => {
     };
     
     return (
-        <div className={clsx("flex flex-col px-2 rounded-sm font-medium capitalize w-full text-left justify-center",
+        <div className={clsx("flex flex-col pl-2 rounded-sm font-medium capitalize w-full text-left justify-center",
                               isSelected ? " bg-yellow-200 text-orange-500 hover:bg-yellow-300" : "bg-blue-50 text-blue-800 hover:bg-blue-100")}>
 
             {/* Pokemon Move Button */}
-            <div className="flex py-1">
-                <div className="flex flex-1 text-[10px] justify-left items-center"
+            <div className="flex">
+                <div className="flex flex-1 py-1 text-[10px] justify-left items-center"
                      onClick={toggleDropdown}>   
                     {formattedName}
                 </div>
-                <div className="flex gap-2">
-                    <button
-                        className={clsx("rounded-full px-0.5 hover:scale-120 hover:text-red-500 cursor-pointer",
+                <div className="flex gap-2 justify-right items-center">
+                    {/* <button
+                        className={clsx("flex justify-center items-center rounded-sm px-0.5 bg-[#2563eb] text-white hover:scale-110 cursor-pointer hover:bg-red-700",
                                         isSelected ? "text-orange-500" : "text-[#2563eb]")}
                         onClick={handleRemove}
                     >
                         -
                     </button>
                     <button
-                        className={clsx("rounded-full px-0.5 hover:scale-120 hover:text-green-600 cursor-pointer",
+                        className={clsx("flex justify-center items-center rounded-sm px-0.5 bg-[#2563eb] text-white hover:scale-110 cursor-pointer  hover:bg-green-700",
                                         isSelected ? "text-orange-500" : "text-[#2563eb]")}
                         onClick={handleAdd}
                     >
                         +
+                    </button> */}
+                    <button
+                        className={clsx("flex rounded-sm bg-[#2563eb] text-white hover:scale-110 cursor-pointer h-full",
+                                        "justify-center items-center w-5",
+                                        isSelected ? "text-orange-700 bg-yellow-500" : "text-[#2563eb]")}
+                        onClick={isSelected ? handleRemove : handleAdd}
+                    >
+                    {isSelected ? "-" : "+"}
                     </button>
                 </div>
             </div>

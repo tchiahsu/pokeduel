@@ -18,7 +18,6 @@ type SelectionProps = {
     list: Pokemon[];
 };
 
-
 // Team Selection Screen
 export default function Selection({ list }: SelectionProps) {
     const [showPokedex, setShowPokedex] = useState(false)
@@ -28,6 +27,9 @@ export default function Selection({ list }: SelectionProps) {
     const [error, setError] = useState<string | null>(null);
     const [pokemonTeam, setPokemonTeam] = useState<Record<string, string[]>>({});
     const [teamSprites, setTeamSprites] = useState<Record<string, string>>({});
+    const [leadPokemon, setLeadPokemon] = useState<string | null>(null);
+    const [showTeamMoves, setShowTeamMoves] = useState(false);
+    const [movesTarget, setMovesTarget] = useState<string | null>(null);
 
     const socket = useSocket();
     const navigate = useNavigate();
@@ -79,6 +81,7 @@ export default function Selection({ list }: SelectionProps) {
             const alreadyInTeam = !prev[entry.pokemon];
 
             if (alreadyInTeam && size >= 6) return prev;
+            if (!leadPokemon) setLeadPokemon(entry.pokemon);
         
             return { ...prev, [entry.pokemon]: entry.moves.slice(0,4) };
         });
@@ -98,6 +101,9 @@ export default function Selection({ list }: SelectionProps) {
         }
     };
 
+    /**
+     * Remove a pokemon from the team
+     */
     const removeFromTeam = (name: string) => {
         setPokemonTeam(prev => {
             const { [name]: _, ...rest } = prev;
@@ -108,6 +114,33 @@ export default function Selection({ list }: SelectionProps) {
             const { [name]: _, ...rest } = prev;
             return rest;
         });
+        if (leadPokemon === name) {
+            const remaining = Object.keys(pokemonTeam).filter(poke => poke !== name);
+            setLeadPokemon(remaining[0] ?? null);
+        };
+    }
+
+    /** 
+     * Open or Closes the panel with the moves for a pokemon
+    */
+    const triggernMovesPanel = (name: string | null) => {
+        if (!name) return;
+        if (!pokemonTeam[name]) return;
+        setShowTeamMoves(!showTeamMoves);
+        setMovesTarget(name);
+    }
+
+    /**
+     * Builds the ordered object (with lead at the start) before emitting
+     * - team : the pokemon team with the name and the list of moves
+     * - leadName : the pokemon that was selected as lead
+     */
+    const AddLeadToStart = (team: Record<string, string[]>, leadName: string | null) => {
+        const names = Object.keys(team);
+        const orderedNames = leadName ? [leadName, ...names.filter(poke => poke !== leadName)] : names;
+
+        // Reconstruct object in the new order
+        return Object.fromEntries(orderedNames.map(poke => [poke, team[poke]]));
     }
 
     /**
@@ -116,8 +149,9 @@ export default function Selection({ list }: SelectionProps) {
      * - playerName : name of the player
      */
     const emitTeamSelection = async () => {
-        console.log("emit setPlayer", { name: playerName, teamSelection: pokemonTeam })
-        socket.emit("setPlayer", { name: playerName, teamSelection: pokemonTeam });
+        const orderedTeam = AddLeadToStart(pokemonTeam, leadPokemon);
+        console.log("emit setPlayer", { name: playerName, teamSelection: orderedTeam })
+        socket.emit("setPlayer", { name: playerName, teamSelection: orderedTeam });
         navigate("/battle");
     };
 
@@ -159,26 +193,49 @@ export default function Selection({ list }: SelectionProps) {
             <div className="flex max-h-[87vh]">
 
                 {/* Left Panel */}
-                <div className="flex-1 flex flex-col bg-gray-300 ml-6 mr-2 mb-6 rounded-lg opacity-80 gap-7 items-center pt-6">                                                     
+                <div className="w-36 flex flex-col bg-gray-300 ml-6 mr-2 mb-6 rounded-lg opacity-80 items-center pt-4">                                                     
                     <h4 className="text-lg font-bold">Your Team</h4>
                     {Object.keys(teamSprites).length > 0 && (
                         <div className="grid grid-rows-6 gap-3 p-3">
                             {Object.entries(teamSprites).map(([poke, sprite]) => (
                                 <div
                                     key={poke}
-                                    className="relative bg-white rounded-lg shadow-sm p-2">
-                                        <div className="relative group w-full h-24 flex items-center justify-center">
-                                            <img
-                                                className="w-24 h-24 pointer-events-none select-none"
-                                                src={sprite}
-                                                alt={poke}
-                                            />
-                                            <button
-                                                className="absolute top-0 right-0 text-center text-white bg-red-500 rounded-full w-8 h-8 invisible group-hover:visible"
-                                                onClick={() => removeFromTeam(poke)}
-                                            >
-                                                x
-                                            </button>
+                                    className="relative rounded-lg p-2">
+                                        <div className="flex-col relative group w-full h-24 flex items-center justify-center text-[12px]">
+                                            <div className={clsx("flex flex-col justify-center items-center group-hover:opacity-50",
+                                                                 leadPokemon === poke ? "text-blue-600" : ""
+                                            )}>
+                                                <img
+                                                    className="pointer-events-none select-none"
+                                                    src={sprite}
+                                                    alt={poke}
+                                                />
+                                                {poke}
+                                            </div>
+                                            <div className="absolute inset-0 z-10 flex flex-col justify-center items-center pointer-events-none gap-1 pt-3">
+                                                <button
+                                                    className={clsx("flex justify-center items-center text-[8px] rounded-full w-full h-1/3 p-2",
+                                                                    "transition-opacity duration-400 ease-in-out hover:scale-105 opacity-0 group-hover:opacity-100",
+                                                                    leadPokemon === poke ? "text-gray-500 bg-gray-700" : "pointer-events-auto text-white bg-yellow-500")}
+                                                    onClick={() => setLeadPokemon(poke)}
+                                                >
+                                                    Set Starter
+                                                </button>
+                                                <button
+                                                    className="pointer-events-auto flex justify-center items-center text-[8px] text-white bg-blue-500 rounded-full w-full h-1/3 p-2
+                                                               transition-opacity duration-400 ease-in-out hover:scale-105 opacity-0 group-hover:opacity-100"
+                                                    onClick={() => triggernMovesPanel(poke)}
+                                                >
+                                                    Show Moves
+                                                </button>
+                                                <button
+                                                    className="pointer-events-auto flex justify-center items-center text-[8px] text-white bg-red-500 rounded-full w-full h-1/3 p-2
+                                                               transition-opacity duration-400 ease-in-out hover:scale-105 opacity-0 group-hover:opacity-100"
+                                                    onClick={() => removeFromTeam(poke)}
+                                                >
+                                                    Remove
+                                                </button>
+                                            </div>
                                         </div>
                                 </div>
                             ))}
@@ -228,7 +285,7 @@ export default function Selection({ list }: SelectionProps) {
                         </div>
 
                         {/* Pokemon Stats and Moves Sidebar Panel */}
-                        <div className={clsx("flex overflow-x-hidden rounded-lg pb-2", showPokedex && "px-4 w-sm", !showPokedex && "px-0 w-0")}>
+                        <div className={clsx("flex overflow-x-hidden rounded-lg pb-2", showPokedex && "px-4 w-md", !showPokedex && "px-0 w-0")}>
                             <Pokedex
                                 pokemon={currPokemon}
                                 close={handlePokedex}
@@ -236,11 +293,8 @@ export default function Selection({ list }: SelectionProps) {
                                 onConfirm={handleAddToTeam}
                             />
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
         </div>
     );
