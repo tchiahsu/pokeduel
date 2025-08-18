@@ -28,6 +28,8 @@ export default function Selection({ list }: SelectionProps) {
     const [pokemonTeam, setPokemonTeam] = useState<Record<string, string[]>>({});
     const [teamSprites, setTeamSprites] = useState<Record<string, string>>({});
     const [leadPokemon, setLeadPokemon] = useState<string | null>(null);
+    const [showTeamMoves, setShowTeamMoves] = useState(false);
+    const [movesTarget, setMovesTarget] = useState<string | null>(null);
 
     const socket = useSocket();
     const navigate = useNavigate();
@@ -99,6 +101,9 @@ export default function Selection({ list }: SelectionProps) {
         }
     };
 
+    /**
+     * Remove a pokemon from the team
+     */
     const removeFromTeam = (name: string) => {
         setPokemonTeam(prev => {
             const { [name]: _, ...rest } = prev;
@@ -113,6 +118,16 @@ export default function Selection({ list }: SelectionProps) {
             const remaining = Object.keys(pokemonTeam).filter(poke => poke !== name);
             setLeadPokemon(remaining[0] ?? null);
         };
+    }
+
+    /** 
+     * Open or Closes the panel with the moves for a pokemon
+    */
+    const triggernMovesPanel = (name: string | null) => {
+        if (!name) return;
+        if (!pokemonTeam[name]) return;
+        setShowTeamMoves(!showTeamMoves);
+        setMovesTarget(name);
     }
 
     /**
@@ -186,8 +201,10 @@ export default function Selection({ list }: SelectionProps) {
                                 <div
                                     key={poke}
                                     className="relative rounded-lg p-2">
-                                        <div className="flex-col relative group w-full h-24 flex items-center justify-center text-xs">
-                                            <div className="flex flex-col justify-center items-center group-hover:opacity-50">
+                                        <div className="flex-col relative group w-full h-24 flex items-center justify-center text-[12px]">
+                                            <div className={clsx("flex flex-col justify-center items-center group-hover:opacity-50",
+                                                                 leadPokemon === poke ? "text-blue-600" : ""
+                                            )}>
                                                 <img
                                                     className="pointer-events-none select-none"
                                                     src={sprite}
@@ -207,9 +224,9 @@ export default function Selection({ list }: SelectionProps) {
                                                 <button
                                                     className="pointer-events-auto flex justify-center items-center text-[8px] text-white bg-blue-500 rounded-full w-full h-1/3 p-2
                                                                transition-opacity duration-400 ease-in-out hover:scale-105 opacity-0 group-hover:opacity-100"
-                                                    onClick={() => removeFromTeam(poke)}
+                                                    onClick={() => triggernMovesPanel(poke)}
                                                 >
-                                                    View Moves
+                                                    Show Moves
                                                 </button>
                                                 <button
                                                     className="pointer-events-auto flex justify-center items-center text-[8px] text-white bg-red-500 rounded-full w-full h-1/3 p-2
@@ -276,11 +293,8 @@ export default function Selection({ list }: SelectionProps) {
                                 onConfirm={handleAddToTeam}
                             />
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
         </div>
     );
