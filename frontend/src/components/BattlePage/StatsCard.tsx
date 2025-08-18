@@ -1,17 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
+/**
+ * Prop that represents stats card of a Pokemon.
+ */
 interface StatsCardProps {
   name: string;
-  image: string;
+  image: string | undefined;
   hp: number;
   maxHp: number;
 }
 
 const StatsCard: React.FC<StatsCardProps> = ({ name, image, hp, maxHp }) => {
-  const [currentHp, setCurrentHp] = useState<number>(hp); // Added for future use
-  const hpPercentage = (currentHp / maxHp) * 100;
+  const [currentHp, setCurrentHp] = useState<number>(hp);
 
-  // Function to handle progress bar color
+  useEffect(() => {
+    setCurrentHp(hp);
+  }, [hp]);
+
+  var hpPercentage = (currentHp / maxHp) * 100;
+
+  // Gets the progress bar color based on hp
   const getHpColor = () => {
     if (hpPercentage <= 20) return 'bg-red-600';
     if (hpPercentage <= 50) return 'bg-yellow-500';
@@ -23,9 +31,9 @@ const StatsCard: React.FC<StatsCardProps> = ({ name, image, hp, maxHp }) => {
       {/* For Name and Sprite of Current Pokemon */}
       <div className="flex justify-between items-center">
         <span className="text-xl font-bold">{name}</span>
-        <img src={image} alt={name} className="w-12 h-auto" />
+        <img src={image} alt={name} className="w-12 h-auto" /> 
       </div>
-      {/* For Hp of Current Pokemon*/}
+      {/* For Hp of Current Pokemon */}
       <div className="mt-14 text-lg text-left">
         <strong>HP:</strong> {currentHp}/{maxHp}
         {/* Progress bar as a nested div */}
