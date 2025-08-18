@@ -5,7 +5,7 @@ import BattleModel from "../model/BattleModel.js";
 export default function registerSocketHandlers(io: Server, roomManager: RoomManager) {
   io.on("connection", (socket) => {
     console.log(`Player ${socket.id} has connected`);
-    
+
     // Join room as soon as the player connects
     socket.on("joinRoom", async (roomID) => {
       socket.join(roomID);
@@ -29,7 +29,12 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
         const player1ID = battleModel.getPlayer1ID();
         const player2ID = battleModel.getPlayer2ID();
 
+        const currentState = battleModel.getCurrentState();
         const nextOptions = battleModel.getNextOptions();
+
+        io.to(player1ID).emit("currentState", currentState[player1ID]);
+        io.to(player2ID).emit("currentState", currentState[player2ID]);
+
         io.to(player1ID).emit("nextOptions", nextOptions[player1ID]);
         io.to(player2ID).emit("nextOptions", nextOptions[player2ID]);
       }
@@ -75,6 +80,8 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
                 const alivePlayer = battleModel.getOppositePlayer(faintedPlayer1);
                 const turnSummary = battleModel.getTurnSummary();
                 io.to(alivePlayer).emit("turnSummary", turnSummary[alivePlayer]);
+                const currentState = battleModel.getCurrentState();
+                io.to(alivePlayer).emit("currentState", currentState[alivePlayer]);
                 const nextOptions = battleModel.getNextOptions();
                 io.to(alivePlayer).emit("nextOptions", nextOptions[alivePlayer]);
               } else {
@@ -99,8 +106,12 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
           return;
         }
 
-        // Send out the next options to each player if no pokemon has fainted
+        // Send out the new state and the next options to each player if no pokemon has fainted
+        const currentState = battleModel.getCurrentState();
         const nextOptions = battleModel.getNextOptions();
+
+        io.to(player1ID).emit("currentState", currentState[player1ID]);
+        io.to(player2ID).emit("currentState", currentState[player2ID]);
         io.to(player1ID).emit("nextOptions", nextOptions[player1ID]);
         io.to(player2ID).emit("nextOptions", nextOptions[player2ID]);
       }
@@ -121,8 +132,12 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
         io.to(player1ID).emit("turnSummary", turnSummary[player1ID]);
         io.to(player2ID).emit("turnSummary", turnSummary[player2ID]);
 
-        // Send out the next options to each player
+        // Send out the new state and the next options to each player
+        const currentState = battleModel.getCurrentState();
         const nextOptions = battleModel.getNextOptions();
+
+        io.to(player1ID).emit("currentState", currentState[player1ID]);
+        io.to(player2ID).emit("currentState", currentState[player2ID]);
         io.to(player1ID).emit("nextOptions", nextOptions[player1ID]);
         io.to(player2ID).emit("nextOptions", nextOptions[player2ID]);
       }
