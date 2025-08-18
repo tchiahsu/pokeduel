@@ -5,7 +5,7 @@ import BattleModel from "../model/BattleModel.js";
 export default function registerSocketHandlers(io: Server, roomManager: RoomManager) {
   io.on("connection", (socket) => {
     console.log(`Player ${socket.id} has connected`);
-
+    
     // Join room as soon as the player connects
     socket.on("joinRoom", async (roomID) => {
       socket.join(roomID);
@@ -81,7 +81,6 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
                 io.to(faintedPlayer1).emit("requestFaintedSwitch", battleModel.getSwitchOptions(faintedPlayer1));
               }
             }
-
             return;
           }
 

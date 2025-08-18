@@ -17,8 +17,12 @@ type PlayerMove = {
  * A type representing the set of possible actions a player can take on their next turn.
  */
 type NextOptions = {
-  moves: Record<string, number>[];
+  moves: {name: string, type: string, pp: number, maxPp: number}[];
   pokemon: PlayerPokemon[];
+  opponent: {
+    team: PlayerPokemon[];
+    activeIndex: number;
+  };
 };
 
 /**
@@ -28,6 +32,7 @@ type NextOptions = {
 type PlayerPokemon = {
   name: string;
   hp: number;
+  maxHp: number;
   sprite: string;
 };
 
@@ -402,7 +407,6 @@ export default class BattleModel {
     } else if (action === "status") {
       event.type = playerPokemon.getStatus();
     }
-
     return event;
   }
 
@@ -455,13 +459,16 @@ export default class BattleModel {
    * @param playerID The ID of the player.
    * @returns An array of objects, each mapping a move name to its PP.
    */
-  private getPlayerMoveOptions(playerID: string): Record<string, number>[] {
+  private getPlayerMoveOptions(playerID: string): { name: string; type: string; pp: number; maxPp: number }[] {
     const { player } = this.getPlayerAndMoveByID(playerID);
     const currentPokemon = player.getCurrentPokemon();
-    const playerMoves: Record<string, number>[] = [];
-    for (const move of currentPokemon.getMoves()) {
-      playerMoves.push({ [move.getName()]: move.getPP() });
-    }
+    const playerMoves = currentPokemon.getMoves().map((move) => ({
+      name: move.getName(),
+      type: move.getType(),
+      pp: move.getPP(),
+      maxPp: move.getMaxPP()
+    }));
+
     return playerMoves;
   }
 
@@ -478,6 +485,7 @@ export default class BattleModel {
       const playerPokemon: PlayerPokemon = {
         name: pokemon.getName(),
         hp: pokemon.getHp(),
+        maxHp: pokemon.getMaxHP(),
         sprite: pokemon.getFrontSprite(),
       };
       playerTeam.push(playerPokemon);
@@ -496,25 +504,40 @@ export default class BattleModel {
   }
 
   /**
-   * Builds the set of available moves and Pokemon to switch to for the given player.
+   * Builds the set of available moves, Pokemon to switch to and opponent Pokemon team for the given player.
    *
    * @param playerID The ID of the player.
    * @returns An object containing the available moves and Pokemon to switch for the given player.
    */
   public buildPlayerNextOptions(playerID: string): NextOptions {
+    const opponentID = this.getOppositePlayer(playerID);
+    const opponentPlayer = this.players[opponentID];
+
+    const opponentTeam = opponentPlayer.getTeam().map((pokemon) => ({
+      name: pokemon.getName(),
+      hp: pokemon.getHp(),
+      maxHp: pokemon.getMaxHP(),
+      sprite: pokemon.getFrontSprite(), 
+    }));
+
+    const opponentActiveIndex = opponentPlayer.getCurrentPokemonIndex();
+
     const nextOptions: NextOptions = {
       moves: this.getPlayerMoveOptions(playerID),
       pokemon: this.getPlayerPokemonOptions(playerID),
+      opponent: {
+        team: opponentTeam,
+        activeIndex: opponentActiveIndex
+      }
     };
-
     return nextOptions;
   }
 
   /**
-   * Builds the set of available moves and Pokemon switches for both players.
+   * Builds the set of available moves, Pokemon switches and opponent team for both players.
    *
    * @returns An object mapping the player ID to an object containing the avaiable moves
-   *          and Pokemon that player can switch to.
+   *          , opponent team and Pokemon that player can switch to.
    */
   public getNextOptions(): Record<string, NextOptions> {
     const nextOptions: Record<string, NextOptions> = {};

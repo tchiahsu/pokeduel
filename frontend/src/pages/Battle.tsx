@@ -10,6 +10,9 @@ import BattleDisplayPanel from '../components/BattlePage/BattleDisplayPanel';
 import ActivePokeCount from '../components/BattlePage/ActivePokeCount';
 import QuitBattleBox from '../components/BattlePage/QuitBattleBox';
 
+/**
+ * Represents a move that a current pokemon can use.
+ */
 interface Move {
   name: string;
   type: string;
@@ -17,6 +20,9 @@ interface Move {
   maxPp: number;
 }
 
+/**
+ * Represents a pokemon in a Player's team.
+ */
 interface TeamMember {
   name: string;
   image: string;
@@ -24,6 +30,9 @@ interface TeamMember {
   maxHp: number;
 }
 
+/**
+ * Battle Screen for handling game play.
+ */
 export default function Battle() {
     const [mode, setMode] = useState<'none' | 'attack' | 'switch'>('none');
     const [status, setStatus] = useState<string | any>('Select an action to begin...');
@@ -40,72 +49,107 @@ export default function Battle() {
     const socket = useSocket();
 
     useEffect(() => {
-        function onNextOptions(data:any) {
-            console.log("nextOptions:",data);
-
-            const parsedMoves: Move[] = data.moves.map((moveObj: any) => {
-                const name = Object.keys(moveObj)[0];
-                return {
-                    name,
-                    pp: moveObj[name]
-                };
-            });
-            setSelfMoves(parsedMoves);
-
+        /**
+         * Handles nextOptions event from server to update player and opponent data.
+         * @param data containing team and move information
+         */
+        function onNextOptions(data: any) {
+            console.log("nextOptions:", data);
+            // parsing self data
+            const parsedMoves: Move[] = data.moves.map((moveObj: any) => ({
+                    name: moveObj.name,
+                    type: moveObj.type,
+                    pp: moveObj.pp,
+                    maxPp: moveObj.maxPp
+            }));
             const parsedTeam: TeamMember[] = data.pokemon.map((poke: any) => ({
                 name: poke.name,
                 hp: poke.hp,
                 maxHp: poke.maxHp || 100,
                 image: poke.sprite
             }));
-
             setSelfTeam(parsedTeam);
-            setSelfActiveIndex(0);
+            setSelfMoves(parsedMoves);
+
+            // parsing opponent's data
+            if (data.opponent) {
+                const parsedOpponentTeam: TeamMember[] = data.opponent.team.map((poke: any) => ({
+                    name: poke.name || "???",
+                    hp: poke.hp || 100,
+                    maxHp: poke.maxHp || 100,
+                    image: poke.sprite || undefined
+                }));       
+                setOpponentTeam(parsedOpponentTeam);
+                setOpponentActiveIndex(data.opponent.activeIndex || 0);
+            }
         }
 
+        /**
+         * Handles turnSummary event from server to display and update turn results.
+         * @param summary array of turn event messages from the server
+         */
         function onTurnSummary(summary: any[]) {
             console.log("turnSummary:", summary);
-
-            const messages = summary.map((entry: any) => entry.message.join('\n'));
+            const messages = summary.map((entry: any) => {
+                // handle switching to a pokemon - self
+                if (entry.user === 'self' && entry.animation === 'switch' && entry.name) {
+                    const switchedIndex = selfTeam.findIndex(p => p.name.toLowerCase() === entry.name.toLowerCase());
+                    if (switchedIndex !== -1) {
+                        setSelfActiveIndex(switchedIndex);
+                    }
+                }
+                // handle switching to a pokemon - self
+                if (entry.user === 'opponent' && entry.animation === 'switch' && entry.name) {
+                    const switchedIndex = opponentTeam.findIndex(p => p.name.toLowerCase() === entry.name.toLowerCase());
+                    if (switchedIndex !== -1) {
+                        setOpponentActiveIndex(switchedIndex);
+                    }
+                }
+                return Array.isArray(entry.message) ? entry.message.join('\n') : entry.message;
+            });
             setStatus(messages);
         }
 
-        //later: to be changed to pop-up that navigates to summary page
+        /**
+         * Handles endGame event from the server.
+         * @param data containing the game over message
+         */
         function onEndGame(data: any) {
             alert(data.message);
-            navigate('/') // take to the summary page
+            navigate('/') // to be changed to a pop-up that navigates to summary page
         }
 
-        socket.on("nextOptions", onNextOptions);
         socket.on("turnSummary", onTurnSummary);
+        socket.on("nextOptions", onNextOptions);
         socket.on("endGame", onEndGame);
 
-    }, [socket, navigate]);
+        return () => {
+            socket.off("nextOptions", onNextOptions);
+            socket.off("turnSummary", onTurnSummary);
+            socket.off("endGame", onEndGame);
+        };
+    }, [socket, navigate, selfTeam, opponentTeam]);
 
-
-    //handle quitting the game
+    //Functions to handle quitting the battle
     const handleQuit = () => setShowQuitConfirm(true);;
     const confirmQuit = () => navigate('/');
     const cancelQuit = () => setShowQuitConfirm(false);
 
-    const selfActive = selfTeam[selfActiveIndex] || { name: '', image: '', hp: 0, maxHp: 100 };
-    const opponentActive = opponentTeam[opponentActiveIndex] || { name: '???', image: '', hp: 100, maxHp: 100 };
+    /**
+     * Converts front sprite URL to a back sprite URL.
+     * @param frontUrl the URL of the front sprite
+     * @returns 
+     */
+    function getBackSpriteUrl(frontUrl: string): string | undefined {
+        if (!frontUrl) return undefined;
+        const match = frontUrl.match(/\/(\d+)\.png$/);
+        const id = match ? match[1] : '0';
+        return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/${id}.png`;
+    }
 
-    //Created team and moves for testing
-    // const team1 = [
-    //     { name: 'Sceptile', image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/254.png', hp: 110, maxHp: 150 },
-    //     { name: 'Flygon', image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/330.png', hp: 80, maxHp: 100 },
-    //     { name: 'Torkoal', image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/324.png', hp: 0, maxHp: 100 },
-    //     { name: 'Jirachi', image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/385.png', hp: 0, maxHp: 150 },
-    //     { name: '', image: '', hp: 0, maxHp: 0 },
-    //     { name: '', image: '', hp: 0, maxHp: 0 },
-    // ];
-    // const moves1: Move[] = [
-    //     { name: 'Leaf Blade', type: 'rock', pp: 10, maxPp: 10 },
-    //     { name: 'Quick Attack', type: 'ghost', pp: 10, maxPp: 10 },
-    //     { name: 'Energy Ball', type: 'grass', pp: 15, maxPp: 15 },
-    //     { name: 'Detect', type: 'fighting', pp: 25, maxPp: 25 }
-    // ];
+    const selfActive = selfTeam[selfActiveIndex] || { name: '', image: null, hp: 0, maxHp: 100 };
+    const opponentActive = opponentTeam[opponentActiveIndex] || { name: '', image: undefined, hp: 0, maxHp: 100 };
+
     return (
         <div className="relative w-screen h-screen overflow-hidden grid grid-rows-3">
             {/* Background */}
@@ -143,11 +187,12 @@ export default function Battle() {
                 <div></div>
                 {/* Player Pokémon */}
                 <div className="relative flex justify-start">
-                <img
-                    className="absolute w-200 h-150 select-none pointer-events-none"
-                    src={selfActive.image}
-                    alt={selfActive.name}
-                />
+                {selfActive.image && (
+                    <img
+                        className="absolute w-200 h-150 select-none pointer-events-none"
+                        src={getBackSpriteUrl(selfActive.image)}
+                        alt={selfActive.name}
+                    />)}
                 </div>
                 <div></div><div></div>
             </div>
@@ -165,13 +210,13 @@ export default function Battle() {
                             console.log('Selected move:', index);
                             setStatus(`You selected ${selfMoves[index].name}\nWaiting for opponent...`);
                             setMode('none');
-                            socket.emit("submitMove", {"action": "attack", "index": index})
+                            socket.emit("submitMove", {"action": "attack", "index": index});
                         }}
                         onSwitchSelect={(index) => {
                             console.log('Selected switch with index:', index);
                             setStatus(`You switched to ${selfTeam[index].name}\nWaiting for opponent...`);
                             setMode('none');
-                            socket.emit("submitMove", {"action": "switch", "index": index})
+                            socket.emit("submitMove", {"action": "switch", "index": index});
                         }}
                     />
                 </div>
@@ -183,10 +228,10 @@ export default function Battle() {
                     <div className="relative flex flex-col items-end min-w-[200px]">
                         <ActivePokeCount team={selfTeam} />
                         <StatsCard
-                        name={selfActive.name}
-                        image={selfActive.image}
-                        hp={selfActive.hp}
-                        maxHp={selfActive.maxHp}
+                            name={selfActive.name}
+                            image={selfActive.image}
+                            hp={selfActive.hp}
+                            maxHp={selfActive.maxHp}
                         />
                     </div>
                 </div>
@@ -195,74 +240,5 @@ export default function Battle() {
                 <QuitBattleBox onConfirm={confirmQuit} onCancel={cancelQuit} />
             )}
         </div>
-
-//old code with absolute placing
-        // <div className="relative flex w-screen h-screen overflow-hidden">
-        //     {/* Background Image */}
-        //     <img
-        //         src={battleBg}
-        //         className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-        //         alt="Battle Background"
-        //     />
-
-        //     {/* Opponent PokeBalls Bar */}
-        //     <div className="absolute top-56 left-6 z-10">
-        //         <ActivePokeCount team={team} />
-        //     </div>
-        //     {/* Oppenent stats card */}
-        //     <div className="absolute top-6 left-6 z-10 select-none pointer-events-none">
-        //         <StatsCard 
-        //             name="Gardevoir" 
-        //             image="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/282.png"
-        //             hp={28}
-        //             maxHp={140}
-        //         />
-        //     </div>
-
-        //     {/* Player PokeBalls Bar */}
-        //     <div className="absolute bottom-56 right-6 z-10">
-        //         <ActivePokeCount team={team} />
-        //     </div>
-        //     {/* Player stats card */}
-        //     <div className="absolute bottom-6 right-6 z-10 select-none pointer-events-none">
-        //         <StatsCard 
-        //             name="Sceptile" 
-        //             image="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/254.png"
-        //             hp={75}
-        //             maxHp={150}
-        //         />
-        //     </div>
-
-        //     {/* Control Panel */}
-        //     <div className='flex absolute bottom-6 right-90 z-10 gap-4'>
-        //         <BattleDisplayPanel mode={mode} moves={moves} team={team} />
-        //         <BattleActionsPanel onSelect={setMode} />
-        //     </div>
-            
-        //     {/* Left Panel */}
-        //     <div className='basis-3/5 flex flex-row'>
-        //         <div className='basis-1/5'></div>
-        //         <div className='basis-4/5 flex flex-col border-2'>
-        //             <div className='basis-1/6 border-2'></div>
-        //             <div className='relative basis-2/6 flex justify-baseline'>
-        //             {/* Player Current Pokemon */}
-        //                 <img 
-        //                     className="absolute bottom--1 w-200 h-200 select-none pointer-events-none"
-        //                     src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/4.png" 
-        //                     alt="Charmender" />
-        //             </div>
-        //         </div>
-        //     </div>
-        //     {/* Right Panel */}
-        //     <div className='basis-2/5 flex flex-col'>
-        //         <div className='relative basis-5/9 flex justify-center-safe'>
-        //         {/* Opponent Current Pokemon */}
-        //             <img 
-        //                 className='absolute bottom-10 w-80 h-80 select-none pointer-events-none'
-        //                 src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/282.png" 
-        //                 alt="Gardevoir" />
-        //         </div>
-        //     </div>
-        // </div>
     );
 }
