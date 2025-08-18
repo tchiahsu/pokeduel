@@ -1,5 +1,8 @@
 import React from 'react';
 
+/**
+ * Represents a Pokemon in the Player's Team.
+ */
 interface Pokemon {
   name: string;
   image: string;
@@ -7,13 +10,19 @@ interface Pokemon {
   maxHp: number;
 }
 
+/**
+ * Represents a move of a Pokemon.
+ */
 interface Move {
   name: string;
   type: string;
   pp: number;
   maxPp: number;
-}
+};
 
+/**
+ * Props for the BattleDisplayPanel component.
+ */
 interface BattleDisplayPanelProps {
   mode: 'none' | 'attack' | 'switch';
   moves: Move[];
@@ -21,11 +30,13 @@ interface BattleDisplayPanelProps {
   status?: string;
   onMoveSelect?: (index: number) => void;
   onSwitchSelect?: (index: number) => void;
-}
+};
 
-// Background color can be modified - can separately go in services too
+/**
+ * Maps types to background color.
+ */
 const typeColorMap: Record<string, string> = {
-  normal: 'bg-gray-200',
+  normal: 'bg-gray-400',
   fire: 'bg-red-300',
   water: 'bg-blue-300',
   electric: 'bg-yellow-200',
@@ -45,57 +56,70 @@ const typeColorMap: Record<string, string> = {
   fairy: 'bg-fuchsia-300',
 };
 
-const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({ mode, moves, team, status, onMoveSelect, onSwitchSelect }) => {
-  return (
-    <div className="w-258 h-50 bg-gray-300/80 rounded-lg p-4">
-      {mode === 'attack' && (
-        <div className="grid grid-cols-2 gap-2 place-items-center justify-items-stretch">
-          {moves.map((move, i) => {
-            const bgColor = typeColorMap[move.type.toLowerCase()] || 'bg-gray-200';
-            return (
-              <button
-                key={i}
-                className={`p-2 mt-2 w-full border border-gray-700 rounded ${bgColor} text-white font-bold hover:brightness-110`}
-                onClick={() => onMoveSelect?.(i)}
-              >
-                <div>{move.name}</div>
-                <div className="text-sm">{move.pp}/{move.maxPp} PP</div>
-              </button>
-            );
-          })}
-        </div>
-      )}
-
-      {mode === 'switch' && (
-        <div className="grid grid-cols-3 gap-1 place-items-center h-full">
-          {team.map((poke, i) => (
-            <button
-              key={i}
-              disabled={poke.hp <= 0}
-              onClick={() => onSwitchSelect?.(i)}
-              className={`flex w-80 items-center justify-between p-3 border rounded-md ${
-                poke.hp <= 0
-                  ? 'bg-gray-200 text-gray-500'
-                  : 'bg-green-100 border-green-400'
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                {poke.image && <img src={poke.image} alt={poke.name} className="w-6 h-6" />}
-                <span className="font-bold">{poke.name}</span>
-              </div>
-              <span className="font-bold">{poke.hp}/{poke.maxHp}</span>
-            </button>
-          ))}
-        </div>
-      )}
-      {/* To be modified */}
-      {mode === 'none' && (
-        <div className="text-gray-600 flex justify-left items-center h-full text-xl italic select-none pointer-events-none">
-          {status || "Select an action to begin..."}
-        </div>
-      )}
+const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({mode, moves, team, status, onMoveSelect, onSwitchSelect,}) => {
+  /**
+   * Render move buttons for current Pokemon.
+   * @returns 
+   */
+  const renderMoves = () => (
+    <div className="grid grid-cols-2 gap-2 place-items-center justify-items-stretch">
+      {moves.map((move, i) => {
+        var bgColor = typeColorMap[move.type?.toLowerCase?.() || 'normal'] || 'bg-gray-200';
+        var displayName = move.name.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        return (
+          <button
+            key={i}
+            onClick={() => onMoveSelect?.(i)}
+            className={`p-2 mt-2 w-full border border-gray-700 rounded ${bgColor} text-white font-bold hover:brightness-110`}
+          >
+            <div>{displayName}</div>
+            <div className="text-sm">{move.pp}/{move.maxPp} PP</div>
+          </button>
+        );
+      })}
     </div>
   );
-};
+
+  /**
+   * Renders a grid of Pokemon to switch to in the team.
+   */
+  const renderSwitches = () => (
+    <div className="grid grid-cols-3 gap-1 place-items-center h-full">
+      {team.map((poke, i) => (
+        <button
+          key={i}
+          disabled={poke.hp <= 0}
+          onClick={() => onSwitchSelect?.(i)}
+          className={`flex w-80 items-center justify-between p-3 border rounded-md ${
+            poke.hp <= 0 ? 'bg-gray-200 text-gray-500' : 'bg-green-100 border-green-400'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            {poke.image && <img src={poke.image} alt={poke.name} className="w-6 h-6" />}
+            <span className="font-bold">{poke.name}</span>
+          </div>
+          <span className="font-bold">{poke.hp}/{poke.maxHp}</span>
+        </button>
+      ))}
+    </div>
+  );
+
+  /**
+   * Renders a status message.
+   */
+  const renderStatus = () => (
+    <div className="text-gray-600 flex justify-left items-center h-full text-xl italic select-none pointer-events-none">
+      {status || "Select an action to begin..."}
+    </div>
+  );
+
+  return (
+    <div className="w-258 h-50 bg-gray-300/80 rounded-lg p-4">
+      {mode === 'attack' && renderMoves()}
+      {mode === 'switch' && renderSwitches()}
+      {mode === 'none' && renderStatus()}
+    </div>
+  );
+}
 
 export default BattleDisplayPanel;
