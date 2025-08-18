@@ -54,6 +54,7 @@ const Pokedex = ({ pokemon, close, initialMoves, onConfirm }: PokedexProps) => {
     const addPokemonToTeam = () => {
         if (!pokemon || moves.length < 1) return;
         onConfirm({ pokemon: pokemon.name, moves: [...moves] })
+        close(false);
     }
 
     /**
@@ -144,14 +145,26 @@ const Pokedex = ({ pokemon, close, initialMoves, onConfirm }: PokedexProps) => {
             <div className="flex gap-2 w-full justify-center p-3 border-t border-gray-200">
                 <button
                     onClick={() => close(false)}
-                    className="px-6 py-2 bg-gray-500 hover:bg-gray-700 text-white text-xs font-medium rounded-lg cursor-pointer"
+                    className="w-1/4 p-2 bg-gray-500 hover:bg-gray-700 text-white text-xs font-medium rounded-lg cursor-pointer"
                 >
                     Close
                 </button>
                 <button
-                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg cursor-pointer"
+                    onClick={() => setMoves([])}
+                    className="w-1/4 p-2 bg-gray-500 hover:bg-gray-700 text-white text-xs font-medium rounded-lg cursor-pointer"
+                >
+                    Clear
+                </button>
+                <button
+                    onClick={() => setMoves([])}
+                    className="w-1/4 p-2 bg-gray-500 hover:bg-gray-700 text-white text-xs font-medium rounded-lg cursor-pointer"
+                >
+                    Random
+                </button>                
+                <button
+                    className="w-1/4 p-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg cursor-pointer"
                     onClick={addPokemonToTeam}>
-                    Add to Team
+                    Add
                 </button>
             </div>
 
