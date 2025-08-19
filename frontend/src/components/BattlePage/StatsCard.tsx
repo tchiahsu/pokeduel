@@ -1,5 +1,3 @@
-import React, { useState, useEffect } from 'react';
-
 /**
  * Prop that represents stats card of a Pokemon.
  */
@@ -7,17 +5,17 @@ interface StatsCardProps {
   name: string;
   image: string | undefined;
   hp: number;
-  maxHp: number;
+  maxHP: number;
 }
 
-const StatsCard: React.FC<StatsCardProps> = ({ name, image, hp, maxHp }) => {
-  const [currentHp, setCurrentHp] = useState<number>(hp);
+const StatsCard: React.FC<StatsCardProps> = ({ name, image, hp, maxHP }) => {
+  // const [currentHp, setCurrentHp] = useState<number>(hp);
 
-  useEffect(() => {
-    setCurrentHp(hp);
-  }, [hp]);
+  // useEffect(() => {
+  //   setCurrentHp(hp);
+  // }, [hp]);
 
-  var hpPercentage = (currentHp / maxHp) * 100;
+  const hpPercentage = (hp / maxHP) * 100;
 
   // Gets the progress bar color based on hp
   const getHpColor = () => {
@@ -35,7 +33,7 @@ const StatsCard: React.FC<StatsCardProps> = ({ name, image, hp, maxHp }) => {
       </div>
       {/* For Hp of Current Pokemon */}
       <div className="mt-14 text-lg text-left">
-        <strong>HP:</strong> {currentHp}/{maxHp}
+        <strong>HP:</strong> {hp}/{maxHP}
         {/* Progress bar as a nested div */}
         <div className="w-full h-4 bg-gray-400 rounded mt-1 overflow-hidden">
           <div
