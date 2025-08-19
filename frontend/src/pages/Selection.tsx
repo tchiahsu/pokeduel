@@ -234,7 +234,7 @@ export default function Selection({ list }: SelectionProps) {
                                                                     leadPokemon === poke ? "text-gray-500 bg-gray-700" : "pointer-events-auto text-white bg-yellow-500")}
                                                     onClick={() => setLeadPokemon(poke)}
                                                 >
-                                                    Set Starter
+                                                    Starter
                                                 </button>
                                                 <button
                                                     className="pointer-events-auto flex justify-center items-center text-[8px] text-white bg-blue-500 rounded-full w-full h-1/4 p-2
