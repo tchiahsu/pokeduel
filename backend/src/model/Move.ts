@@ -8,7 +8,7 @@ export default class Move {
     private power: number; 
     private accuracy: number; 
     private pp: number;
-    private maxPp: number;
+    private maxPP: number;
     private effect: string;
     private effectChance: number;
     private effectTarget: string;
@@ -29,7 +29,7 @@ export default class Move {
         this.power = power;
         this.accuracy = accuracy;
         this.pp = pp;
-        this.maxPp = pp;
+        this.maxPP = pp;
         this.effect = effect;
         this.effectChance = effectChance;
     }
@@ -87,7 +87,7 @@ export default class Move {
      * @returns The MaxPP as a number.
      */
     public getMaxPP(): number {
-        return this.maxPp;
+        return this.maxPP;
     }
 
     /**
