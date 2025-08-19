@@ -7,7 +7,7 @@ interface Pokemon {
   name: string;
   image: string;
   hp: number;
-  maxHp: number;
+  maxHP: number;
 }
 
 /**
@@ -17,14 +17,14 @@ interface Move {
   name: string;
   type: string;
   pp: number;
-  maxPp: number;
+  maxPP: number;
 };
 
 /**
  * Props for the BattleDisplayPanel component.
  */
 interface BattleDisplayPanelProps {
-  mode: 'none' | 'attack' | 'switch';
+  mode: 'none' | 'attack' | 'switch' | 'fainted';
   moves: Move[];
   team: Pokemon[];
   status?: string;
@@ -73,7 +73,7 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({mode, moves, tea
             className={`p-2 mt-2 w-full border border-gray-700 rounded ${bgColor} text-white font-bold hover:brightness-110`}
           >
             <div>{displayName}</div>
-            <div className="text-sm">{move.pp}/{move.maxPp} PP</div>
+            <div className="text-sm">{move.pp}/{move.maxPP} PP</div>
           </button>
         );
       })}
@@ -98,7 +98,7 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({mode, moves, tea
             {poke.image && <img src={poke.image} alt={poke.name} className="w-6 h-6" />}
             <span className="font-bold">{poke.name}</span>
           </div>
-          <span className="font-bold">{poke.hp}/{poke.maxHp}</span>
+          <span className="font-bold">{poke.hp}/{poke.maxHP}</span>
         </button>
       ))}
     </div>

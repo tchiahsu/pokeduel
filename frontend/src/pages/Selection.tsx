@@ -1,13 +1,15 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { fetchPokemonData } from '../services/SearchAPI';
+import { useState, useEffect, useRef } from 'react';
+import { fetchPokemonData } from '../utils/SearchAPI';
 import { useSocket } from "../contexts/SocketContext";
+import { shake } from "../utils/shake";
+import type { Pokemon } from '../types/pokemon'
+import { toast } from 'sonner';
 
 import SearchBar from '../components/TeamSelection/SearchBar';
 import Button from '../components/Button';
 import selectionBg from '../assets/bg-field.jpg';
 import Pokedex from '../components/TeamSelection/Pokedex';
-import type { Pokemon } from '../types/pokemon'
 import clsx from 'clsx'
 
 /**
@@ -29,14 +31,16 @@ export default function Selection({ list }: SelectionProps) {
     const [teamSprites, setTeamSprites] = useState<Record<string, string>>({});
     const [leadPokemon, setLeadPokemon] = useState<string | null>(null);
     const [showTeamMoves, setShowTeamMoves] = useState(false);
-    const [movesTarget, setMovesTarget] = useState<string | null>(null);
 
     const socket = useSocket();
     const navigate = useNavigate();
     const location = useLocation();
+    const startRef = useRef<HTMLSpanElement>(null);
 
     const { playerName } = location.state || {}
     const initialMovesForCurrent = currPokemon ? (pokemonTeam[currPokemon.name] ?? []) : [];
+
+    const canStart = Object.keys(pokemonTeam).length > 0;
 
     /**
      * Searches the information for the given pokemon name
@@ -107,6 +111,7 @@ export default function Selection({ list }: SelectionProps) {
     const removeFromTeam = (name: string) => {
         setPokemonTeam(prev => {
             const { [name]: _, ...rest } = prev;
+            if (leadPokemon === name) setLeadPokemon(Object.keys(rest)[0] ?? null);
             return rest;
         });
 
@@ -127,7 +132,6 @@ export default function Selection({ list }: SelectionProps) {
         if (!name) return;
         if (!pokemonTeam[name]) return;
         setShowTeamMoves(!showTeamMoves);
-        setMovesTarget(name);
     }
 
     /**
@@ -149,6 +153,12 @@ export default function Selection({ list }: SelectionProps) {
      * - playerName : name of the player
      */
     const emitTeamSelection = async () => {
+        if (!canStart) {
+            shake(startRef.current);
+            toast.error("Add at least 1 Pokemon to start game.")
+            return;
+        }
+
         const orderedTeam = AddLeadToStart(pokemonTeam, leadPokemon);
         console.log("emit setPlayer", { name: playerName, teamSelection: orderedTeam })
         socket.emit("setPlayer", { name: playerName, teamSelection: orderedTeam });
@@ -185,7 +195,12 @@ export default function Selection({ list }: SelectionProps) {
                     <Link to='/multiplayer'>
                         <Button>Back</Button>
                     </Link>
-                    <Button onClick={emitTeamSelection}>Start Game</Button>
+
+                    <span ref={startRef} className={!canStart ? "opacity-60" : ""}>
+                        <Button onClick={emitTeamSelection}>
+                            Start Game
+                        </Button>
+                    </span>
                 </div>
             </div>
 
@@ -214,22 +229,32 @@ export default function Selection({ list }: SelectionProps) {
                                             </div>
                                             <div className="absolute inset-0 z-10 flex flex-col justify-center items-center pointer-events-none gap-1 pt-3">
                                                 <button
-                                                    className={clsx("flex justify-center items-center text-[8px] rounded-full w-full h-1/3 p-2",
+                                                    className={clsx("flex justify-center items-center text-[8px] rounded-full w-full h-1/4 p-2",
                                                                     "transition-opacity duration-400 ease-in-out hover:scale-105 opacity-0 group-hover:opacity-100",
                                                                     leadPokemon === poke ? "text-gray-500 bg-gray-700" : "pointer-events-auto text-white bg-yellow-500")}
                                                     onClick={() => setLeadPokemon(poke)}
                                                 >
-                                                    Set Starter
+                                                    Starter
                                                 </button>
                                                 <button
-                                                    className="pointer-events-auto flex justify-center items-center text-[8px] text-white bg-blue-500 rounded-full w-full h-1/3 p-2
+                                                    className="pointer-events-auto flex justify-center items-center text-[8px] text-white bg-blue-500 rounded-full w-full h-1/4 p-2
                                                                transition-opacity duration-400 ease-in-out hover:scale-105 opacity-0 group-hover:opacity-100"
                                                     onClick={() => triggernMovesPanel(poke)}
                                                 >
                                                     Show Moves
                                                 </button>
                                                 <button
-                                                    className="pointer-events-auto flex justify-center items-center text-[8px] text-white bg-red-500 rounded-full w-full h-1/3 p-2
+                                                    className="pointer-events-auto flex justify-center items-center text-[8px] text-white bg-purple-500 rounded-full w-full h-1/4 p-2
+                                                               transition-opacity duration-400 ease-in-out hover:scale-105 opacity-0 group-hover:opacity-100"
+                                                    onClick={() => {
+                                                        handlePokedex(true)
+                                                        setCurrPokemon({ name: poke, sprite: sprite});
+                                                    }}
+                                                >
+                                                    Update
+                                                </button>
+                                                <button
+                                                    className="pointer-events-auto flex justify-center items-center text-[8px] text-white bg-red-500 rounded-full w-full h-1/4 p-2
                                                                transition-opacity duration-400 ease-in-out hover:scale-105 opacity-0 group-hover:opacity-100"
                                                     onClick={() => removeFromTeam(poke)}
                                                 >
@@ -256,7 +281,7 @@ export default function Selection({ list }: SelectionProps) {
                     <div className="flex flex-1 overflow-hidden">
                         {/* Table of Pokemon */}
                         <div className={clsx("grid gap-2 p-2 relative flex-1 overflow-y-auto no-scrollbar",
-                                             "item-start justify-items-center auto-rows-min",
+                                             "items-start justify-items-center auto-rows-min",
                                              showPokedex? "grid-cols-4" : "grid-cols-6")}>
                             {error && (
                                 <div className="text-red-600 col-span-6">
@@ -291,6 +316,7 @@ export default function Selection({ list }: SelectionProps) {
                                 close={handlePokedex}
                                 initialMoves={initialMovesForCurrent}
                                 onConfirm={handleAddToTeam}
+                                team={pokemonTeam}
                             />
                         </div>
                     </div>

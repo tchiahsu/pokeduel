@@ -1,5 +1,6 @@
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { Toaster } from "sonner"
 import { io, Socket } from "socket.io-client";
 import Home from "./pages/Home";
 import Multiplayer from "./pages/Multiplayer";
@@ -9,17 +10,13 @@ import Battle from "./pages/Battle";
 import { SocketContext } from "./contexts/SocketContext";
 import "./App.css";
 import TestAnimation from "./testAnimations/animations";
+import type { Pokemon } from "./types/pokemon";
 
 const API_URL_BASE = "http://localhost:8000";
 const socket: Socket = io(API_URL_BASE);
 
 function App() {
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
-
-  type Pokemon = {
-    name: string;
-    sprite: string;
-  };
 
   // Fetch the pokemon into the frontend
   useEffect(() => {
@@ -36,20 +33,21 @@ function App() {
   }, []);
 
   return (
-    // <SocketContext.Provider value={socket}>
-    //   <HashRouter>
-    //     <div>
-    //       <Routes>
-    //         <Route path="/" element={<Home />} />
-    //         <Route path="/multiplayer" element={<Multiplayer />} />
-    //         <Route path="/team-selection" element={<Selection list={pokemonList} />} />
-    //         <Route path="/battle" element={<Battle />} />
-    //         <Route path="/single-player" element={<SinglePlayer />} />
-    //       </Routes>
-    //     </div>
-    //   </HashRouter>
-    // </SocketContext.Provider>
-    <TestAnimation pokemon="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/330.png"></TestAnimation>
+    <SocketContext.Provider value={socket}>
+      <HashRouter>
+        <Toaster position="top-center" />
+        <div>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/multiplayer" element={<Multiplayer />} />
+            <Route path="/team-selection" element={<Selection list={pokemonList} />} />
+            <Route path="/battle" element={<Battle />} />
+            <Route path="/single-player" element={<SinglePlayer />} />
+          </Routes>
+        </div>
+      </HashRouter>
+    </SocketContext.Provider>
+    // <TestAnimation pokemon="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/330.png"></TestAnimation>
   );
 }
 //initial loading component
