@@ -74,6 +74,18 @@ const Pokedex = ({ pokemon, close, initialMoves, onConfirm, team }: PokedexProps
         close(false);
     }
 
+    const handleRandomMoves = () => {
+    if (!pokeMoves || searchPokeMoves.length === 0) {
+        toast.error("No moves available to randomize");
+        return;
+    }
+
+    const allMoves = pokeMoves.map((move: string | { name: string}) => typeof move === "string" ? move : move.name);
+    
+    const random = [...allMoves].sort(() => Math.random() - 0.5);
+    setMoves(random.slice(0, 4));
+    }
+
     /**
      * Refetch Pokemon data whenever the selected pokemon changes
      */
@@ -173,7 +185,7 @@ const Pokedex = ({ pokemon, close, initialMoves, onConfirm, team }: PokedexProps
                     Clear
                 </button>
                 <button
-                    onClick={() => setMoves([])}
+                    onClick={handleRandomMoves}
                     className="w-1/4 p-2 bg-gray-500 hover:bg-gray-700 text-white text-xs font-medium rounded-lg cursor-pointer"
                 >
                     Random

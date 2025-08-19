@@ -11,7 +11,7 @@ import Button from '../components/Button';
 import selectionBg from '../assets/bg-field.jpg';
 import Pokedex from '../components/TeamSelection/Pokedex';
 import clsx from 'clsx'
-import MovesPopover from '../components/TeamSelection/Popover';
+import TeamButton from '../components/TeamSelection/TeamButton';
 
 /**
  * Props for the Selection page:
@@ -31,7 +31,6 @@ export default function Selection({ list }: SelectionProps) {
     const [pokemonTeam, setPokemonTeam] = useState<Record<string, string[]>>({});
     const [teamSprites, setTeamSprites] = useState<Record<string, string>>({});
     const [leadPokemon, setLeadPokemon] = useState<string | null>(null);
-    const [openMovesFor, setOpenMovesFor] = useState<string | null>(null);
 
     const socket = useSocket();
     const navigate = useNavigate();
@@ -222,47 +221,26 @@ export default function Selection({ list }: SelectionProps) {
                                                 {poke}
                                             </div>
                                             <div className="absolute inset-0 z-10 flex flex-col justify-center items-center pointer-events-none gap-1 pt-3">
-                                                <button
-                                                    className={clsx("flex justify-center items-center text-[8px] rounded-full w-full h-1/4 p-2",
-                                                                    "transition-opacity duration-400 ease-in-out hover:scale-105 opacity-0 group-hover:opacity-100",
-                                                                    leadPokemon === poke ? "text-gray-500 bg-gray-700" : "pointer-events-auto text-white bg-yellow-500")}
+                                                <TeamButton 
+                                                    label="Starter"
+                                                    color={leadPokemon === poke? "gray" : "yellow"}
                                                     onClick={() => setLeadPokemon(poke)}
-                                                >
-                                                    Starter
-                                                </button>
-                                                <button
-                                                    className="pointer-events-auto flex justify-center items-center text-[8px] text-white bg-blue-500 rounded-full w-full h-1/4 p-2
-                                                               transition-opacity duration-400 ease-in-out hover:scale-105 opacity-0 group-hover:opacity-100"
-                                                    onClick={() => setOpenMovesFor((prev) => (prev === poke ? null : poke))}
-                                                >
-                                                    {openMovesFor === poke ? "Hide Moves" : "Show Moves"}
-                                                </button>
-                                                <button
-                                                    className="pointer-events-auto flex justify-center items-center text-[8px] text-white bg-purple-500 rounded-full w-full h-1/4 p-2
-                                                               transition-opacity duration-400 ease-in-out hover:scale-105 opacity-0 group-hover:opacity-100"
+                                                />
+                                                <TeamButton 
+                                                    label="Show Moves"
+                                                    color="blue"
                                                     onClick={() => {
                                                         handlePokedex(true)
-                                                        setCurrPokemon({ name: poke, sprite: sprite});
-                                                    }}
-                                                >
-                                                    Update
-                                                </button>
-                                                <button
-                                                    className="pointer-events-auto flex justify-center items-center text-[8px] text-white bg-red-500 rounded-full w-full h-1/4 p-2
-                                                               transition-opacity duration-400 ease-in-out hover:scale-105 opacity-0 group-hover:opacity-100"
-                                                    onClick={() => removeFromTeam(poke)}
-                                                >
-                                                    Remove
-                                                </button>
+                                                        setCurrPokemon({ name: poke, sprite: sprite });
+                                                    }}                                                
+                                                />
+                                                <TeamButton 
+                                                    label="Remove"
+                                                    color="red"
+                                                    onClick={() => removeFromTeam(poke)}                                                
+                                                />
                                             </div>
                                         </div>
-                                        <MovesPopover
-                                            open={openMovesFor === poke}
-                                            anchorEl={anchorRef.current[poke] ?? null}
-                                            moves={pokemonTeam[poke] ?? []}
-                                            onClose={() => setOpenMovesFor(null)}
-                                            side="right"
-                                        />
                                 </div>
                             ))}
                         </div>
