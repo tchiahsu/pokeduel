@@ -14,26 +14,11 @@ type PlayerMove = {
 };
 
 /**
- * A type representing the set of possible actions a player can take on their next turn.
+ * A type representing an effect that triggers at the end of a turn.
  */
-type NextOptions = {
-  moves: {name: string, type: string, pp: number, maxPp: number}[];
-  pokemon: PlayerPokemon[];
-  opponent: {
-    team: PlayerPokemon[];
-    activeIndex: number;
-  };
-};
-
-/**
- * A type representing the basic information of a Pokemon available to a player.
- * Used for displaying switch options in NextOptions.
- */
-type PlayerPokemon = {
-  name: string;
-  hp: number;
-  maxHp: number;
-  sprite: string;
+type EndTurnEffect = {
+  player: string;
+  effect: () => string | null;
 };
 
 /**
@@ -51,11 +36,53 @@ type Event = {
 };
 
 /**
- * A type representing an effect that triggers at the end of a turn.
+ * A type representing the set of possible actions a player can take on their next turn.
  */
-type EndTurnEffect = {
-  player: string;
-  effect: () => string | null;
+type NextOptions = {
+  moves: MoveOptions[];
+  pokemon: PokemonOptions[];
+};
+
+/**
+ * A type representing the basic move information of the current Pokemon available to a player.
+ * Used for displaying move options in NextOptions.
+ */
+type MoveOptions = {
+  name: string;
+  type: string;
+  pp: number;
+  maxPP: number;
+};
+
+/**
+ * A type representing the basic information of a Pokemon available to a player.
+ * Used for displaying switch options in NextOptions.
+ */
+type PokemonOptions = {
+  name: string;
+  hp: number;
+  maxHP: number;
+  sprite: string;
+};
+
+/**
+ * A type representing the overall state of the battle visible to a player.
+ */
+type CurrentState = {
+  self: PlayerState;
+  opponent: PlayerState;
+};
+
+/**
+ * A type representing exact state of a player.
+ */
+type PlayerState = {
+  name: string;
+  hp: number;
+  maxHP: number;
+  sprite: string;
+  remainingPokemon: number;
+  teamCount: number;
 };
 
 /**
@@ -459,14 +486,14 @@ export default class BattleModel {
    * @param playerID The ID of the player.
    * @returns An array of objects, each mapping a move name to its PP.
    */
-  private getPlayerMoveOptions(playerID: string): { name: string; type: string; pp: number; maxPp: number }[] {
+  private getPlayerMoveOptions(playerID: string): MoveOptions[] {
     const { player } = this.getPlayerAndMoveByID(playerID);
     const currentPokemon = player.getCurrentPokemon();
     const playerMoves = currentPokemon.getMoves().map((move) => ({
       name: move.getName(),
       type: move.getType(),
       pp: move.getPP(),
-      maxPp: move.getMaxPP()
+      maxPP: move.getMaxPP(),
     }));
 
     return playerMoves;
@@ -478,14 +505,14 @@ export default class BattleModel {
    * @param playerID The ID of the player.
    * @returns An array of PlayerPokemon objects with basic info.
    */
-  private getPlayerPokemonOptions(playerID: string): PlayerPokemon[] {
+  private getPlayerPokemonOptions(playerID: string): PokemonOptions[] {
     const { player } = this.getPlayerAndMoveByID(playerID);
-    const playerTeam: PlayerPokemon[] = [];
+    const playerTeam: PokemonOptions[] = [];
     for (const pokemon of player.getTeam()) {
-      const playerPokemon: PlayerPokemon = {
+      const playerPokemon: PokemonOptions = {
         name: pokemon.getName(),
-        hp: pokemon.getHp(),
-        maxHp: pokemon.getMaxHP(),
+        hp: pokemon.getHP(),
+        maxHP: pokemon.getMaxHP(),
         sprite: pokemon.getFrontSprite(),
       };
       playerTeam.push(playerPokemon);
@@ -499,7 +526,7 @@ export default class BattleModel {
    * @param playerID The ID of the player.
    * @returns The list of Pokemon the given player can switch to.
    */
-  public getSwitchOptions(playerID: string): PlayerPokemon[] {
+  public getSwitchOptions(playerID: string): PokemonOptions[] {
     return this.getPlayerPokemonOptions(playerID);
   }
 
@@ -510,25 +537,21 @@ export default class BattleModel {
    * @returns An object containing the available moves and Pokemon to switch for the given player.
    */
   public buildPlayerNextOptions(playerID: string): NextOptions {
-    const opponentID = this.getOppositePlayer(playerID);
-    const opponentPlayer = this.players[opponentID];
+    // const opponentID = this.getOppositePlayer(playerID);
+    // const opponentPlayer = this.players[opponentID];
 
-    const opponentTeam = opponentPlayer.getTeam().map((pokemon) => ({
-      name: pokemon.getName(),
-      hp: pokemon.getHp(),
-      maxHp: pokemon.getMaxHP(),
-      sprite: pokemon.getFrontSprite(), 
-    }));
+    // const opponentTeam = opponentPlayer.getTeam().map((pokemon) => ({
+    //   name: pokemon.getName(),
+    //   hp: pokemon.getHP(),
+    //   maxHp: pokemon.getMaxHP(),
+    //   sprite: pokemon.getFrontSprite(),
+    // }));
 
-    const opponentActiveIndex = opponentPlayer.getCurrentPokemonIndex();
+    // const opponentActiveIndex = opponentPlayer.getCurrentPokemonIndex();
 
     const nextOptions: NextOptions = {
       moves: this.getPlayerMoveOptions(playerID),
       pokemon: this.getPlayerPokemonOptions(playerID),
-      opponent: {
-        team: opponentTeam,
-        activeIndex: opponentActiveIndex
-      }
     };
     return nextOptions;
   }
@@ -544,6 +567,56 @@ export default class BattleModel {
     nextOptions[this.player1ID] = this.buildPlayerNextOptions(this.player1ID);
     nextOptions[this.player2ID] = this.buildPlayerNextOptions(this.player2ID);
     return nextOptions;
+  }
+
+  /**
+   * Builds the current state information for both players.
+   * This includes details about their own Pokemon and their opponent’s Pokemon.
+   *
+   * @returns A mapping from each player ID to their current state.
+   */
+  public getCurrentState(): Record<string, CurrentState> {
+    const currentState: Record<string, CurrentState> = {};
+    currentState[this.player1ID] = this.buildPlayerCurrentState(this.player1ID);
+    currentState[this.player2ID] = this.buildPlayerCurrentState(this.player2ID);
+    return currentState;
+  }
+
+  /**
+   * Builds the current state for a specific player.
+   * Includes information about the player’s active Pokemon and the opponent’s active Pokemon.
+   *
+   * @param playerID The ID of the player.
+   * @returns A CurrentState object containing self and opponent details
+   */
+  public buildPlayerCurrentState(playerID: string): CurrentState {
+    const { player } = this.getPlayerAndMoveByID(playerID);
+    const playerPokemon: Pokemon = player.getCurrentPokemon();
+
+    const opponentID = this.getOppositePlayer(playerID);
+    const { player: opponentPlayer } = this.getPlayerAndMoveByID(opponentID);
+    const opponentPokemon = opponentPlayer.getCurrentPokemon();
+
+    const playerState: CurrentState = {
+      self: {
+        name: playerPokemon.getName(),
+        hp: playerPokemon.getHP(),
+        maxHP: playerPokemon.getMaxHP(),
+        sprite: playerPokemon.getBackSprite(),
+        remainingPokemon: player.getRemainingPokemon(),
+        teamCount: player.getTeam().length,
+      },
+      opponent: {
+        name: opponentPokemon.getName(),
+        hp: opponentPokemon.getHP(),
+        maxHP: opponentPokemon.getMaxHP(),
+        sprite: opponentPokemon.getFrontSprite(),
+        remainingPokemon: opponentPlayer.getRemainingPokemon(),
+        teamCount: opponentPlayer.getTeam().length,
+      },
+    };
+
+    return playerState;
   }
 
   /**

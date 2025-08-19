@@ -91,7 +91,7 @@ export default class Pokemon {
    * Method to get the hp of the Pokemon.
    * @returns hp of the Pokemon
    */
-  public getHp(): number {
+  public getHP(): number {
     return this.hp;
   }
 
@@ -197,10 +197,7 @@ export default class Pokemon {
    * @param stat the stat of the Pokemon that is to be lowered
    * @param reduce the number by which stat is to be lowered
    */
-  public lowerStat(
-    stat: "atk" | "def" | "spAtk" | "spDef" | "speed",
-    reduce: number
-  ): void {
+  public lowerStat(stat: "atk" | "def" | "spAtk" | "spDef" | "speed", reduce: number): void {
     this[stat] -= reduce;
   }
 
@@ -209,10 +206,7 @@ export default class Pokemon {
    * @param stat the stat of the Pokemon that is to be raised
    * @param reduce the number by which stat is to be raised
    */
-  public raiseStat(
-    stat: "atk" | "def" | "spAtk" | "spDef" | "speed",
-    raise: number
-  ): void {
+  public raiseStat(stat: "atk" | "def" | "spAtk" | "spDef" | "speed", raise: number): void {
     this[stat] += raise;
   }
 
