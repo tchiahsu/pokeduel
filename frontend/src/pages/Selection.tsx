@@ -11,6 +11,7 @@ import Button from '../components/Button';
 import selectionBg from '../assets/bg-field.jpg';
 import Pokedex from '../components/TeamSelection/Pokedex';
 import clsx from 'clsx'
+import MovesPopover from '../components/TeamSelection/Popover';
 
 /**
  * Props for the Selection page:
@@ -30,12 +31,13 @@ export default function Selection({ list }: SelectionProps) {
     const [pokemonTeam, setPokemonTeam] = useState<Record<string, string[]>>({});
     const [teamSprites, setTeamSprites] = useState<Record<string, string>>({});
     const [leadPokemon, setLeadPokemon] = useState<string | null>(null);
-    const [showTeamMoves, setShowTeamMoves] = useState(false);
+    const [openMovesFor, setOpenMovesFor] = useState<string | null>(null);
 
     const socket = useSocket();
     const navigate = useNavigate();
     const location = useLocation();
     const startRef = useRef<HTMLSpanElement>(null);
+    const anchorRef = useRef<Record<string, HTMLDivElement | null>>({});
 
     const { playerName } = location.state || {}
     const initialMovesForCurrent = currPokemon ? (pokemonTeam[currPokemon.name] ?? []) : [];
@@ -125,15 +127,6 @@ export default function Selection({ list }: SelectionProps) {
         };
     }
 
-    /** 
-     * Open or Closes the panel with the moves for a pokemon
-    */
-    const triggernMovesPanel = (name: string | null) => {
-        if (!name) return;
-        if (!pokemonTeam[name]) return;
-        setShowTeamMoves(!showTeamMoves);
-    }
-
     /**
      * Builds the ordered object (with lead at the start) before emitting
      * - team : the pokemon team with the name and the list of moves
@@ -215,7 +208,8 @@ export default function Selection({ list }: SelectionProps) {
                             {Object.entries(teamSprites).map(([poke, sprite]) => (
                                 <div
                                     key={poke}
-                                    className="relative rounded-lg p-2">
+                                    className="relative rounded-lg p-2"
+                                    ref={(element) => {anchorRef.current[poke] = element}}>
                                         <div className="flex-col relative group w-full h-24 flex items-center justify-center text-[12px]">
                                             <div className={clsx("flex flex-col justify-center items-center group-hover:opacity-50",
                                                                  leadPokemon === poke ? "text-blue-600" : ""
@@ -239,9 +233,9 @@ export default function Selection({ list }: SelectionProps) {
                                                 <button
                                                     className="pointer-events-auto flex justify-center items-center text-[8px] text-white bg-blue-500 rounded-full w-full h-1/4 p-2
                                                                transition-opacity duration-400 ease-in-out hover:scale-105 opacity-0 group-hover:opacity-100"
-                                                    onClick={() => triggernMovesPanel(poke)}
+                                                    onClick={() => setOpenMovesFor((prev) => (prev === poke ? null : poke))}
                                                 >
-                                                    Show Moves
+                                                    {openMovesFor === poke ? "Hide Moves" : "Show Moves"}
                                                 </button>
                                                 <button
                                                     className="pointer-events-auto flex justify-center items-center text-[8px] text-white bg-purple-500 rounded-full w-full h-1/4 p-2
@@ -262,6 +256,13 @@ export default function Selection({ list }: SelectionProps) {
                                                 </button>
                                             </div>
                                         </div>
+                                        <MovesPopover
+                                            open={openMovesFor === poke}
+                                            anchorEl={anchorRef.current[poke] ?? null}
+                                            moves={pokemonTeam[poke] ?? []}
+                                            onClose={() => setOpenMovesFor(null)}
+                                            side="right"
+                                        />
                                 </div>
                             ))}
                         </div>
