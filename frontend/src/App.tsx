@@ -1,5 +1,6 @@
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { Toaster } from "sonner"
 import { io, Socket } from "socket.io-client";
 import Home from "./pages/Home";
 import Multiplayer from "./pages/Multiplayer";
@@ -8,17 +9,13 @@ import Selection from "./pages/Selection";
 import Battle from "./pages/Battle";
 import { SocketContext } from "./contexts/SocketContext";
 import "./App.css";
+import type { Pokemon } from "./types/pokemon";
 
 const API_URL_BASE = "http://localhost:8000";
 const socket: Socket = io(API_URL_BASE);
 
 function App() {
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
-
-  type Pokemon = {
-    name: string;
-    sprite: string;
-  };
 
   // Fetch the pokemon into the frontend
   useEffect(() => {
@@ -37,6 +34,7 @@ function App() {
   return (
     <SocketContext.Provider value={socket}>
       <HashRouter>
+        <Toaster position="top-center" />
         <div>
           <Routes>
             <Route path="/" element={<Home />} />

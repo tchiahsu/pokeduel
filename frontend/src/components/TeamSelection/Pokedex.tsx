@@ -1,8 +1,11 @@
-import { useState, useEffect } from 'react';
-import { searchPokeStats, searchPokeMoves } from '../../services/SearchAPI';
+import { useRef, useState, useEffect } from 'react';
+import { searchPokeStats, searchPokeMoves } from '../../utils/SearchAPI';
+import type { Pokemon } from '../../types/pokemon';
+import { shake } from '../../utils/shake';
+import { toast } from 'sonner';
+
 import PokeMove from './PokeMove';
 import PokeStat from './PokeStat';
-import type { Pokemon } from '../../types/pokemon';
 
 /**
  * Props for the Pokedex component:
@@ -14,16 +17,18 @@ type PokedexProps = {
     close: (value: boolean) => void;
     initialMoves: string[];
     onConfirm: (entry: { pokemon: string; moves: string[] }) => void;
+    team: Record<string, string[]>;
 }
 
 /**
  * Display detailed stats and available moves for a selected pokemon
  */
-const Pokedex = ({ pokemon, close, initialMoves, onConfirm }: PokedexProps) => {
+const Pokedex = ({ pokemon, close, initialMoves, onConfirm, team }: PokedexProps) => {
     const [pokeData, setPokeData] = useState<any>(null);
     const [pokeMoves, setPokeMoves] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [moves, setMoves] = useState<string[]>(initialMoves)
+    const addButtonRef = useRef<HTMLButtonElement>(null);
 
     /**
      * Fetch Pokemon stats and moves from the API
@@ -51,8 +56,20 @@ const Pokedex = ({ pokemon, close, initialMoves, onConfirm }: PokedexProps) => {
         }
     }
 
+    const isSelected = pokemon != null && Object.keys(team).includes(pokemon.name);
+
     const addPokemonToTeam = () => {
-        if (!pokemon || moves.length < 1) return;
+        if (!pokemon) return;
+        if (Object.keys(team).length === 6) {
+            shake(addButtonRef.current);
+            toast.error("You have reach the maximum of 6 Pokemon per team");
+            return;
+        }
+        if (moves.length < 1) {
+            shake(addButtonRef.current);
+            toast.error("Select at least 1 move before adding this Pokemon.");
+            return;
+        }
         onConfirm({ pokemon: pokemon.name, moves: [...moves] })
         close(false);
     }
@@ -145,7 +162,7 @@ const Pokedex = ({ pokemon, close, initialMoves, onConfirm }: PokedexProps) => {
             <div className="flex gap-2 w-full justify-center p-3 border-t border-gray-200">
                 <button
                     onClick={() => close(false)}
-                    className="w-1/4 p-2 bg-gray-500 hover:bg-gray-700 text-white text-xs font-medium rounded-lg cursor-pointer"
+                    className="w-1/4 p-2 bg-red-500 hover:bg-gray-700 text-white text-xs font-medium rounded-lg cursor-pointer"
                 >
                     Close
                 </button>
@@ -160,11 +177,12 @@ const Pokedex = ({ pokemon, close, initialMoves, onConfirm }: PokedexProps) => {
                     className="w-1/4 p-2 bg-gray-500 hover:bg-gray-700 text-white text-xs font-medium rounded-lg cursor-pointer"
                 >
                     Random
-                </button>                
+                </button>        
                 <button
+                    ref={addButtonRef}
                     className="w-1/4 p-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg cursor-pointer"
                     onClick={addPokemonToTeam}>
-                    Add
+                    {isSelected ? "Update" : "Add"}
                 </button>
             </div>
 
