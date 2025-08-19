@@ -18,17 +18,23 @@ type PokedexProps = {
     initialMoves: string[];
     onConfirm: (entry: { pokemon: string; moves: string[] }) => void;
     team: Record<string, string[]>;
+    variant?: "default" | "moveFocused";
 }
 
 /**
  * Display detailed stats and available moves for a selected pokemon
  */
-const Pokedex = ({ pokemon, close, initialMoves, onConfirm, team }: PokedexProps) => {
+const Pokedex = ({ pokemon, close, initialMoves, onConfirm, team, variant }: PokedexProps) => {
     const [pokeData, setPokeData] = useState<any>(null);
     const [pokeMoves, setPokeMoves] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [moves, setMoves] = useState<string[]>(initialMoves)
     const addButtonRef = useRef<HTMLButtonElement>(null);
+
+    const moveFocused = variant === "moveFocused";
+
+    let selected: (string | { name: string })[] = [];
+    let remaining: (string | { name: string })[] = [];
 
     /**
      * Fetch Pokemon stats and moves from the API
@@ -112,6 +118,17 @@ const Pokedex = ({ pokemon, close, initialMoves, onConfirm, team }: PokedexProps
         )
     }
 
+    if (moveFocused && pokeMoves) {
+        selected = pokeMoves.filter((move: any) => {
+            const name = typeof move === "string" ? move: move.name;
+            return moves.includes(name);
+        });
+        remaining = pokeMoves.filter((move: any) => {
+            const name = typeof move === "string" ? move : move.name;
+            return !moves.includes(name);
+        });
+    }
+
     return (
         <div className="relative w-full bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
             {/* Pokemon Name and Stats */}
@@ -148,26 +165,64 @@ const Pokedex = ({ pokemon, close, initialMoves, onConfirm, team }: PokedexProps
                 
                 {pokeMoves ? (
                     pokeMoves.length > 0 ? (
-                        <div className="flex flex-col gap-2 cursor-pointer">
-                            {pokeMoves.map((move: string | { name: string }) => (
+                    moveFocused ? (
+                        <div className="flex flex-col gap-3">
+                        {/* Selected moves first */}
+                        {selected.length > 0 && (
+                            <div>
+                            <h4 className="text-[11px] font-bold text-green-700 mb-1">Selected</h4>
+                            <div className="flex flex-col gap-2">
+                                {selected.map((move) => (
                                 <PokeMove
                                     key={typeof move === "string" ? move : move.name}
                                     move={move}
                                     moves={moves}
                                     setMoves={setMoves}
                                 />
-                            ))}
+                                ))}
+                            </div>
+                            </div>
+                        )}
+
+                        {/* Remaining moves */}
+                        {remaining.length > 0 && (
+                            <div>
+                            <h4 className="text-[11px] font-bold text-gray-600 mb-1">Available</h4>
+                            <div className="flex flex-col gap-2">
+                                {remaining.map((move) => (
+                                <PokeMove
+                                    key={typeof move === "string" ? move : move.name}
+                                    move={move}
+                                    moves={moves}
+                                    setMoves={setMoves}
+                                />
+                                ))}
+                            </div>
+                            </div>
+                        )}
                         </div>
                     ) : (
-                        <div className="text-gray-500 text-center py-4">
-                            No moves available
+                        // Default: just list all moves
+                        <div className="flex flex-col gap-2 cursor-pointer">
+                        {pokeMoves.map((move: string | { name: string }) => (
+                            <PokeMove
+                            key={typeof move === "string" ? move : move.name}
+                            move={move}
+                            moves={moves}
+                            setMoves={setMoves}
+                            />
+                        ))}
                         </div>
+                    )
+                    ) : (
+                    <div className="text-gray-500 text-center py-4">No moves available</div>
                     )
                 ) : (
                     <div className="text-red-600 text-center p-4 bg-red-50 rounded-lg">
-                        Failed to load Pokemon moves
+                    Failed to load Pokemon moves
                     </div>
                 )}
+
             </div>
 
             {/* Stats Card Action Items */}
