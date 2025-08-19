@@ -1,5 +1,7 @@
-import { useState } from 'react';
-import { searchMoveStats } from '../../services/SearchAPI';
+import { useRef, useState } from 'react';
+import { searchMoveStats } from '../../utils/SearchAPI';
+import { shake } from '../../utils/shake';
+import { toast } from 'sonner';
 
 import MoveStat from './MoveStat'
 import clsx from 'clsx';
@@ -28,6 +30,9 @@ const PokeMove = ({ move, moves, setMoves }: PokeMoveProps) => {
     const formattedName = moveName.replace(/-/g, " ");
     // Check if move has been selected
     const isSelected = moves.includes(moveName);
+
+    const addRef = useRef<HTMLButtonElement>(null);
+    const removeRef = useRef<HTMLButtonElement>(null);
 
     /**
      * Fetches detailed stats for the current move from the API
@@ -62,7 +67,17 @@ const PokeMove = ({ move, moves, setMoves }: PokeMoveProps) => {
      * Prevents from exceeding the maximum of 4 moves
      */
     const handleAdd = () => {
-        if (!isSelected && moves.length < 4) setMoves([...moves, moveName]);
+        if (isSelected) {
+            shake(addRef.current);
+            toast.error("That move is already on your list.");
+            return;
+        }
+        if (moves.length >= 4) {
+            shake(addRef.current);
+            toast.error("You can pick up to 4 moves.");
+            return;
+        }
+        setMoves([...moves, moveName]);
     };
 
     /**
@@ -70,7 +85,12 @@ const PokeMove = ({ move, moves, setMoves }: PokeMoveProps) => {
      * Prevents user from removing a mode that was never added
      */
     const handleRemove = () => {
-        if (isSelected) setMoves(moves.filter(move => move !== moveName));
+        if (!isSelected) {
+            shake(removeRef.current);
+            toast.error("That move isn't on your list.");
+            return;
+        }
+        setMoves(moves.filter(move => move !== moveName));
     };
     
     return (
@@ -85,6 +105,7 @@ const PokeMove = ({ move, moves, setMoves }: PokeMoveProps) => {
                 </div>
                 <div className="flex gap-2 justify-right items-center">
                     <button
+                        ref={isSelected ? removeRef : addRef}
                         className={clsx("flex rounded-sm bg-[#2563eb] text-white hover:scale-110 cursor-pointer h-full",
                                         "justify-center items-center w-5",
                                         isSelected ? "text-orange-700 bg-yellow-500" : "text-[#2563eb]")}
