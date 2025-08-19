@@ -33,20 +33,6 @@ function App() {
   }, []);
 
   return (
-    // <SocketContext.Provider value={socket}>
-    //   <HashRouter>
-    //     <div>
-    //       <Routes>
-    //         <Route path="/" element={<Home />} />
-    //         <Route path="/multiplayer" element={<Multiplayer />} />
-    //         <Route path="/team-selection" element={<Selection list={pokemonList} />} />
-    //         <Route path="/battle" element={<Battle />} />
-    //         <Route path="/single-player" element={<SinglePlayer />} />
-    //       </Routes>
-    //     </div>
-    //   </HashRouter>
-    // </SocketContext.Provider>
-    <TestAnimation pokemon="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/330.png"></TestAnimation>
     <SocketContext.Provider value={socket}>
       <HashRouter>
         <Toaster position="top-center" />
@@ -61,6 +47,7 @@ function App() {
         </div>
       </HashRouter>
     </SocketContext.Provider>
+    // <TestAnimation pokemon="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/330.png"></TestAnimation>
   );
 }
 //initial loading component
