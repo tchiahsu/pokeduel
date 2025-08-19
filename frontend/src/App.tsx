@@ -1,6 +1,6 @@
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Toaster } from "sonner"
+import { Toaster } from "sonner";
 import { io, Socket } from "socket.io-client";
 import Home from "./pages/Home";
 import Multiplayer from "./pages/Multiplayer";
