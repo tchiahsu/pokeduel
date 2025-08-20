@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { fetchPokemonData } from '../utils/SearchAPI';
 import { useSocket } from "../contexts/SocketContext";
 import { shake } from "../utils/shake";
-import type { Pokemon, PokedexVariant } from '../types/pokemon'
+import type { Pokemon } from '../types/pokemon'
 import { toast } from 'sonner';
 
 import SearchBar from '../components/TeamSelection/SearchBar';
@@ -34,7 +34,6 @@ export default function Selection({ list }: SelectionProps) {
     const [pokemonTeam, setPokemonTeam] = useState<Record<string, string[]>>({});
     const [teamSprites, setTeamSprites] = useState<Record<string, string>>({});
     const [leadPokemon, setLeadPokemon] = useState<string | null>(null);
-    const [pokedexVariant, setPokedexVariant] = useState<PokedexVariant>("default");
 
     const socket = useSocket();
     const navigate = useNavigate();
@@ -158,18 +157,12 @@ export default function Selection({ list }: SelectionProps) {
      * - team : the pokemon team with the name and the list of moves
      * - leadName : the pokemon that was selected as lead
      */
-    const AddLeadToStart = (team: Record<string, string[]>, leadName: string | null) => {
+    const addLeadToStart = (team: Record<string, string[]>, leadName: string | null) => {
         const names = Object.keys(team);
         const orderedNames = leadName ? [leadName, ...names.filter(poke => poke !== leadName)] : names;
 
         // Reconstruct object in the new order
         return Object.fromEntries(orderedNames.map(poke => [poke, team[poke]]));
-    }
-
-    const openPokedexFor = (pokemon: Pokemon, variant: PokedexVariant = "default") => {
-        setCurrPokemon(pokemon);
-        setPokedexVariant(variant);
-        setShowPokedex(true);
     }
 
     /**
@@ -184,7 +177,7 @@ export default function Selection({ list }: SelectionProps) {
             return;
         }
 
-        const orderedTeam = AddLeadToStart(pokemonTeam, leadPokemon);
+        const orderedTeam = addLeadToStart(pokemonTeam, leadPokemon);
         console.log("emit setPlayer", { name: playerName, teamSelection: orderedTeam })
         socket.emit("setPlayer", { name: playerName, teamSelection: orderedTeam });
         navigate("/battle");
@@ -218,15 +211,17 @@ export default function Selection({ list }: SelectionProps) {
                 </h3>
                 <div className='flex justify-center items-center mr-4 gap-3'>
                     <Link to='/multiplayer'>
-                        <Button>Back</Button>
+                        <Button>
+                            Back
+                        </Button>
                     </Link>
 
                     <Button onClick={fetchRandomTeam}>
-                        Random Team
+                        Randomize
                     </Button>
 
                     <span ref={startRef} className={!canStart ? "opacity-60" : ""}>
-                        <Button onClick={emitTeamSelection}>
+                        <Button onClick={emitTeamSelection} variant="start">
                             Start Game
                         </Button>
                     </span>
@@ -251,9 +246,9 @@ export default function Selection({ list }: SelectionProps) {
                                                                  leadPokemon === poke ? "text-blue-600" : ""
                                             )}>
                                                 <img
-                                                    className="pointer-events-none select-none"
                                                     src={sprite}
                                                     alt={poke}
+                                                    className="pointer-events-none select-none"
                                                 />
                                                 {poke}
                                             </div>
@@ -267,8 +262,8 @@ export default function Selection({ list }: SelectionProps) {
                                                     label="Show Moves"
                                                     color="blue"
                                                     onClick={() => {
-                                                        const pokemon = { name: poke, sprite: sprite};
-                                                        openPokedexFor(pokemon, "moveFocused");
+                                                        setShowPokedex(true);
+                                                        setCurrPokemon({ name: poke, sprite: sprite });
                                                     }}                                                
                                                 />
                                                 <TeamButton 
@@ -333,7 +328,6 @@ export default function Selection({ list }: SelectionProps) {
                                 initialMoves={initialMovesForCurrent}
                                 onConfirm={handleAddToTeam}
                                 team={pokemonTeam}
-                                variant={pokedexVariant}
                             />
                         </div>
                     </div>
