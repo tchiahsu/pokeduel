@@ -9,7 +9,6 @@ import Selection from "./pages/Selection";
 import Battle from "./pages/Battle";
 import { SocketContext } from "./contexts/SocketContext";
 import "./App.css";
-import TestAnimation from "./testAnimations/animations";
 import type { Pokemon } from "./types/pokemon";
 
 const API_URL_BASE = "http://localhost:8000";
