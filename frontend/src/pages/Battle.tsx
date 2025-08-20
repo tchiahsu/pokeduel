@@ -80,6 +80,8 @@ export default function Battle() {
   const [selfRemaining, setSelfRemaining] = useState(0);
   const [opponentTeamCount, setOpponentTeamCount] = useState(0);
   const [opponentRemaining, setOpponentRemaining] = useState(0);
+  const [selfIsSummoned, setSelfIsSummoned] = useState(false);
+  const [opponentIsSummoned, setOpponentisSummoned] = useState(false);
 
   const [eventQueue, setEventQueue] = useState<Event[]>([]);
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null);
@@ -282,18 +284,24 @@ export default function Battle() {
             />
           )} */}
           {currentEvent?.user === "self" && currentEvent.animation === "switch" ? (
-            <SelfSwitchAnimation pokemon={selfActive.backSprite} onComplete={() => setCurrentEvent(null)} />
+            <SelfSwitchAnimation
+              pokemon={selfActive.backSprite}
+              onComplete={() => {
+                setSelfIsSummoned(true);
+                setCurrentEvent(null);
+              }}
+            />
           ) : currentEvent?.user === "self" && currentEvent.animation === "attack" ? (
             <SelfAttackAnimation pokemon={selfActive.backSprite} onComplete={() => setCurrentEvent(null)} />
           ) : currentEvent?.user === "opponent" && currentEvent.animation === "attack" ? (
             <TakeDamageAnimation pokemon={selfActive.backSprite} />
-          ) : (
+          ) : selfIsSummoned ? (
             <img
               className="absolute w-200 h-150 select-none pointer-events-none"
               src={selfActive.backSprite}
               alt={selfActive.name}
             />
-          )}
+          ) : null}
         </div>
         <div></div>
         <div></div>
