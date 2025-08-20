@@ -13,25 +13,32 @@ type ButtonProps = {
     onClick?: () => void;
     size?: "xs" | "sm" | "md";
     variant?: "default" | "start";
-    disabled?: boolean;
+    inactive?: boolean;
 };
 
-const Button = ({ children, onClick, size="sm", variant="default", disabled=false }: ButtonProps) => {
+const Button = ({ children, onClick, size="sm", variant="default", inactive=false }: ButtonProps) => {
+    
+    const buttonSize = clsx({
+        "text-xs": size === "xs",
+        "text-sm": size === "sm",
+        "text-md": size === "md",
+    });
+
+    const baseDisabled = "bg-gray-300 text-gray-500 opacity-80"
+    const defaultEnabled = "bg-gray-300 text-gray-500 hover:bg-red-300 hover:text-red-600 cursor-pointer"
+    const startEnbled = "bg-yellow-200 text-yellow-600 hover:scale-105 animate-pulse-subtle duration-200 ease-in-out cursor-pointer"
+
+    const buttonVariant = variant === "default" ? (inactive ? baseDisabled : defaultEnabled) : (inactive ? baseDisabled : startEnbled)
+
     return (
         <button
             onClick={onClick}
-            disabled={disabled}
+            disabled={inactive}
             className={clsx("border-2 rounded-lg py-2 px-4",
-                            {
-                                "text-xs": size === "xs",
-                                "text-sm": size === "sm",
-                                "text-md": size === "md",
-                            },
-                            {
-                                "bg-gray-300 text-gray-500 hover:bg-red-300 hover:text-red-600": variant === "default",
-                                "bg-yellow-200 text-yellow-500 animate-pulse-subtle hover:scale-105 duration-300 ease-in-out": variant === "start",
-                            },
-                            disabled ? "opacity-80 cursor-not-allowed" : "cursor-pointer")}
+                            "transition-transform duration-200 ease-in-out",
+                            buttonSize,
+                            buttonVariant,
+                        )}
         >
             {children}
         </button>

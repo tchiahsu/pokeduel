@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useSocket } from "../contexts/SocketContext";
 
-import battleBg from "../assets/bg-battle.jpg";
+import battleBg from "../assets/bg_3.webp";
 import StatsCard from "../components/BattlePage/StatsCard";
 import BattleActionsPanel from "../components/BattlePage/BattleActionsPanel";
 import BattleDisplayPanel from "../components/BattlePage/BattleDisplayPanel";
@@ -230,13 +230,16 @@ export default function Battle() {
   const cancelQuit = () => setShowQuitConfirm(false);
 
   return (
+
     <div className="relative w-screen h-screen overflow-hidden grid grid-rows-3">
+
       {/* Background */}
       <img
         src={battleBg}
         className="absolute inset-0 w-full h-full object-cover -z-10 pointer-events-none"
         alt="Battle Background"
       />
+
       {/* Top Section */}
       <div className="relative grid grid-cols-6">
         {/* Opponent Info */}
@@ -270,6 +273,7 @@ export default function Battle() {
         </div>
         <div></div>
       </div>
+
 
       {/* Middle Section Player Pokémon */}
       <div className="relative grid grid-cols-4">
@@ -306,6 +310,7 @@ export default function Battle() {
         <div></div>
         <div></div>
       </div>
+
 
       {/* Bottom Section (Controls + Player Stats) */}
       <div className=" relative flex flex-row justify-between items-end gap-4 p-4 w-full">
@@ -353,7 +358,10 @@ export default function Battle() {
           </div>
         </div>
       </div>
+
+      {/* Quit Message */}
       {showQuitConfirm && <QuitBattleBox onConfirm={confirmQuit} onCancel={cancelQuit} />}
+    
     </div>
   );
 }

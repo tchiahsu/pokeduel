@@ -220,8 +220,8 @@ export default function Selection({ list }: SelectionProps) {
                         Randomize
                     </Button>
 
-                    <span ref={startRef} className={!canStart ? "opacity-60" : ""}>
-                        <Button onClick={emitTeamSelection} variant="start">
+                    <span ref={startRef}>
+                        <Button onClick={emitTeamSelection} variant="start" inactive={!canStart}>
                             Start Game
                         </Button>
                     </span>
@@ -243,7 +243,7 @@ export default function Selection({ list }: SelectionProps) {
                                     ref={(element) => {anchorRef.current[poke] = element}}>
                                         <div className="flex-col relative group w-full h-24 flex items-center justify-center text-[12px]">
                                             <div className={clsx("flex flex-col justify-center items-center group-hover:opacity-50",
-                                                                 leadPokemon === poke ? "text-blue-600" : ""
+                                                                 leadPokemon === poke ? "text-amber-500" : ""
                                             )}>
                                                 <img
                                                     src={sprite}
