@@ -190,6 +190,9 @@ export default class Pokemon {
    */
   public takeDamage(damage: number): void {
     this.hp -= damage;
+    if (this.hp <= 0) {
+      this.hp = 0;
+    }
   }
 
   /**
