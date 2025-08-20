@@ -150,60 +150,48 @@ const Pokedex = ({ pokemon, close, initialMoves, onConfirm, team }: PokedexProps
                     </div>
                 )}
             </div>
+
+            {/* Pokemon Moves Table */}
+            <div className="relative px-4 pb-4 flex flex-col text-xs overflow-y-auto no-scrollbar">
+                {selected.length > 0 && (
+                    <>
+                        <h4 className="text-[11px] font-bold text-green-700 mb-1 pt-4">Selected</h4>
+                        <div className="flex flex-col gap-1">
+                            {selected.map((move: any) => (
+                                <PokeMove
+                                    key={getMoveName(move)}
+                                    move={move}
+                                    moves={moves}
+                                    setMoves={setMoves}
+                                />
+                            ))}
+                        </div>
+                    </>
+                )}
+            </div>
             
             {/* Pokemon Moves Table */}
-            <div className="relative px-4 pb-4 flex-1 flex flex-col overflow-y-auto text-xs no-scrollbar">
+            <div className="relative px-4 pb-4 flex-1 flex flex-col text-xs overflow-y-auto no-scrollbar">
                 <div className="sticky top-0 flex justify-between items-center bg-white py-3">
                     <h3 className="text-[13px] font-semibold text-gray-800 text-left indent-0.5">Select Moves</h3>
                     <span className="text-[10px]">{moves.length}/4</span>
                 </div>
-                
-                {pokeMoves ? (
-                    pokeMoves.length > 0 ? (
-                        <div className="flex flex-col gap-3">
-                        {/* Selected moves */}
-                        {selected.length > 0 && (
-                            <div>
-                            <h4 className="text-[11px] font-bold text-green-700 mb-1">Selected</h4>
-                            <div className="flex flex-col gap-2">
-                                {selected.map((move: any) => (
-                                <PokeMove
-                                    key={typeof move === "string" ? move : move.name}
-                                    move={move}
-                                    moves={moves}
-                                    setMoves={setMoves}
-                                />
-                                ))}
-                            </div>
-                            </div>
-                        )}
 
-                        {/* Remaining moves */}
-                        {remaining.length > 0 && (
-                            <div>
-                            <h4 className="text-[11px] font-bold text-gray-600 mb-1">Available</h4>
-                            <div className="flex flex-col gap-2">
-                                {remaining.map((move: any) => (
-                                <PokeMove
-                                    key={typeof move === "string" ? move : move.name}
+                {remaining.length > 0 && (
+                    <>
+                        <h4 className="text-[11px] font-bold text-gray-600 mb-1">Available</h4>
+                        <div className="flex flex-col gap-2">
+                            {remaining.map((move: any) => (
+                                <PokeMove 
+                                    key={getMoveName(move)}
                                     move={move}
                                     moves={moves}
                                     setMoves={setMoves}
                                 />
-                                ))}
-                            </div>
-                            </div>
-                        )}
+                            ))}
                         </div>
-                    ) : (
-                    <div className="text-gray-500 text-center py-4">No moves available</div>
-                    )
-                ) : (
-                    <div className="text-red-600 text-center p-4 bg-red-50 rounded-lg">
-                    Failed to load Pokemon moves
-                    </div>
+                    </>
                 )}
-
             </div>
 
             {/* Stats Card Action Items */}

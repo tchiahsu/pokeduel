@@ -157,7 +157,7 @@ export default function Selection({ list }: SelectionProps) {
      * - team : the pokemon team with the name and the list of moves
      * - leadName : the pokemon that was selected as lead
      */
-    const AddLeadToStart = (team: Record<string, string[]>, leadName: string | null) => {
+    const addLeadToStart = (team: Record<string, string[]>, leadName: string | null) => {
         const names = Object.keys(team);
         const orderedNames = leadName ? [leadName, ...names.filter(poke => poke !== leadName)] : names;
 
@@ -177,7 +177,7 @@ export default function Selection({ list }: SelectionProps) {
             return;
         }
 
-        const orderedTeam = AddLeadToStart(pokemonTeam, leadPokemon);
+        const orderedTeam = addLeadToStart(pokemonTeam, leadPokemon);
         console.log("emit setPlayer", { name: playerName, teamSelection: orderedTeam })
         socket.emit("setPlayer", { name: playerName, teamSelection: orderedTeam });
         navigate("/battle");
@@ -211,15 +211,17 @@ export default function Selection({ list }: SelectionProps) {
                 </h3>
                 <div className='flex justify-center items-center mr-4 gap-3'>
                     <Link to='/multiplayer'>
-                        <Button>Back</Button>
+                        <Button>
+                            Back
+                        </Button>
                     </Link>
 
                     <Button onClick={fetchRandomTeam}>
-                        Random Team
+                        Randomize
                     </Button>
 
                     <span ref={startRef} className={!canStart ? "opacity-60" : ""}>
-                        <Button onClick={emitTeamSelection}>
+                        <Button onClick={emitTeamSelection} variant="start">
                             Start Game
                         </Button>
                     </span>
@@ -244,9 +246,9 @@ export default function Selection({ list }: SelectionProps) {
                                                                  leadPokemon === poke ? "text-blue-600" : ""
                                             )}>
                                                 <img
-                                                    className="pointer-events-none select-none"
                                                     src={sprite}
                                                     alt={poke}
+                                                    className="pointer-events-none select-none"
                                                 />
                                                 {poke}
                                             </div>
