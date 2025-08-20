@@ -4,7 +4,7 @@ import closed from "../../assets/closed_pokeball.png";
 import opening from "../../assets/opening_pokeball.png";
 import opened from "../../assets/opened_pokeball.png";
 
-export default function TestAnimation({ pokemon }: { pokemon: string }) {
+export default function OpponentSwitchAnimation({ pokemon, onComplete }: { pokemon: string; onComplete: () => void }) {
   const [phase, setPhase] = useState<"closed" | "opening" | "opened" | "summon">("closed");
   return (
     <>
@@ -49,7 +49,7 @@ export default function TestAnimation({ pokemon }: { pokemon: string }) {
             initial={{ scale: 0, filter: ["brightness(50)"] }}
             animate={{ scale: 4, filter: ["brightness(1)"] }}
             transition={{ duration: 0.5, ease: easeInOut }}
-            onAnimationComplete={() => setPhase("summon")}
+            onAnimationComplete={onComplete}
           />
         )}
       </div>

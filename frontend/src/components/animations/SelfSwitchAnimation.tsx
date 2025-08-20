@@ -2,7 +2,7 @@ import { useState } from "react";
 import { easeInOut, motion } from "motion/react";
 import pokeball from "../../assets/poke_pixel.png";
 
-export default function SelfSwitchAnimation({ pokemon }: { pokemon: string }) {
+export default function SelfSwitchAnimation({ pokemon, onComplete }: { pokemon: string; onComplete: () => void }) {
   const [phase, setPhase] = useState<"throw" | "summon">("throw");
 
   return (
@@ -23,7 +23,7 @@ export default function SelfSwitchAnimation({ pokemon }: { pokemon: string }) {
           <motion.img
             src={pokemon}
             alt="summon pokemon"
-            initial={{ x: 400, y: 300, scale: 0, opacity: 0, filter: "brightness(10)" }}
+            initial={{ scale: 0, opacity: 0, filter: "brightness(10)" }}
             animate={{
               scale: [0, 4, 4],
               opacity: [0, 1, 1],
@@ -33,7 +33,7 @@ export default function SelfSwitchAnimation({ pokemon }: { pokemon: string }) {
             }}
             transition={{ duration: 0.5 }}
             className="pointer-events-none"
-            // onAnimationComplete={() => setPhase("dance")}
+            onAnimationComplete={onComplete}
           />
         )}
         {/* 
