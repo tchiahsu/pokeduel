@@ -63,6 +63,7 @@ type PokemonOptions = {
   hp: number;
   maxHP: number;
   sprite: string;
+  isCurrent: boolean;
 };
 
 /**
@@ -80,7 +81,8 @@ type PlayerState = {
   name: string;
   hp: number;
   maxHP: number;
-  sprite: string;
+  backSprite: string;
+  frontSprite: string;
   remainingPokemon: number;
   teamCount: number;
 };
@@ -481,6 +483,34 @@ export default class BattleModel {
   }
 
   /**
+   * Returns a summary of the start of the battle for both players, with events personalized
+   * to each player's perspective. Also clears the internal event list.
+   *
+   * @returns A mapping of player IDs to their respective personalized Events in an array.
+   */
+  public getStartSummary(): Record<string, Event[]> {
+    const { player: player1 } = this.getPlayerAndMoveByID(this.player1ID);
+    const { player: player2 } = this.getPlayerAndMoveByID(this.player2ID);
+
+    this.events.push(
+      this.createEvent(
+        this.player1ID,
+        "switch",
+        `${player1.getName()} sent out ${player1.getCurrentPokemon().getName()}!`
+      )
+    );
+    this.events.push(
+      this.createEvent(
+        this.player2ID,
+        "switch",
+        `${player2.getName()} sent out ${player2.getCurrentPokemon().getName()}!`
+      )
+    );
+
+    return this.getTurnSummary();
+  }
+
+  /**
    * Returns the current Pokemon's moves for the given player.
    *
    * @param playerID The ID of the player.
@@ -514,6 +544,7 @@ export default class BattleModel {
         hp: pokemon.getHP(),
         maxHP: pokemon.getMaxHP(),
         sprite: pokemon.getFrontSprite(),
+        isCurrent: pokemon === player.getCurrentPokemon(),
       };
       playerTeam.push(playerPokemon);
     }
@@ -537,18 +568,6 @@ export default class BattleModel {
    * @returns An object containing the available moves and Pokemon to switch for the given player.
    */
   public buildPlayerNextOptions(playerID: string): NextOptions {
-    // const opponentID = this.getOppositePlayer(playerID);
-    // const opponentPlayer = this.players[opponentID];
-
-    // const opponentTeam = opponentPlayer.getTeam().map((pokemon) => ({
-    //   name: pokemon.getName(),
-    //   hp: pokemon.getHP(),
-    //   maxHp: pokemon.getMaxHP(),
-    //   sprite: pokemon.getFrontSprite(),
-    // }));
-
-    // const opponentActiveIndex = opponentPlayer.getCurrentPokemonIndex();
-
     const nextOptions: NextOptions = {
       moves: this.getPlayerMoveOptions(playerID),
       pokemon: this.getPlayerPokemonOptions(playerID),
@@ -602,7 +621,8 @@ export default class BattleModel {
         name: playerPokemon.getName(),
         hp: playerPokemon.getHP(),
         maxHP: playerPokemon.getMaxHP(),
-        sprite: playerPokemon.getBackSprite(),
+        backSprite: playerPokemon.getBackSprite(),
+        frontSprite: playerPokemon.getFrontSprite(),
         remainingPokemon: player.getRemainingPokemon(),
         teamCount: player.getTeam().length,
       },
@@ -610,7 +630,8 @@ export default class BattleModel {
         name: opponentPokemon.getName(),
         hp: opponentPokemon.getHP(),
         maxHP: opponentPokemon.getMaxHP(),
-        sprite: opponentPokemon.getFrontSprite(),
+        backSprite: opponentPokemon.getBackSprite(),
+        frontSprite: opponentPokemon.getFrontSprite(),
         remainingPokemon: opponentPlayer.getRemainingPokemon(),
         teamCount: opponentPlayer.getTeam().length,
       },
