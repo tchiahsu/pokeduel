@@ -13,6 +13,9 @@ import Pokedex from '../components/TeamSelection/Pokedex';
 import clsx from 'clsx'
 import TeamButton from '../components/TeamSelection/TeamButton';
 
+// Base URL for the backend server
+const API_URL_BASE = 'http://localhost:8000';
+
 /**
  * Props for the Selection page:
  * - list: initial list of Pokemon to render
@@ -43,6 +46,29 @@ export default function Selection({ list }: SelectionProps) {
     const initialMovesForCurrent = currPokemon ? (pokemonTeam[currPokemon.name] ?? []) : [];
 
     const canStart = Object.keys(pokemonTeam).length > 0;
+
+    const fetchRandomTeam = async () => {
+        try {
+            const res = await fetch(`${API_URL_BASE}/pokemon/random-team`);
+            const team = await res.json();
+            
+            setPokemonTeam(team);
+
+            const nextSprites: Record<string, string> = {};
+            await Promise.all(
+            Object.keys(team).map(async (name) => {
+                const pokeData = await fetchPokemonData(name);
+                if (pokeData) nextSprites[name] = pokeData.sprite;
+            })
+            );
+            setTeamSprites(nextSprites);
+
+            setLeadPokemon(Object.keys(team)[0] ?? null);      
+        } catch (error) {
+            console.error(`Error fetching random team: `, error);
+            return null;
+        }
+    }
 
     /**
      * Searches the information for the given pokemon name
@@ -194,6 +220,10 @@ export default function Selection({ list }: SelectionProps) {
                     <Link to='/multiplayer'>
                         <Button>Back</Button>
                     </Link>
+
+                    <Button onClick={fetchRandomTeam}>
+                        Random Team
+                    </Button>
 
                     <span ref={startRef} className={!canStart ? "opacity-60" : ""}>
                         <Button onClick={emitTeamSelection}>
