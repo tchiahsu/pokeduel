@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { fetchPokemonData } from '../utils/SearchAPI';
 import { useSocket } from "../contexts/SocketContext";
 import { shake } from "../utils/shake";
-import type { Pokemon, PokedexVariant } from '../types/pokemon'
+import type { Pokemon } from '../types/pokemon'
 import { toast } from 'sonner';
 
 import SearchBar from '../components/TeamSelection/SearchBar';
@@ -34,7 +34,6 @@ export default function Selection({ list }: SelectionProps) {
     const [pokemonTeam, setPokemonTeam] = useState<Record<string, string[]>>({});
     const [teamSprites, setTeamSprites] = useState<Record<string, string>>({});
     const [leadPokemon, setLeadPokemon] = useState<string | null>(null);
-    const [pokedexVariant, setPokedexVariant] = useState<PokedexVariant>("default");
 
     const socket = useSocket();
     const navigate = useNavigate();
@@ -166,12 +165,6 @@ export default function Selection({ list }: SelectionProps) {
         return Object.fromEntries(orderedNames.map(poke => [poke, team[poke]]));
     }
 
-    const openPokedexFor = (pokemon: Pokemon, variant: PokedexVariant = "default") => {
-        setCurrPokemon(pokemon);
-        setPokedexVariant(variant);
-        setShowPokedex(true);
-    }
-
     /**
      * Sends the team selection to the backend client
      * - team : the pokemon team selected by the player
@@ -267,8 +260,8 @@ export default function Selection({ list }: SelectionProps) {
                                                     label="Show Moves"
                                                     color="blue"
                                                     onClick={() => {
-                                                        const pokemon = { name: poke, sprite: sprite};
-                                                        openPokedexFor(pokemon, "moveFocused");
+                                                        setShowPokedex(true);
+                                                        setCurrPokemon({ name: poke, sprite: sprite });
                                                     }}                                                
                                                 />
                                                 <TeamButton 
@@ -333,7 +326,6 @@ export default function Selection({ list }: SelectionProps) {
                                 initialMoves={initialMovesForCurrent}
                                 onConfirm={handleAddToTeam}
                                 team={pokemonTeam}
-                                variant={pokedexVariant}
                             />
                         </div>
                     </div>
