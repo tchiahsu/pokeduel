@@ -9,6 +9,11 @@ import BattleActionsPanel from "../components/BattlePage/BattleActionsPanel";
 import BattleDisplayPanel from "../components/BattlePage/BattleDisplayPanel";
 import ActivePokeCount from "../components/BattlePage/ActivePokeCount";
 import QuitBattleBox from "../components/BattlePage/QuitBattleBox";
+import SelfSwitchAnimation from "../components/animations/SelfSwitchAnimation";
+import OpponentSwitchAnimation from "../components/animations/OpponentSwitchAnimation";
+import SelfAttackAnimation from "../components/animations/SelfAttackAnimation";
+import OpponentAttackAnimation from "../components/animations/OpponentAttackAnimation";
+import TakeDamageAnimation from "../components/animations/TakeDamageAnimation";
 
 /**
  * Represents a move that a current pokemon can use.
@@ -25,9 +30,10 @@ interface Move {
  */
 interface TeamMember {
   name: string;
-  image: string;
   hp: number;
   maxHP: number;
+  backSprite: string;
+  frontSprite: string;
 }
 
 /*
@@ -48,7 +54,7 @@ type Event = {
  */
 export default function Battle() {
   const [mode, setMode] = useState<"none" | "attack" | "switch" | "fainted">("none");
-  const [status, setStatus] = useState<string | any>("Select an action to begin...");
+  const [status, setStatus] = useState<string | any>("Select an action to begin..."); // Used for messages in display panel
   const [showQuitConfirm, setShowQuitConfirm] = useState(false);
 
   const [selfTeam, setSelfTeam] = useState<TeamMember[]>([]);
@@ -58,13 +64,16 @@ export default function Battle() {
     name: "",
     hp: 0,
     maxHP: 100,
-    image: ""
+    backSprite: "",
+    frontSprite: "",
   });
+
   const [opponentActive, setOpponentActive] = useState<TeamMember>({
     name: "",
     hp: 0,
     maxHP: 100,
-    image: ""
+    backSprite: "",
+    frontSprite: "",
   });
 
   const [selfTeamCount, setSelfTeamCount] = useState(0);
@@ -79,6 +88,10 @@ export default function Battle() {
   const socket = useSocket();
 
   useEffect(() => {
+    function onGameStart(events: any) {
+      setEventQueue(events);
+    }
+
     function onCurrentState(data: any) {
       console.log("currentState:", data);
 
@@ -95,14 +108,16 @@ export default function Battle() {
         name: selfData.name,
         hp: selfData.hp,
         maxHP: selfData.maxHP,
-        image: selfData.sprite
+        backSprite: selfData.backSprite,
+        frontSprite: selfData.frontSprite,
       });
 
       setOpponentActive({
         name: opponentData.name,
         hp: opponentData.hp,
         maxHP: opponentData.maxHP,
-        image: opponentData.sprite
+        backSprite: opponentData.backSprite,
+        frontSprite: opponentData.frontSprite,
       });
     }
 
@@ -124,7 +139,8 @@ export default function Battle() {
         name: poke.name,
         hp: poke.hp,
         maxHP: poke.maxHP || 100,
-        image: poke.sprite,
+        frontSprite: poke.sprite,
+        isCurrent: poke.isCurrent,
       }));
       setSelfTeam(parsedTeam);
       setSelfMoves(parsedMoves);
@@ -134,39 +150,33 @@ export default function Battle() {
      * Handles turnSummary event from server to display and update turn results.
      * @param summary array of turn event messages from the server
      */
-    function onTurnSummary(summary: any[]) {
-      console.log("turnSummary:", summary);
-      const messages = summary
-      .filter((entry: any) => entry.user === "self")
-      .map((entry: any) =>
-        Array.isArray(entry.message) ? entry.message.join("\n") : entry.message
-      );
-      setStatus(messages.join("\n"));
+    function onTurnSummary(events: any[]) {
+      setEventQueue(events);
     }
 
-    function onRequestFaintedSwitch(data: any) {
-      console.log("requestFaintedSwitch:", data);
-      setStatus("Your Pokemon has fainted! Switch to another Pokemon");
-      setMode("fainted");
+    // function onRequestFaintedSwitch(data: any) {
+    //   console.log("requestFaintedSwitch:", data);
+    //   setStatus("Your Pokemon has fainted! Switch to another Pokemon");
+    //   setMode("fainted");
 
-      const parsedTeam: TeamMember[] = data.map((poke: any) => ({
-        name: poke.name,
-        hp: poke.hp,
-        maxHP: poke.maxHP || 100,
-        image: poke.sprite,
-      }));
-      setSelfTeam(parsedTeam);
+    //   const parsedTeam: TeamMember[] = data.map((poke: any) => ({
+    //     name: poke.name,
+    //     hp: poke.hp,
+    //     maxHP: poke.maxHP || 100,
+    //     image: poke.sprite,
+    //   }));
+    //   setSelfTeam(parsedTeam);
 
-      const fainted = parsedTeam.find(p => p.name === selfActive.name);
-      if (fainted) {
-        setSelfActive({
-          name: fainted.name,
-          hp: 0,
-          maxHP: fainted.maxHP,
-          image: fainted.image,
-        });
-      }
-    }
+    //   const fainted = parsedTeam.find((p) => p.name === selfActive.name);
+    //   if (fainted) {
+    //     setSelfActive({
+    //       name: fainted.name,
+    //       hp: 0,
+    //       maxHP: fainted.maxHP,
+    //       image: fainted.image,
+    //     });
+    //   }
+    // }
 
     /**
      * Handles endGame event from the server.
@@ -177,41 +187,45 @@ export default function Battle() {
       navigate("/"); // to be changed to a pop-up that navigates to summary page
     }
 
+    socket.on("gameStart", onGameStart);
     socket.on("currentState", onCurrentState);
     socket.on("turnSummary", onTurnSummary);
     socket.on("nextOptions", onNextOptions);
-    socket.on("requestFaintedSwitch", onRequestFaintedSwitch);
+    // socket.on("requestFaintedSwitch", onRequestFaintedSwitch);
     socket.on("waitForFaintedSwitch", (data: any) => {
       setStatus(data.message || "Waiting for other player to switch pokemon");
     });
     socket.on("endGame", onEndGame);
 
     return () => {
+      socket.off("gameStart", onGameStart);
       socket.off("currentState", onCurrentState);
       socket.off("nextOptions", onNextOptions);
       socket.off("turnSummary", onTurnSummary);
-      socket.off("requestFaintedSwitch", onRequestFaintedSwitch);
+      // socket.off("requestFaintedSwitch", onRequestFaintedSwitch);
       socket.off("waitForFaintedSwitch");
       socket.off("endGame", onEndGame);
     };
   }, [socket, navigate, selfActive.name]);
 
+  useEffect(() => {
+    if (!currentEvent && eventQueue.length > 0) {
+      setCurrentEvent(eventQueue[0]);
+      setEventQueue((prev) => prev.slice(1));
+      setStatus(eventQueue[0].message);
+
+      if (eventQueue[0].animation === "none") {
+        setTimeout(() => {
+          setCurrentEvent(null);
+        }, 1000);
+      }
+    }
+  }, [eventQueue, currentEvent]);
+
   //Functions to handle quitting the battle
   const handleQuit = () => setShowQuitConfirm(true);
   const confirmQuit = () => navigate("/");
   const cancelQuit = () => setShowQuitConfirm(false);
-
-  /**
-   * Converts front sprite URL to a back sprite URL.
-   * @param frontUrl the URL of the front sprite
-   * @returns
-   */
-  function getBackSpriteUrl(frontUrl: string): string | undefined {
-    if (!frontUrl) return undefined;
-    const match = frontUrl.match(/\/(\d+)\.png$/);
-    const id = match ? match[1] : "0";
-    return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/${id}.png`;
-  }
 
   return (
     <div className="relative w-screen h-screen overflow-hidden grid grid-rows-3">
@@ -227,25 +241,30 @@ export default function Battle() {
         <div className="flex flex-col ml-4 mt-4">
           <StatsCard
             name={opponentActive.name || "Loading.."}
-            image={opponentActive.image}
+            image={opponentActive.frontSprite}
             hp={opponentActive.hp || 0}
             maxHP={opponentActive.maxHP || 100}
           />
-          <ActivePokeCount 
-            teamCount={opponentTeamCount}
-            remainingPokemon={opponentRemaining}
-          />
+          <ActivePokeCount teamCount={opponentTeamCount} remainingPokemon={opponentRemaining} />
         </div>
         <div></div>
         <div></div>
         <div></div>
         {/* Opponent Pokémon */}
         <div className="relative">
-          <img
-            className="absolute w-80 h-auto select-none pointer-events-none"
-            src={opponentActive.image}
-            alt={opponentActive.name}
-          />
+          {currentEvent?.user === "opponent" && currentEvent.animation === "switch" ? (
+            <OpponentSwitchAnimation pokemon={opponentActive.frontSprite} onComplete={() => setCurrentEvent(null)} />
+          ) : currentEvent?.user === "opponent" && currentEvent.animation === "attack" ? (
+            <OpponentAttackAnimation pokemon={opponentActive.frontSprite} onComplete={() => setCurrentEvent(null)} />
+          ) : currentEvent?.user === "self" && currentEvent.animation === "attack" ? (
+            <TakeDamageAnimation pokemon={opponentActive.frontSprite} />
+          ) : (
+            <img
+              className="absolute w-80 h-auto select-none pointer-events-none"
+              src={opponentActive.frontSprite}
+              alt={opponentActive.name}
+            />
+          )}
         </div>
         <div></div>
       </div>
@@ -255,10 +274,23 @@ export default function Battle() {
         <div></div>
         {/* Player Pokémon */}
         <div className="relative flex justify-start">
-          {selfActive.image && (
+          {/* {selfActive.backSprite && (
             <img
               className="absolute w-200 h-150 select-none pointer-events-none"
-              src={getBackSpriteUrl(selfActive.image)}
+              src={selfActive.backSprite}
+              alt={selfActive.name}
+            />
+          )} */}
+          {currentEvent?.user === "self" && currentEvent.animation === "switch" ? (
+            <SelfSwitchAnimation pokemon={selfActive.backSprite} onComplete={() => setCurrentEvent(null)} />
+          ) : currentEvent?.user === "self" && currentEvent.animation === "attack" ? (
+            <SelfAttackAnimation pokemon={selfActive.backSprite} onComplete={() => setCurrentEvent(null)} />
+          ) : currentEvent?.user === "opponent" && currentEvent.animation === "attack" ? (
+            <TakeDamageAnimation pokemon={selfActive.backSprite} />
+          ) : (
+            <img
+              className="absolute w-200 h-150 select-none pointer-events-none"
+              src={selfActive.backSprite}
               alt={selfActive.name}
             />
           )}
@@ -302,16 +334,13 @@ export default function Battle() {
             <BattleActionsPanel onSelect={setMode} onQuit={handleQuit} />
           </div>
           <div className="relative flex flex-col items-end min-w-[200px]">
-            <ActivePokeCount 
-              teamCount={selfTeamCount}
-              remainingPokemon={selfRemaining}
-            />
-            <StatsCard 
+            <ActivePokeCount teamCount={selfTeamCount} remainingPokemon={selfRemaining} />
+            <StatsCard
               key={selfActive.name} // re-render
-              name={selfActive.name} 
-              image={selfActive.image} 
-              hp={selfActive.hp} 
-              maxHP={selfActive.maxHP} 
+              name={selfActive.name}
+              image={selfActive.frontSprite}
+              hp={selfActive.hp}
+              maxHP={selfActive.maxHP}
             />
           </div>
         </div>

@@ -1,6 +1,6 @@
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Toaster } from "sonner"
+import { Toaster } from "sonner";
 import { io, Socket } from "socket.io-client";
 import Home from "./pages/Home";
 import Multiplayer from "./pages/Multiplayer";
@@ -9,7 +9,6 @@ import Selection from "./pages/Selection";
 import Battle from "./pages/Battle";
 import { SocketContext } from "./contexts/SocketContext";
 import "./App.css";
-import TestAnimation from "./testAnimations/animations";
 import type { Pokemon } from "./types/pokemon";
 
 const API_URL_BASE = "http://localhost:8000";

@@ -29,6 +29,10 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
         const player1ID = battleModel.getPlayer1ID();
         const player2ID = battleModel.getPlayer2ID();
 
+        const startSummary = battleModel.getStartSummary();
+        io.to(player1ID).emit("gameStart", startSummary[player1ID]);
+        io.to(player2ID).emit("gameStart", startSummary[player2ID]);
+
         const currentState = battleModel.getCurrentState();
         const nextOptions = battleModel.getNextOptions();
 
