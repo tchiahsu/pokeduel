@@ -8,8 +8,8 @@ export default function SelfAttackAnimation({ pokemon, onComplete }: { pokemon: 
           src={pokemon}
           alt="attack"
           initial={{ x: 0, y: 0, scale: 2, rotate: 0 }}
-          animate={{ x: [0, -100, 120, 0], y: [0, 10, -50, 0], rotate: [20, 20, 0] }}
-          transition={{ duration: 0.4, ease: easeInOut }}
+          animate={{ x: [0, -100, 120, 0], y: [0, 10, -50, 0], rotate: [12, 12, 0] }}
+          transition={{ duration: 0.5, ease: easeInOut }}
           onAnimationComplete={onComplete}
         />
       </div>

@@ -47,7 +47,13 @@ export default function OpponentSwitchAnimation({ pokemon, onComplete }: { pokem
             src={pokemon}
             alt="summon pokemon"
             initial={{ scale: 0, filter: ["brightness(50)"] }}
-            animate={{ scale: 4, filter: ["brightness(1)"] }}
+            animate={{
+              y: [0, 10, 0, 10, 0, 0],
+              scale: [0, 2, 2],
+              opacity: [0, 1, 1],
+              rotate: [0, 0, 0, 0, -7, -7, 0, 7, 7, 0],
+              filter: ["brightness(1)"],
+            }}
             transition={{ duration: 0.5, ease: easeInOut }}
             onAnimationComplete={onComplete}
           />

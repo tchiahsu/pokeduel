@@ -7,7 +7,7 @@ export default function TakeDamageAnimation({ pokemon }: { pokemon: string }) {
         <motion.img
           src={pokemon}
           alt="recall pokemon"
-          initial={{ x: 0, y: 0, scale: 4 }}
+          initial={{ x: 0, y: 0, scale: 2 }}
           animate={{
             opacity: [1, 0, 1, 0, 1, 0, 1],
             filter: [
@@ -19,7 +19,7 @@ export default function TakeDamageAnimation({ pokemon }: { pokemon: string }) {
               "brightness(1)",
             ],
           }}
-          transition={{ duration: 0.5, ease: easeInOut }}
+          transition={{ duration: 0.5, ease: easeInOut, delay: 0.2 }}
         />
       </div>
     </>

@@ -13,7 +13,12 @@ export default function SelfSwitchAnimation({ pokemon, onComplete }: { pokemon: 
             src={pokeball}
             alt="throw pokeball"
             initial={{ x: 0, y: 0, scale: 0.1, rotate: 0 }}
-            animate={{ x: [100, 300, 400], y: [300, 115, 125, 300], scale: 0.1, rotate: -1500 }}
+            animate={{
+              x: [0, 200, 300],
+              y: [0, -185, -175, 0],
+              scale: 0.1,
+              rotate: -1500,
+            }}
             transition={{ duration: 0.9, ease: easeInOut }}
             onAnimationComplete={() => setPhase("summon")}
           />
@@ -25,11 +30,11 @@ export default function SelfSwitchAnimation({ pokemon, onComplete }: { pokemon: 
             alt="summon pokemon"
             initial={{ scale: 0, opacity: 0, filter: "brightness(10)" }}
             animate={{
-              scale: [0, 4, 4],
+              scale: [0, 2, 2],
               opacity: [0, 1, 1],
               filter: ["brightness(10)", "brightness(10)", "brightness(1)"],
               rotate: [0, 0, 0, 0, -7, 7, -7, 7, 0],
-              y: [300, 300, 300, 300, 300, 280, 300, 280, 300],
+              y: [0, 0, 0, 0, 0, -20, 0, -20, 0],
             }}
             transition={{ duration: 0.5 }}
             className="pointer-events-none"
