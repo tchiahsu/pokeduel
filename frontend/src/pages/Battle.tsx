@@ -13,6 +13,7 @@ import SelfSwitchAnimation from "../components/animations/SelfSwitchAnimation";
 import OpponentSwitchAnimation from "../components/animations/OpponentSwitchAnimation";
 import SelfAttackAnimation from "../components/animations/SelfAttackAnimation";
 import OpponentAttackAnimation from "../components/animations/OpponentAttackAnimation";
+import TakeDamageAnimation from "../components/animations/TakeDamageAnimation";
 
 /**
  * Represents a move that a current pokemon can use.
@@ -450,6 +451,7 @@ export default function Battle() {
     socket.on("endGame", onEndGame);
 
     return () => {
+      socket.off("gameStart", onGameStart);
       socket.off("currentState", onCurrentState);
       socket.off("nextOptions", onNextOptions);
       socket.off("turnSummary", onTurnSummary);
@@ -507,6 +509,8 @@ export default function Battle() {
             <OpponentSwitchAnimation pokemon={opponentActive.frontSprite} onComplete={() => setCurrentEvent(null)} />
           ) : currentEvent?.user === "opponent" && currentEvent.animation === "attack" ? (
             <OpponentAttackAnimation pokemon={opponentActive.frontSprite} onComplete={() => setCurrentEvent(null)} />
+          ) : currentEvent?.user === "self" && currentEvent.animation === "attack" ? (
+            <TakeDamageAnimation pokemon={opponentActive.frontSprite} />
           ) : (
             <img
               className="absolute w-80 h-auto select-none pointer-events-none"
@@ -534,6 +538,8 @@ export default function Battle() {
             <SelfSwitchAnimation pokemon={selfActive.backSprite} onComplete={() => setCurrentEvent(null)} />
           ) : currentEvent?.user === "self" && currentEvent.animation === "attack" ? (
             <SelfAttackAnimation pokemon={selfActive.backSprite} onComplete={() => setCurrentEvent(null)} />
+          ) : currentEvent?.user === "opponent" && currentEvent.animation === "attack" ? (
+            <TakeDamageAnimation pokemon={selfActive.backSprite} />
           ) : (
             <img
               className="absolute w-200 h-150 select-none pointer-events-none"
