@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { fetchPokemonData } from '../utils/SearchAPI';
 import { useSocket } from "../contexts/SocketContext";
 import { shake } from "../utils/shake";
-import type { Pokemon } from '../types/pokemon'
+import type { Pokemon, PokedexVariant } from '../types/pokemon'
 import { toast } from 'sonner';
 
 import SearchBar from '../components/TeamSelection/SearchBar';
@@ -11,7 +11,10 @@ import Button from '../components/Button';
 import selectionBg from '../assets/bg-field.jpg';
 import Pokedex from '../components/TeamSelection/Pokedex';
 import clsx from 'clsx'
-import MovesPopover from '../components/TeamSelection/Popover';
+import TeamButton from '../components/TeamSelection/TeamButton';
+
+// Base URL for the backend server
+const API_URL_BASE = 'http://localhost:8000';
 
 /**
  * Props for the Selection page:
@@ -31,7 +34,7 @@ export default function Selection({ list }: SelectionProps) {
     const [pokemonTeam, setPokemonTeam] = useState<Record<string, string[]>>({});
     const [teamSprites, setTeamSprites] = useState<Record<string, string>>({});
     const [leadPokemon, setLeadPokemon] = useState<string | null>(null);
-    const [openMovesFor, setOpenMovesFor] = useState<string | null>(null);
+    const [pokedexVariant, setPokedexVariant] = useState<PokedexVariant>("default");
 
     const socket = useSocket();
     const navigate = useNavigate();
@@ -43,6 +46,29 @@ export default function Selection({ list }: SelectionProps) {
     const initialMovesForCurrent = currPokemon ? (pokemonTeam[currPokemon.name] ?? []) : [];
 
     const canStart = Object.keys(pokemonTeam).length > 0;
+
+    const fetchRandomTeam = async () => {
+        try {
+            const res = await fetch(`${API_URL_BASE}/pokemon/random-team`);
+            const team = await res.json();
+            
+            setPokemonTeam(team);
+
+            const nextSprites: Record<string, string> = {};
+            await Promise.all(
+            Object.keys(team).map(async (name) => {
+                const pokeData = await fetchPokemonData(name);
+                if (pokeData) nextSprites[name] = pokeData.sprite;
+            })
+            );
+            setTeamSprites(nextSprites);
+
+            setLeadPokemon(Object.keys(team)[0] ?? null);      
+        } catch (error) {
+            console.error(`Error fetching random team: `, error);
+            return null;
+        }
+    }
 
     /**
      * Searches the information for the given pokemon name
@@ -140,6 +166,12 @@ export default function Selection({ list }: SelectionProps) {
         return Object.fromEntries(orderedNames.map(poke => [poke, team[poke]]));
     }
 
+    const openPokedexFor = (pokemon: Pokemon, variant: PokedexVariant = "default") => {
+        setCurrPokemon(pokemon);
+        setPokedexVariant(variant);
+        setShowPokedex(true);
+    }
+
     /**
      * Sends the team selection to the backend client
      * - team : the pokemon team selected by the player
@@ -189,6 +221,10 @@ export default function Selection({ list }: SelectionProps) {
                         <Button>Back</Button>
                     </Link>
 
+                    <Button onClick={fetchRandomTeam}>
+                        Random Team
+                    </Button>
+
                     <span ref={startRef} className={!canStart ? "opacity-60" : ""}>
                         <Button onClick={emitTeamSelection}>
                             Start Game
@@ -222,47 +258,26 @@ export default function Selection({ list }: SelectionProps) {
                                                 {poke}
                                             </div>
                                             <div className="absolute inset-0 z-10 flex flex-col justify-center items-center pointer-events-none gap-1 pt-3">
-                                                <button
-                                                    className={clsx("flex justify-center items-center text-[8px] rounded-full w-full h-1/4 p-2",
-                                                                    "transition-opacity duration-400 ease-in-out hover:scale-105 opacity-0 group-hover:opacity-100",
-                                                                    leadPokemon === poke ? "text-gray-500 bg-gray-700" : "pointer-events-auto text-white bg-yellow-500")}
+                                                <TeamButton 
+                                                    label="Starter"
+                                                    color={leadPokemon === poke? "gray" : "yellow"}
                                                     onClick={() => setLeadPokemon(poke)}
-                                                >
-                                                    Starter
-                                                </button>
-                                                <button
-                                                    className="pointer-events-auto flex justify-center items-center text-[8px] text-white bg-blue-500 rounded-full w-full h-1/4 p-2
-                                                               transition-opacity duration-400 ease-in-out hover:scale-105 opacity-0 group-hover:opacity-100"
-                                                    onClick={() => setOpenMovesFor((prev) => (prev === poke ? null : poke))}
-                                                >
-                                                    {openMovesFor === poke ? "Hide Moves" : "Show Moves"}
-                                                </button>
-                                                <button
-                                                    className="pointer-events-auto flex justify-center items-center text-[8px] text-white bg-purple-500 rounded-full w-full h-1/4 p-2
-                                                               transition-opacity duration-400 ease-in-out hover:scale-105 opacity-0 group-hover:opacity-100"
+                                                />
+                                                <TeamButton 
+                                                    label="Show Moves"
+                                                    color="blue"
                                                     onClick={() => {
-                                                        handlePokedex(true)
-                                                        setCurrPokemon({ name: poke, sprite: sprite});
-                                                    }}
-                                                >
-                                                    Update
-                                                </button>
-                                                <button
-                                                    className="pointer-events-auto flex justify-center items-center text-[8px] text-white bg-red-500 rounded-full w-full h-1/4 p-2
-                                                               transition-opacity duration-400 ease-in-out hover:scale-105 opacity-0 group-hover:opacity-100"
-                                                    onClick={() => removeFromTeam(poke)}
-                                                >
-                                                    Remove
-                                                </button>
+                                                        const pokemon = { name: poke, sprite: sprite};
+                                                        openPokedexFor(pokemon, "moveFocused");
+                                                    }}                                                
+                                                />
+                                                <TeamButton 
+                                                    label="Remove"
+                                                    color="red"
+                                                    onClick={() => removeFromTeam(poke)}                                                
+                                                />
                                             </div>
                                         </div>
-                                        <MovesPopover
-                                            open={openMovesFor === poke}
-                                            anchorEl={anchorRef.current[poke] ?? null}
-                                            moves={pokemonTeam[poke] ?? []}
-                                            onClose={() => setOpenMovesFor(null)}
-                                            side="right"
-                                        />
                                 </div>
                             ))}
                         </div>
@@ -318,6 +333,7 @@ export default function Selection({ list }: SelectionProps) {
                                 initialMoves={initialMovesForCurrent}
                                 onConfirm={handleAddToTeam}
                                 team={pokemonTeam}
+                                variant={pokedexVariant}
                             />
                         </div>
                     </div>
