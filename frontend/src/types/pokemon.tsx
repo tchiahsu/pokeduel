@@ -17,5 +17,3 @@ export type TeamEntry = {
     pokemon: string;
     moves: string[];
 }
-
-export type PokedexVariant = "default" | "moveFocused";

@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
 import { searchPokeStats, searchPokeMoves } from '../../utils/SearchAPI';
 import type { Pokemon } from '../../types/pokemon';
 import { shake } from '../../utils/shake';
@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 
 import PokeMove from './PokeMove';
 import PokeStat from './PokeStat';
+import PokedexButton from './PokedexButton';
 
 /**
  * Props for the Pokedex component:
@@ -18,23 +19,19 @@ type PokedexProps = {
     initialMoves: string[];
     onConfirm: (entry: { pokemon: string; moves: string[] }) => void;
     team: Record<string, string[]>;
-    variant?: "default" | "moveFocused";
 }
 
 /**
  * Display detailed stats and available moves for a selected pokemon
  */
-const Pokedex = ({ pokemon, close, initialMoves, onConfirm, team, variant }: PokedexProps) => {
+const Pokedex = ({ pokemon, close, initialMoves, onConfirm, team }: PokedexProps) => {
     const [pokeData, setPokeData] = useState<any>(null);
     const [pokeMoves, setPokeMoves] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [moves, setMoves] = useState<string[]>(initialMoves)
     const addButtonRef = useRef<HTMLButtonElement>(null);
 
-    const moveFocused = variant === "moveFocused";
-
-    let selected: (string | { name: string })[] = [];
-    let remaining: (string | { name: string })[] = [];
+    const getMoveName = (move: any) => (typeof move === "string" ? move : move.name);
 
     /**
      * Fetch Pokemon stats and moves from the API
@@ -43,9 +40,6 @@ const Pokedex = ({ pokemon, close, initialMoves, onConfirm, team, variant }: Pok
         if (!pokemon || isLoading) return;
         
         setIsLoading(true);
-
-        setPokeData(null);
-        setPokeMoves(null);
 
         try {
             const stats = await searchPokeStats(pokemon.name);
@@ -68,7 +62,7 @@ const Pokedex = ({ pokemon, close, initialMoves, onConfirm, team, variant }: Pok
         if (!pokemon) return;
         if (Object.keys(team).length === 6) {
             shake(addButtonRef.current);
-            toast.error("You have reach the maximum of 6 Pokemon per team");
+            toast.error("You've reached the maximum of 6 Pokemon per team");
             return;
         }
         if (moves.length < 1) {
@@ -81,12 +75,12 @@ const Pokedex = ({ pokemon, close, initialMoves, onConfirm, team, variant }: Pok
     }
 
     const handleRandomMoves = () => {
-    if (!pokeMoves || searchPokeMoves.length === 0) {
+    if (!pokeMoves || pokeMoves.length === 0) {
         toast.error("No moves available to randomize");
         return;
     }
 
-    const allMoves = pokeMoves.map((move: string | { name: string}) => typeof move === "string" ? move : move.name);
+    const allMoves = pokeMoves.map((move: string | { name: string}) => getMoveName(move));
     
     const random = [...allMoves].sort(() => Math.random() - 0.5);
     setMoves(random.slice(0, 4));
@@ -105,8 +99,20 @@ const Pokedex = ({ pokemon, close, initialMoves, onConfirm, team, variant }: Pok
      * Reset local draft of the pokemon when we switch pokemons
      */
     useEffect(() => {
-        setMoves(initialMoves ?? []);
+        setMoves(initialMoves);
     }, [pokemon?.name, initialMoves]);
+
+    const { selected, remaining} = useMemo(() => {
+        if (!pokeMoves) return { selected: [], remaining: [] };
+        const set = new Set(moves);
+        const sel: any[] = [];
+        const rem: any[] = [];
+        for (const move of pokeMoves) {
+            const name = getMoveName(move);
+            (set.has(name) ? sel : rem).push(move);
+        }
+        return { selected: sel, remaining: rem };
+    }, [pokeMoves, moves]);
 
     // Loading animation while data is being fetched
     if (isLoading) {
@@ -116,17 +122,6 @@ const Pokedex = ({ pokemon, close, initialMoves, onConfirm, team, variant }: Pok
                 <span className="ml-2 text-blue-950">Loading Data...</span>
             </div>            
         )
-    }
-
-    if (moveFocused && pokeMoves) {
-        selected = pokeMoves.filter((move: any) => {
-            const name = typeof move === "string" ? move: move.name;
-            return moves.includes(name);
-        });
-        remaining = pokeMoves.filter((move: any) => {
-            const name = typeof move === "string" ? move : move.name;
-            return !moves.includes(name);
-        });
     }
 
     return (
@@ -155,102 +150,72 @@ const Pokedex = ({ pokemon, close, initialMoves, onConfirm, team, variant }: Pok
                     </div>
                 )}
             </div>
+
+            {/* Pokemon Moves Table */}
+            <div className="relative px-4 pb-4 flex flex-col text-xs overflow-y-auto no-scrollbar">
+                {selected.length > 0 && (
+                    <>
+                        <h4 className="text-[11px] font-bold text-green-700 mb-1 pt-4">Selected</h4>
+                        <div className="flex flex-col gap-1">
+                            {selected.map((move: any) => (
+                                <PokeMove
+                                    key={getMoveName(move)}
+                                    move={move}
+                                    moves={moves}
+                                    setMoves={setMoves}
+                                />
+                            ))}
+                        </div>
+                    </>
+                )}
+            </div>
             
             {/* Pokemon Moves Table */}
-            <div className="relative px-4 pb-4 flex-1 flex flex-col overflow-y-auto text-xs no-scrollbar">
+            <div className="relative px-4 pb-4 flex-1 flex flex-col text-xs overflow-y-auto no-scrollbar">
                 <div className="sticky top-0 flex justify-between items-center bg-white py-3">
                     <h3 className="text-[13px] font-semibold text-gray-800 text-left indent-0.5">Select Moves</h3>
                     <span className="text-[10px]">{moves.length}/4</span>
                 </div>
-                
-                {pokeMoves ? (
-                    pokeMoves.length > 0 ? (
-                    moveFocused ? (
-                        <div className="flex flex-col gap-3">
-                        {/* Selected moves first */}
-                        {selected.length > 0 && (
-                            <div>
-                            <h4 className="text-[11px] font-bold text-green-700 mb-1">Selected</h4>
-                            <div className="flex flex-col gap-2">
-                                {selected.map((move) => (
-                                <PokeMove
-                                    key={typeof move === "string" ? move : move.name}
-                                    move={move}
-                                    moves={moves}
-                                    setMoves={setMoves}
-                                />
-                                ))}
-                            </div>
-                            </div>
-                        )}
 
-                        {/* Remaining moves */}
-                        {remaining.length > 0 && (
-                            <div>
-                            <h4 className="text-[11px] font-bold text-gray-600 mb-1">Available</h4>
-                            <div className="flex flex-col gap-2">
-                                {remaining.map((move) => (
-                                <PokeMove
-                                    key={typeof move === "string" ? move : move.name}
+                {remaining.length > 0 && (
+                    <>
+                        <h4 className="text-[11px] font-bold text-gray-600 mb-1">Available</h4>
+                        <div className="flex flex-col gap-2">
+                            {remaining.map((move: any) => (
+                                <PokeMove 
+                                    key={getMoveName(move)}
                                     move={move}
                                     moves={moves}
                                     setMoves={setMoves}
                                 />
-                                ))}
-                            </div>
-                            </div>
-                        )}
+                            ))}
                         </div>
-                    ) : (
-                        // Default: just list all moves
-                        <div className="flex flex-col gap-2 cursor-pointer">
-                        {pokeMoves.map((move: string | { name: string }) => (
-                            <PokeMove
-                            key={typeof move === "string" ? move : move.name}
-                            move={move}
-                            moves={moves}
-                            setMoves={setMoves}
-                            />
-                        ))}
-                        </div>
-                    )
-                    ) : (
-                    <div className="text-gray-500 text-center py-4">No moves available</div>
-                    )
-                ) : (
-                    <div className="text-red-600 text-center p-4 bg-red-50 rounded-lg">
-                    Failed to load Pokemon moves
-                    </div>
+                    </>
                 )}
-
             </div>
 
             {/* Stats Card Action Items */}
             <div className="flex gap-2 w-full justify-center p-3 border-t border-gray-200">
-                <button
+                <PokedexButton
+                    label="Close"
                     onClick={() => close(false)}
-                    className="w-1/4 p-2 bg-red-500 hover:bg-gray-700 text-white text-xs font-medium rounded-lg cursor-pointer"
-                >
-                    Close
-                </button>
-                <button
+                    color="red"
+                />
+                <PokedexButton
+                    label="Clear"
                     onClick={() => setMoves([])}
-                    className="w-1/4 p-2 bg-gray-500 hover:bg-gray-700 text-white text-xs font-medium rounded-lg cursor-pointer"
-                >
-                    Clear
-                </button>
-                <button
+                    color="gray"
+                />
+                <PokedexButton
+                    label="Random"
                     onClick={handleRandomMoves}
-                    className="w-1/4 p-2 bg-gray-500 hover:bg-gray-700 text-white text-xs font-medium rounded-lg cursor-pointer"
-                >
-                    Random
-                </button>        
-                <button
-                    ref={addButtonRef}
-                    className="w-1/4 p-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg cursor-pointer"
-                    onClick={addPokemonToTeam}>
-                    {isSelected ? "Update" : "Add"}
-                </button>
+                    color="gray"
+                />
+                <PokedexButton
+                    label={isSelected ? "Update" : "Add"}
+                    onClick={addPokemonToTeam}
+                    color="blue"
+                />
             </div>
 
         </div>

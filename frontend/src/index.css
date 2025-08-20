@@ -86,3 +86,12 @@ body {
   40%,80% { transform: translateX(5px) }
 }
 .shake { animation: shake 0.4s ease-in-out }
+
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.75; } /* instead of 0.5 */
+}
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
