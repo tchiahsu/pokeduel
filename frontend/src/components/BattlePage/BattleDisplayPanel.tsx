@@ -121,14 +121,14 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
    */
   const renderStatus = () => (
     <div className="text-gray-600 flex justify-left items-center h-full text-xl italic select-none pointer-events-none">
-      {status || "Select an action to begin..."}
+      {status || "Select an action..."}
     </div>
   );
 
   return (
     <div className="flex-1 h-full bg-gray-300/80 rounded-lg p-4">
       {mode === "attack" && renderMoves()}
-      {mode === "switch" && renderSwitches()}
+      {(mode === "switch" || mode == "fainted") && renderSwitches()}
       {mode === "none" && renderStatus()}
     </div>
   );
