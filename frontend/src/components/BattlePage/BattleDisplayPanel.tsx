@@ -126,7 +126,7 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
   );
 
   return (
-    <div className="w-258 h-50 bg-gray-300/80 rounded-lg p-4">
+    <div className="flex-1 h-full bg-gray-300/80 rounded-lg p-4">
       {mode === "attack" && renderMoves()}
       {mode === "switch" && renderSwitches()}
       {mode === "none" && renderStatus()}
