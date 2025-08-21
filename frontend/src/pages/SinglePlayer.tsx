@@ -45,33 +45,39 @@ export default function SinglePlayer() {
   };
 
   return (
-    <div className="relative min-h-screen min-w-screen flex flex-col items-center justify-center">
-      <img
-        src={homeBg}
-        className="absolute inset-0 w-full h-full object-cover opacity-50 pointer-events-none"
-        alt="background"
-      />
+        <div className="relative min-h-screen min-w-screen flex flex-col items-center justify-center">
+            
+            {/* Background Image */}
+            <img
+                src={homeBg}
+                className="absolute inset-0 w-full h-full object-cover opacity-50 pointer-events-none"
+            />
 
-      <div className="relative gap-5 flex flex-col items-center select-none">
-        <h3 className="text-3xl pokemon-h3 m-5 text-center">Solo Battle</h3>
-        <h1 className="text-8xl pb-6 tracking-[-8px] pokemon-h1">PokeDuel</h1>
-      </div>
+            {/* Game Title */}
+            <div className="flex flex-col gap-6 z-10">
+                <h3 className="text-3xl pokemon-h3 text-center">Solo Battle</h3>
+                <h1 className="text-8xl pb-6 tracking-[-8px] pokemon-h1 select-none">PokeDuel</h1>
+            </div>
 
-      <div className="relative inset-x-0 inset-y-0">
-        <div className="flex flex-col gap-6 items-center justify-center">
-          <InputBox placeholder="Enter your name" value={playerName} onChange={(e) => setPlayerName(e.target.value)} />
-          <div className="flex gap-2">
-            <Link to="/">
-              <Button>Back to Home</Button>
-            </Link>
-            <span ref={startRef}>
-              <Button onClick={createRoomID} disabled={!playerName}>
-                Start Game
-              </Button>
-            </span>
-          </div>
+            {/* Game Message */}
+            <div className="select-none z-10 py-4">
+                <p>Test Your Skills in a Solo Adventure</p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col w-2/5 justify-center items-center gap-4 z-10">
+                <InputBox placeholder="Enter your name" value={playerName} onChange={(e) => setPlayerName(e.target.value)} />
+                <div className="flex gap-4">
+                    <Link to="/">
+                    <Button>Home</Button>
+                    </Link>
+                    <span ref={startRef}>
+                    <Button onClick={createRoomID} disabled={!playerName}>
+                        Start
+                    </Button>
+                    </span>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
   );
 }

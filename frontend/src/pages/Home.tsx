@@ -7,25 +7,32 @@ export default function Home() {
     return (
         <div className="relative min-h-screen min-w-screen flex flex-col items-center justify-center">
             
+            {/* Background Image */}
             <img
                 src={homeBg}
                 className="absolute inset-0 w-full h-full object-cover opacity-50 pointer-events-none"
             />
 
-            <div className="relative gap-5">
-                <h1 className="text-8xl pb-6 tracking-[-8px] pokemon-h1 select-none">
-                    PokeDuel
-                </h1>
-                <p className='m-3 select-none'>Battle Friends, Become a Champion</p>
-                <div>
-                    <Link to='/single-player' className='m-4'>
-                        <Button>Solo Battle</Button>
-                    </Link>
-                    <Link to='/multiplayer' className='m-4'>
-                        <Button>Multiplayer</Button>
-                    </Link>
-                </div>
+            {/* Game Title */}
+            <div className="text-8xl pb-6 tracking-[-8px] pokemon-h1 select-none z-10">
+                <h1>PokeDuel</h1>
             </div>
+
+            {/* Game Message */}
+            <div className="select-none z-10 py-4">
+                <p>Battle Friends, Become Champion</p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-row w-1/3 justify-center items-center gap-4 z-10">
+                <Link to='/single-player'>
+                    <Button>Solo Battle</Button>
+                </Link>
+                <Link to='/multiplayer'>
+                    <Button>Multiplayer</Button>
+                </Link>
+            </div>
+
         </div>
     );
 }
