@@ -230,9 +230,7 @@ export default function Battle() {
   const cancelQuit = () => setShowQuitConfirm(false);
 
   return (
-
     <div className="relative w-screen h-screen overflow-hidden grid grid-rows-[1fr_4fr_1fr]">
-
       {/* Background */}
       <img
         src={battleBg}
@@ -253,7 +251,6 @@ export default function Battle() {
 
       {/* Middle Section Player Pokémon */}
       <div className="flex flex-1 justify-between px-6">
-
         <div className="flex flex-col justify-between w-1/2">
           <div className="flex justify-start">
             {/* Opponent Active Pokemon Count */}
@@ -261,13 +258,6 @@ export default function Battle() {
           </div>
           {/* Player Pokémon */}
           <div className="flex justify-center items-baseline-last">
-            {/* {selfActive.backSprite && (
-              <img
-                className="absolute w-200 h-150 select-none pointer-events-none"
-                src={selfActive.backSprite}
-                alt={selfActive.name}
-              />
-            )} */}
             {currentEvent?.user === "self" && currentEvent.animation === "switch" ? (
               <SelfSwitchAnimation
                 pokemon={selfActive.backSprite}
@@ -279,7 +269,7 @@ export default function Battle() {
             ) : currentEvent?.user === "self" && currentEvent.animation === "attack" ? (
               <SelfAttackAnimation pokemon={selfActive.backSprite} onComplete={() => setCurrentEvent(null)} />
             ) : currentEvent?.user === "opponent" && currentEvent.animation === "attack" ? (
-              <TakeDamageAnimation pokemon={selfActive.backSprite} />
+              <TakeDamageAnimation pokemon={selfActive.backSprite} user="self" />
             ) : selfIsSummoned ? (
               <img
                 className="w-3/4 h-auto select-none pointer-events-none"
@@ -293,23 +283,27 @@ export default function Battle() {
         <div className="flex flex-col justify-between w-1/2">
           <div className="flex justify-center items-baseline px-6">
             {currentEvent?.user === "opponent" && currentEvent.animation === "switch" ? (
-              <OpponentSwitchAnimation pokemon={opponentActive.frontSprite} onComplete={() => setCurrentEvent(null)} />
+              <OpponentSwitchAnimation
+                pokemon={opponentActive.frontSprite}
+                onComplete={() => {
+                  setOpponentisSummoned(true);
+                  setCurrentEvent(null);
+                }}
+              />
             ) : currentEvent?.user === "opponent" && currentEvent.animation === "attack" ? (
               <OpponentAttackAnimation pokemon={opponentActive.frontSprite} onComplete={() => setCurrentEvent(null)} />
             ) : currentEvent?.user === "self" && currentEvent.animation === "attack" ? (
-              <TakeDamageAnimation pokemon={opponentActive.frontSprite} />
-            ) : (
+              <TakeDamageAnimation pokemon={opponentActive.frontSprite} user="opponent" />
+            ) : opponentIsSummoned ? (
               <img
                 className="w-2/4 h-auto select-none pointer-events-none"
                 src={opponentActive.frontSprite}
                 alt={opponentActive.name}
               />
-            )}
+            ) : null}
           </div>
         </div>
-
       </div>
-
 
       {/* Bottom Section (Controls + Player Stats) */}
       <div className="sticky bottom-0 flex flex-col z-100">
@@ -360,13 +354,11 @@ export default function Battle() {
               maxHP={selfActive.maxHP}
             />
           </div>
-        
         </div>
       </div>
 
       {/* Quit Message */}
       {showQuitConfirm && <QuitBattleBox onConfirm={confirmQuit} onCancel={cancelQuit} />}
-    
     </div>
   );
 }
