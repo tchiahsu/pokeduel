@@ -76,13 +76,14 @@ export default function Battle() {
     frontSprite: "",
   });
 
+  const [prevActive, setPrevActive] = useState<TeamMember | null>(null);
+
   const [selfTeamCount, setSelfTeamCount] = useState(0);
   const [selfRemaining, setSelfRemaining] = useState(0);
   const [opponentTeamCount, setOpponentTeamCount] = useState(0);
   const [opponentRemaining, setOpponentRemaining] = useState(0);
   const [selfIsSummoned, setSelfIsSummoned] = useState(false);
   const [opponentIsSummoned, setOpponentisSummoned] = useState(false);
-
   const [eventQueue, setEventQueue] = useState<Event[]>([]);
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null);
 
@@ -106,6 +107,7 @@ export default function Battle() {
       setOpponentTeamCount(opponentData.teamCount);
       setOpponentRemaining(opponentData.remainingPokemon);
 
+      setPrevActive(selfActive);
       setSelfActive({
         name: selfData.name,
         hp: selfData.hp,
@@ -242,7 +244,7 @@ export default function Battle() {
       <div className="flex w-5/20 justify-bottom items-end px-6 pt-6 z-100">
         {/* Opponent Pokemon Card */}
         <StatsCard
-          name={opponentActive.name || "Loading.."}
+          name={opponentActive.name || "Loading..."}
           image={opponentActive.frontSprite}
           hp={opponentActive.hp || 0}
           maxHP={opponentActive.maxHP || 100}
@@ -260,7 +262,8 @@ export default function Battle() {
           <div className="flex justify-center items-baseline-last">
             {currentEvent?.user === "self" && currentEvent.animation === "switch" ? (
               <SelfSwitchAnimation
-                pokemon={selfActive.backSprite}
+                prevPokemon={prevActive?.backSprite ?? ""}
+                newPokemon={selfActive.backSprite}
                 onComplete={() => {
                   setSelfIsSummoned(true);
                   setCurrentEvent(null);
