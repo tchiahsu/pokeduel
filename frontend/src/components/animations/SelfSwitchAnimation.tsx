@@ -2,11 +2,31 @@ import { useState } from "react";
 import { easeInOut, motion } from "motion/react";
 import pokeball from "../../assets/poke_pixel.png";
 
-export default function SelfSwitchAnimation({ pokemon, onComplete }: { pokemon: string; onComplete: () => void }) {
-  const [phase, setPhase] = useState<"throw" | "summon">("throw");
+export default function SelfSwitchAnimation({
+  prevPokemon,
+  newPokemon,
+  onComplete,
+}: {
+  prevPokemon: string;
+  newPokemon: string;
+  onComplete: () => void;
+}) {
+  const [phase, setPhase] = useState<"recall" | "throw" | "summon">(prevPokemon ? "recall" : "throw");
 
   return (
     <>
+      {phase == "recall" && prevPokemon && (
+        <motion.img
+          src={prevPokemon}
+          alt="recall pokemon"
+          initial={{ x: 0, y: 0, scale: 1 }}
+          animate={{ x: -100, y: -100, filter: ["brightness(50)"], opacity: 0, scale: 0 }}
+          transition={{ duration: 0.4, ease: easeInOut }}
+          onAnimationComplete={() => setPhase("throw")}
+          className="w-3/4 h-auto select-none pointer-events-none"
+        />
+      )}
+
       {phase === "throw" && (
         <motion.img
           src={pokeball}
@@ -26,7 +46,7 @@ export default function SelfSwitchAnimation({ pokemon, onComplete }: { pokemon: 
 
       {phase === "summon" && (
         <motion.img
-          src={pokemon}
+          src={newPokemon}
           alt="summon pokemon"
           initial={{ scale: 0, opacity: 0, filter: "brightness(10)" }}
           animate={{
