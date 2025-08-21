@@ -231,7 +231,7 @@ export default function Battle() {
 
   return (
 
-    <div className="relative w-screen h-screen overflow-hidden grid grid-rows-3">
+    <div className="relative w-screen h-screen overflow-hidden grid grid-rows-[1fr_4fr_1fr]">
 
       {/* Background */}
       <img
@@ -241,113 +241,117 @@ export default function Battle() {
       />
 
       {/* Top Section */}
-      <div className="relative grid grid-cols-6">
-        {/* Opponent Info */}
-        <div className="flex flex-col ml-4 mt-4">
-          <StatsCard
-            name={opponentActive.name || "Loading.."}
-            image={opponentActive.frontSprite}
-            hp={opponentActive.hp || 0}
-            maxHP={opponentActive.maxHP || 100}
-          />
-          <ActivePokeCount teamCount={opponentTeamCount} remainingPokemon={opponentRemaining} />
-        </div>
-        <div></div>
-        <div></div>
-        <div></div>
-        {/* Opponent Pokémon */}
-        <div className="relative">
-          {currentEvent?.user === "opponent" && currentEvent.animation === "switch" ? (
-            <OpponentSwitchAnimation pokemon={opponentActive.frontSprite} onComplete={() => setCurrentEvent(null)} />
-          ) : currentEvent?.user === "opponent" && currentEvent.animation === "attack" ? (
-            <OpponentAttackAnimation pokemon={opponentActive.frontSprite} onComplete={() => setCurrentEvent(null)} />
-          ) : currentEvent?.user === "self" && currentEvent.animation === "attack" ? (
-            <TakeDamageAnimation pokemon={opponentActive.frontSprite} />
-          ) : (
-            <img
-              className="absolute w-80 h-auto select-none pointer-events-none"
-              src={opponentActive.frontSprite}
-              alt={opponentActive.name}
-            />
-          )}
-        </div>
-        <div></div>
+      <div className="flex w-5/20 justify-bottom items-end px-6 pt-6 z-100">
+        {/* Opponent Pokemon Card */}
+        <StatsCard
+          name={opponentActive.name || "Loading.."}
+          image={opponentActive.frontSprite}
+          hp={opponentActive.hp || 0}
+          maxHP={opponentActive.maxHP || 100}
+        />
       </div>
 
-
       {/* Middle Section Player Pokémon */}
-      <div className="relative grid grid-cols-4">
-        <div></div>
-        {/* Player Pokémon */}
-        <div className="relative flex justify-start">
-          {/* {selfActive.backSprite && (
-            <img
-              className="absolute w-200 h-150 select-none pointer-events-none"
-              src={selfActive.backSprite}
-              alt={selfActive.name}
-            />
-          )} */}
-          {currentEvent?.user === "self" && currentEvent.animation === "switch" ? (
-            <SelfSwitchAnimation
-              pokemon={selfActive.backSprite}
-              onComplete={() => {
-                setSelfIsSummoned(true);
-                setCurrentEvent(null);
-              }}
-            />
-          ) : currentEvent?.user === "self" && currentEvent.animation === "attack" ? (
-            <SelfAttackAnimation pokemon={selfActive.backSprite} onComplete={() => setCurrentEvent(null)} />
-          ) : currentEvent?.user === "opponent" && currentEvent.animation === "attack" ? (
-            <TakeDamageAnimation pokemon={selfActive.backSprite} />
-          ) : selfIsSummoned ? (
-            <img
-              className="absolute w-200 h-150 select-none pointer-events-none"
-              src={selfActive.backSprite}
-              alt={selfActive.name}
-            />
-          ) : null}
+      <div className="flex flex-1 justify-between px-6">
+
+        <div className="flex flex-col justify-between w-1/2">
+          <div className="flex justify-start">
+            {/* Opponent Active Pokemon Count */}
+            <ActivePokeCount teamCount={opponentTeamCount} remainingPokemon={opponentRemaining} />
+          </div>
+          {/* Player Pokémon */}
+          <div className="flex justify-center items-baseline-last">
+            {/* {selfActive.backSprite && (
+              <img
+                className="absolute w-200 h-150 select-none pointer-events-none"
+                src={selfActive.backSprite}
+                alt={selfActive.name}
+              />
+            )} */}
+            {currentEvent?.user === "self" && currentEvent.animation === "switch" ? (
+              <SelfSwitchAnimation
+                pokemon={selfActive.backSprite}
+                onComplete={() => {
+                  setSelfIsSummoned(true);
+                  setCurrentEvent(null);
+                }}
+              />
+            ) : currentEvent?.user === "self" && currentEvent.animation === "attack" ? (
+              <SelfAttackAnimation pokemon={selfActive.backSprite} onComplete={() => setCurrentEvent(null)} />
+            ) : currentEvent?.user === "opponent" && currentEvent.animation === "attack" ? (
+              <TakeDamageAnimation pokemon={selfActive.backSprite} />
+            ) : selfIsSummoned ? (
+              <img
+                className="w-3/4 h-auto select-none pointer-events-none"
+                src={selfActive.backSprite}
+                alt={selfActive.name}
+              />
+            ) : null}
+          </div>
         </div>
-        <div></div>
-        <div></div>
+        {/* Opponent Pokémon */}
+        <div className="flex flex-col justify-between w-1/2">
+          <div className="flex justify-center items-baseline px-6">
+            {currentEvent?.user === "opponent" && currentEvent.animation === "switch" ? (
+              <OpponentSwitchAnimation pokemon={opponentActive.frontSprite} onComplete={() => setCurrentEvent(null)} />
+            ) : currentEvent?.user === "opponent" && currentEvent.animation === "attack" ? (
+              <OpponentAttackAnimation pokemon={opponentActive.frontSprite} onComplete={() => setCurrentEvent(null)} />
+            ) : currentEvent?.user === "self" && currentEvent.animation === "attack" ? (
+              <TakeDamageAnimation pokemon={opponentActive.frontSprite} />
+            ) : (
+              <img
+                className="w-2/4 h-auto select-none pointer-events-none"
+                src={opponentActive.frontSprite}
+                alt={opponentActive.name}
+              />
+            )}
+          </div>
+          <div className="flex justify-end">
+            <ActivePokeCount teamCount={selfTeamCount} remainingPokemon={selfRemaining} />
+          </div>
+        </div>
+
       </div>
 
 
       {/* Bottom Section (Controls + Player Stats) */}
-      <div className=" relative flex flex-row justify-between items-end gap-4 p-4 w-full">
-        {/* Battle Display and Action Panel */}
-        <div className="relative whitespace-pre-line flex-1 min-w-[250px] max-w-[500px]">
-          <BattleDisplayPanel
-            mode={mode}
-            moves={selfMoves}
-            team={selfTeam}
-            status={status}
-            onMoveSelect={(index) => {
-              console.log("Selected move:", index);
-              setStatus(`You selected ${selfMoves[index].name}\nWaiting for opponent...`);
-              setMode("none");
-              socket.emit("submitMove", { action: "attack", index: index });
-            }}
-            onSwitchSelect={(index) => {
-              // console.log("Selected switch with index:", index);
-              const selectedName = selfTeam[index].name;
-              setStatus(`You switched to ${selectedName}\nWaiting for opponent...`);
-              setMode("none");
+      <div className="flex flex-col z-100">
+        <div className=" relative flex flex-row px-6 pb-6 gap-4">
+          {/* Battle Display and Action Panel */}
+          <div className="relative flex w-15/20 justify-center items-baseline-last">
+            <BattleDisplayPanel
+              mode={mode}
+              moves={selfMoves}
+              team={selfTeam}
+              status={status}
+              onMoveSelect={(index) => {
+                console.log("Selected move:", index);
+                setStatus(`You selected ${selfMoves[index].name}\nWaiting for opponent...`);
+                setMode("none");
+                socket.emit("submitMove", { action: "attack", index: index });
+              }}
+              onSwitchSelect={(index) => {
+                // console.log("Selected switch with index:", index);
+                const selectedName = selfTeam[index].name;
+                setStatus(`You switched to ${selectedName}\nWaiting for opponent...`);
+                setMode("none");
 
-              if (mode === "fainted") {
-                socket.emit("submitFaintedSwitch", { action: "switch", index: index });
-              } else {
-                socket.emit("submitMove", { action: "switch", index: index });
-              }
-            }}
-          />
-        </div>
-        {/* Player Stats and Action panel */}
-        <div className="relative flex flex-row gap-3">
-          <div className="relative flex flex-col justify-end items-center min-w-[100px] max-w-[200px]">
+                if (mode === "fainted") {
+                  socket.emit("submitFaintedSwitch", { action: "switch", index: index });
+                } else {
+                  socket.emit("submitMove", { action: "switch", index: index });
+                }
+              }}
+            />
+          </div>
+
+          {/* Action Button Panel */}
+          <div className="flex w-1/20 justify-center items-baseline-last">
             <BattleActionsPanel onSelect={setMode} onQuit={handleQuit} />
           </div>
-          <div className="relative flex flex-col items-end min-w-[200px]">
-            <ActivePokeCount teamCount={selfTeamCount} remainingPokemon={selfRemaining} />
+
+          {/* Player Stats*/}
+          <div className="flex w-5/20 justify-bottom items-end">
             <StatsCard
               key={selfActive.name} // re-render
               name={selfActive.name}
@@ -356,6 +360,7 @@ export default function Battle() {
               maxHP={selfActive.maxHP}
             />
           </div>
+        
         </div>
       </div>
 

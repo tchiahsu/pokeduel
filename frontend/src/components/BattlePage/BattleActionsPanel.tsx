@@ -11,7 +11,7 @@ interface BattleActionsPanelProps {
 
 const BattleActionsPanel: React.FC<BattleActionsPanelProps> = ({ onSelect, onQuit }) => {
   return (
-    <div className="flex flex-col w-20 h-50 rounded-lg bg-gray-300/80 p-1 justify-center items-center gap-2">
+    <div className="flex flex-col flex-1 h-full p-4 rounded-lg bg-gray-300/80 justify-center items-center gap-4">
       <button
         onClick={() => onSelect('attack')}
         className="w-13 h-13 bg-[#FFA500]/80 hover:bg-gray-500/80 rounded-full flex items-center justify-center"
