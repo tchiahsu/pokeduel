@@ -5,6 +5,7 @@ import { useSocket } from "../contexts/SocketContext";
 import { shake } from "../utils/effects";
 import type { Pokemon } from '../types/pokemon'
 import { toast } from 'sonner';
+import { handleDeleteRoom } from "../utils/handleSocket";
 
 import SearchBar from '../components/TeamSelection/SearchBar';
 import Button from '../components/Button';
@@ -182,7 +183,7 @@ export default function Selection({ list }: SelectionProps) {
         const orderedTeam = addLeadToStart(pokemonTeam, leadPokemon);
         console.log("emit setPlayer", { name: playerName, teamSelection: orderedTeam })
         socket.emit("setPlayer", { name: playerName, teamSelection: orderedTeam });
-        navigate("/battle");
+        navigate(`/battle/${roomId}`);
     };
 
     /**
@@ -213,7 +214,7 @@ export default function Selection({ list }: SelectionProps) {
                 </h3>
                 <div className='flex justify-center items-center mr-4 gap-3'>
                     <span ref={backRef}>
-                        <Button>
+                        <Button onClick={() => {handleDeleteRoom(roomId), navigate("/")}}>
                             Back
                         </Button>
                     </span>

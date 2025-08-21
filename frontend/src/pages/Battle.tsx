@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { handleDeleteRoom } from "../utils/handleSocket";
 
 import { useSocket } from "../contexts/SocketContext";
 
@@ -81,14 +82,14 @@ export default function Battle() {
   const [opponentTeamCount, setOpponentTeamCount] = useState(0);
   const [opponentRemaining, setOpponentRemaining] = useState(0);
   const [selfIsSummoned, setSelfIsSummoned] = useState(false);
-  const [opponentIsSummoned, setOpponentisSummoned] = useState(false);
+  // const [opponentIsSummoned, setOpponentisSummoned] = useState(false);
 
   const [eventQueue, setEventQueue] = useState<Event[]>([]);
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null);
 
   const navigate = useNavigate();
   const socket = useSocket();
-  const roomId = useParams();
+  const { roomId } = useParams();
 
   useEffect(() => {
     function onGameStart(events: any) {
@@ -227,7 +228,10 @@ export default function Battle() {
 
   //Functions to handle quitting the battle
   const handleQuit = () => setShowQuitConfirm(true);
-  const confirmQuit = () => navigate("/");
+  const confirmQuit = () => {
+    handleDeleteRoom(roomId),
+    navigate("/")
+  };
   const cancelQuit = () => setShowQuitConfirm(false);
 
   return (

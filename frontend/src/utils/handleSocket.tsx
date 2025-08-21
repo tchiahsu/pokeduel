@@ -1,0 +1,18 @@
+const API_URL_BASE = "http://localhost:8000/room";
+  
+// Handles deleting a room
+export const handleDeleteRoom = async (roomID: string | undefined) => {
+    try {
+        console.log(roomID)
+        if (!roomID) return;
+        const response = await fetch(`${API_URL_BASE}/${roomID}`, {
+        method: "DELETE",
+        });
+        if (!response.ok) {
+        const data = await response.json();
+        console.log("Server responded with error:", data.message);
+        }
+    } catch (error) {
+        console.error("Error deleting room");
+    }
+};

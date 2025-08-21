@@ -171,12 +171,6 @@ export default function Multiplayer() {
                 >
                   Copy
                 </button>
-                <button
-                  onClick={handleDeleteRoom}
-                  className="border-2 border-blue-600 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:border-blue"
-                >
-                  Leave
-                </button>
               </div>
             </div>
           )}
@@ -184,22 +178,21 @@ export default function Multiplayer() {
           {mode === "join" && (
             <div className="flex gap-2">
               <InputBox placeholder="Enter Room ID" value={roomID} onChange={(e) => setRoomID(e.target.value)} />
-              <button
-                onClick={handleLeaveRoom}
-                className="border-2 border-blue-600 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:border-blue"
-              >
-                Leave
-              </button>
             </div>
           )}
         </div>
         <div className="pt-6">
           {mode != null && (
-            <span ref={startRef}>
-              <Button onClick={handleStartGame} disabled={!roomID}>
-                Start Game
+            <div className="flex justify-center items-center gap-2">
+              <Button onClick={handleLeaveRoom}>
+                Back to Home
               </Button>
-            </span>
+              <span ref={startRef}>
+                <Button onClick={handleStartGame} disabled={!roomID}>
+                  Start Game
+                </Button>
+              </span>
+            </div>
           )}
         </div>
       </div>
