@@ -1,8 +1,8 @@
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { fetchPokemonData } from '../utils/SearchAPI';
 import { useSocket } from "../contexts/SocketContext";
-import { shake } from "../utils/shake";
+import { shake } from "../utils/effects";
 import type { Pokemon } from '../types/pokemon'
 import { toast } from 'sonner';
 
@@ -40,8 +40,10 @@ export default function Selection({ list }: SelectionProps) {
     const location = useLocation();
     const startRef = useRef<HTMLSpanElement>(null);
     const anchorRef = useRef<Record<string, HTMLDivElement | null>>({});
+    const backRef = useRef<HTMLSpanElement>(null);
 
     const { playerName } = location.state || {}
+    const { roomId } = useParams();
     const initialMovesForCurrent = currPokemon ? (pokemonTeam[currPokemon.name] ?? []) : [];
 
     const canStart = Object.keys(pokemonTeam).length > 0;
@@ -210,11 +212,11 @@ export default function Selection({ list }: SelectionProps) {
                     Team Selection:
                 </h3>
                 <div className='flex justify-center items-center mr-4 gap-3'>
-                    <Link to='/'>
+                    <span ref={backRef}>
                         <Button>
                             Back
                         </Button>
-                    </Link>
+                    </span>
 
                     <Button onClick={fetchRandomTeam}>
                         Randomize

@@ -4,7 +4,7 @@ import homeBg from "../assets/bg-forrest.jpg";
 import Button from "../components/Button";
 import InputBox from "../components/InputBox";
 import { toast } from "sonner";
-import { shake } from "../utils/shake";
+import { shake } from "../utils/effects";
 import { useNavigate } from "react-router-dom";
 import { useSocket } from "../contexts/SocketContext";
 
@@ -84,7 +84,7 @@ export default function Multiplayer() {
     }
 
     socket.emit("joinRoom", roomID);
-    navigate("/team-selection", { state: { playerName } });
+    navigate(`/team-selection/${roomID}`, { state: { playerName } });
   };
 
   // Handles deleting a room

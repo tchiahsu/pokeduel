@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useMemo } from 'react';
-import { searchPokeStats, searchPokeMoves } from '../../utils/SearchAPI';
+import { searchPokeStats, searchPokeMoves } from '../../utils/searchAPI';
 import type { Pokemon } from '../../types/pokemon';
-import { shake } from '../../utils/shake';
+import { shake } from '../../utils/effects';
 import { toast } from 'sonner';
 
 import PokeMove from './PokeMove';

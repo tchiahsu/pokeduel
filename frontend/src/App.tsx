@@ -39,8 +39,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/multiplayer" element={<Multiplayer />} />
-            <Route path="/team-selection" element={<Selection list={pokemonList} />} />
-            <Route path="/battle" element={<Battle />} />
+            <Route path="/team-selection/:roomID" element={<Selection list={pokemonList} />} />
+            <Route path="/battle/:roomID" element={<Battle />} />
             <Route path="/single-player" element={<SinglePlayer />} />
           </Routes>
         </div>

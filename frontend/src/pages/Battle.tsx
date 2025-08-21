@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { useSocket } from "../contexts/SocketContext";
 
@@ -88,6 +88,7 @@ export default function Battle() {
 
   const navigate = useNavigate();
   const socket = useSocket();
+  const roomId = useParams();
 
   useEffect(() => {
     function onGameStart(events: any) {
