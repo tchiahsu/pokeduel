@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { searchMoveStats } from '../../utils/searchAPI';
+import { searchMoveStats } from '../../utils/SearchAPI';
 import { shake } from '../../utils/effects';
 import { toast } from 'sonner';
 

@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, useMemo } from 'react';
-import { searchPokeStats, searchPokeMoves } from '../../utils/searchAPI';
+import { searchPokeStats, searchPokeMoves } from '../../utils/SearchAPI';
 import type { Pokemon } from '../../types/pokemon';
 import { shake } from '../../utils/effects';
 import { toast } from 'sonner';
