@@ -19,7 +19,7 @@ export default function SelfSwitchAnimation({
         <motion.img
           src={prevPokemon}
           alt="recall pokemon"
-          initial={{ x: 0, y: 0, scale: 1 }}
+          initial={{ x: 0, y: 0, filter: ["brightness(1)"], scale: 1 }}
           animate={{ x: -100, y: -100, filter: ["brightness(50)"], opacity: 0, scale: 0 }}
           transition={{ duration: 0.4, ease: easeInOut }}
           onAnimationComplete={() => setPhase("throw")}
