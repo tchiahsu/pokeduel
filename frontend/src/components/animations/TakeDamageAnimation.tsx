@@ -1,6 +1,6 @@
 import { easeInOut, motion } from "motion/react";
 
-export default function TakeDamageAnimation({ pokemon, user }: { pokemon: string; user: string }) {
+export default function TakeDamageAnimation({ user, pokemon }: { user: string; pokemon: string }) {
   const positioning =
     user === "self" ? "w-3/4 h-auto select-none pointer-events-none" : "w-2/4 h-auto select-none pointer-events-none";
 
