@@ -26,7 +26,7 @@ export default function OpponentSwitchAnimation({ pokemon, onComplete }: { pokem
           alt="opening pokeball"
           initial={{ y: -5, opacity: 0.99, scale: 0.1 }}
           animate={{ opacity: 1, scale: 0.1 }}
-          transition={{ duration: 0.09, ease: easeInOut }}
+          transition={{ duration: 0.07, ease: easeInOut }}
           onAnimationComplete={() => setPhase("openedBall")}
           className="w-2/4 h-auto select-none pointer-events-none"
         />
@@ -38,7 +38,7 @@ export default function OpponentSwitchAnimation({ pokemon, onComplete }: { pokem
           alt="opened pokeball"
           initial={{ y: -50, opacity: 0.99, scale: 0.1 }}
           animate={{ opacity: 1, scale: 0.1 }}
-          transition={{ duration: 0.06, ease: easeInOut }}
+          transition={{ duration: 0.05, ease: easeInOut }}
           onAnimationComplete={() => setPhase("summon")}
           className="w-2/4 h-auto select-none pointer-events-none"
         />
