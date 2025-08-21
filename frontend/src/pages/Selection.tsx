@@ -1,10 +1,11 @@
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { fetchPokemonData } from '../utils/SearchAPI';
 import { useSocket } from "../contexts/SocketContext";
-import { shake } from "../utils/shake";
+import { shake } from "../utils/effects";
 import type { Pokemon } from '../types/pokemon'
 import { toast } from 'sonner';
+import { handleDeleteRoom } from "../utils/handleSocket";
 
 import SearchBar from '../components/TeamSelection/SearchBar';
 import Button from '../components/Button';
@@ -40,8 +41,10 @@ export default function Selection({ list }: SelectionProps) {
     const location = useLocation();
     const startRef = useRef<HTMLSpanElement>(null);
     const anchorRef = useRef<Record<string, HTMLDivElement | null>>({});
+    const backRef = useRef<HTMLSpanElement>(null);
 
     const { playerName } = location.state || {}
+    const { roomId } = useParams();
     const initialMovesForCurrent = currPokemon ? (pokemonTeam[currPokemon.name] ?? []) : [];
 
     const canStart = Object.keys(pokemonTeam).length > 0;
@@ -180,7 +183,7 @@ export default function Selection({ list }: SelectionProps) {
         const orderedTeam = addLeadToStart(pokemonTeam, leadPokemon);
         console.log("emit setPlayer", { name: playerName, teamSelection: orderedTeam })
         socket.emit("setPlayer", { name: playerName, teamSelection: orderedTeam });
-        navigate("/battle");
+        navigate(`/battle/${roomId}`);
     };
 
     /**
@@ -210,11 +213,11 @@ export default function Selection({ list }: SelectionProps) {
                     Team Selection:
                 </h3>
                 <div className='flex justify-center items-center mr-4 gap-3'>
-                    <Link to='/'>
-                        <Button>
+                    <span ref={backRef}>
+                        <Button onClick={() => {handleDeleteRoom(roomId), navigate("/")}}>
                             Back
                         </Button>
-                    </Link>
+                    </span>
 
                     <Button onClick={fetchRandomTeam}>
                         Randomize

@@ -5,12 +5,11 @@ import Button from "../components/Button";
 import InputBox from "../components/InputBox";
 import { useSocket } from "../contexts/SocketContext";
 import { toast } from "sonner";
-import { shake } from "../utils/shake";
+import { shake } from "../utils/effects";
 
 export default function SinglePlayer() {
   const API_URL_BASE = "http://localhost:8000/room";
   const [playerName, setPlayerName] = useState("");
-  const [roomID, setRoomID] = useState("");
   const socket = useSocket();
   const startRef = useRef<HTMLSpanElement>(null);
   const navigate = useNavigate();
@@ -37,30 +36,11 @@ export default function SinglePlayer() {
       }
 
       const data = await response.json();
-      setRoomID(data.id);
       socket.emit("joinRoom", data.id);
+      navigate(`/team-selection/${data.id}`, { state: { playerName } });
     } catch (error) {
       console.error("Error creating room: ", error);
       alert("Failed to create room. Please try again.");
-    }
-    
-    navigate("/team-selection", { state: { playerName } });
-  };
-
-  // Handles deleting a room
-  const handleDeleteRoom = async () => {
-    try {
-      const response = await fetch(`${API_URL_BASE}/${roomID}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) {
-        const data = await response.json();
-        console.log("Server responded with error:", data.message);
-      }
-    } catch (error) {
-      console.error("Error deleting room");
-    } finally {
-      setRoomID("");
     }
   };
 
@@ -82,7 +62,7 @@ export default function SinglePlayer() {
           <InputBox placeholder="Enter your name" value={playerName} onChange={(e) => setPlayerName(e.target.value)} />
           <div className="flex gap-2">
             <Link to="/">
-              <Button onClick={handleDeleteRoom}>Back to Home</Button>
+              <Button>Back to Home</Button>
             </Link>
             <span ref={startRef}>
               <Button onClick={createRoomID} disabled={!playerName}>
