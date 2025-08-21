@@ -215,7 +215,7 @@ export default function Selection({ list }: SelectionProps) {
                 <div className='flex justify-center items-center mr-4 gap-3'>
                     <span ref={backRef}>
                         <Button onClick={() => {handleDeleteRoom(roomId), navigate("/")}}>
-                            Back
+                            Quit
                         </Button>
                     </span>
 
