@@ -66,14 +66,14 @@ export default function SinglePlayer() {
 
             {/* Action Buttons */}
             <div className="flex flex-col w-2/5 justify-center items-center gap-4 z-10">
-                <InputBox placeholder="Enter your name" value={playerName} onChange={(e) => setPlayerName(e.target.value)} />
+                <InputBox placeholder="Enter your name" value={playerName} onChange={(e) => setPlayerName(e.target.value)} onEnter={createRoomID} />
                 <div className="flex gap-4">
                     <Link to="/">
-                    <Button>Home</Button>
+                    <Button>Back to Home</Button>
                     </Link>
                     <span ref={startRef}>
                     <Button onClick={createRoomID} disabled={!playerName}>
-                        Start
+                        Start Game
                     </Button>
                     </span>
                 </div>

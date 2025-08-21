@@ -130,7 +130,7 @@ export default function Multiplayer() {
             />
             <div className="flex gap-4">
               <Link to="/">
-                <Button>Back</Button>
+                <Button>Back to Home</Button>
               </Link>
               <span ref={createRef}>
                 <Button onClick={createRoomID} disabled={!playerName}>
@@ -171,11 +171,11 @@ export default function Multiplayer() {
             
             <div className="flex gap-4">
               <Button onClick={handleLeaveRoom}>
-                Back
+                Back to Home
               </Button>
               <span ref={startRef}>
                 <Button onClick={handleStartGame} disabled={!roomID}>
-                  Start
+                  Start Game
                 </Button>
               </span>
             </div>
@@ -192,14 +192,14 @@ export default function Multiplayer() {
 
           {/* Action Buttons */}
           <div className="flex flex-col w-2/5 justify-center items-center gap-4 z-10">
-            <InputBox placeholder="Enter Room ID" value={roomID} onChange={(e) => setRoomID(e.target.value)} />
+            <InputBox placeholder="Enter Room ID" value={roomID} onChange={(e) => setRoomID(e.target.value)} onEnter={handleStartGame} />
             <div className="flex gap-4">
               <Button onClick={handleLeaveRoom}>
-                Home
+                Back to Home
               </Button>
               <span ref={startRef}>
                 <Button onClick={handleStartGame} disabled={!roomID}>
-                  Start
+                  Start Game
                 </Button>
               </span>
             </div>

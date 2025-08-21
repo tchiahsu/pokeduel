@@ -1,7 +1,7 @@
 type Props = {
     value: string;
     onChange: (val: string) => void;
-    onEnter: () => Promise<void>
+    onEnter: () => Promise<void>;
 };
 
 export default function SearchBar({ value, onChange, onEnter }: Props) {
