@@ -210,7 +210,7 @@ export default function Selection({ list }: SelectionProps) {
                     Team Selection:
                 </h3>
                 <div className='flex justify-center items-center mr-4 gap-3'>
-                    <Link to='/multiplayer'>
+                    <Link to='/'>
                         <Button>
                             Back
                         </Button>
@@ -221,7 +221,7 @@ export default function Selection({ list }: SelectionProps) {
                     </Button>
 
                     <span ref={startRef}>
-                        <Button onClick={emitTeamSelection} variant="start" inactive={!canStart}>
+                        <Button onClick={emitTeamSelection} variant="yellow" disabled={!canStart}>
                             Start Game
                         </Button>
                     </span>
@@ -232,10 +232,10 @@ export default function Selection({ list }: SelectionProps) {
             <div className="flex max-h-[87vh]">
 
                 {/* Left Panel */}
-                <div className="w-36 flex flex-col bg-gray-300 ml-6 mr-2 mb-6 rounded-lg opacity-80 items-center pt-4">                                                     
-                    <h4 className="text-lg font-bold">Your Team</h4>
+                <div className="relative w-36 flex flex-col bg-gray-300 ml-6 mr-2 mb-6 rounded-lg opacity-80 items-center overflow-y-auto no-scrollbar">                                                     
+                    <h4 className="sticky top-0 z-10 text-lg font-bold bg-gray-300 pt-4">Your Team</h4>
                     {Object.keys(teamSprites).length > 0 && (
-                        <div className="grid grid-rows-6 gap-3 p-3">
+                        <div className="grid grid-rows-auto gap-3 p-3">
                             {Object.entries(teamSprites).map(([poke, sprite]) => (
                                 <div
                                     key={poke}

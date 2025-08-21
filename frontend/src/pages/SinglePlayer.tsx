@@ -1,19 +1,29 @@
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useState, useRef } from "react";
 import homeBg from "../assets/bg-forrest.jpg";
 import Button from "../components/Button";
 import InputBox from "../components/InputBox";
 import { useSocket } from "../contexts/SocketContext";
+import { toast } from "sonner";
+import { shake } from "../utils/shake";
 
 export default function SinglePlayer() {
   const API_URL_BASE = "http://localhost:8000/room";
   const [playerName, setPlayerName] = useState("");
   const [roomID, setRoomID] = useState("");
   const socket = useSocket();
+  const startRef = useRef<HTMLSpanElement>(null);
+  const navigate = useNavigate();
 
   // Handles creating a new roomID
   const createRoomID = async () => {
     try {
+      if (!playerName) {
+        shake(startRef.current);
+        toast.error("Please enter your name.")
+        return;
+      }
+
       const response = await fetch(API_URL_BASE, {
         method: "POST",
         headers: {
@@ -33,6 +43,8 @@ export default function SinglePlayer() {
       console.error("Error creating room: ", error);
       alert("Failed to create room. Please try again.");
     }
+    
+    navigate("/team-selection", { state: { playerName } });
   };
 
   // Handles deleting a room
@@ -72,11 +84,11 @@ export default function SinglePlayer() {
             <Link to="/">
               <Button onClick={handleDeleteRoom}>Back to Home</Button>
             </Link>
-            <Link to="/team-selection" state={{ playerName }}>
+            <span ref={startRef}>
               <Button onClick={createRoomID} disabled={!playerName}>
                 Start Game
               </Button>
-            </Link>
+            </span>
           </div>
         </div>
       </div>

@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import homeBg from "../assets/bg-forrest.jpg";
 import Button from "../components/Button";
 import InputBox from "../components/InputBox";
+import { toast } from "sonner";
+import { shake } from "../utils/shake";
 import { useNavigate } from "react-router-dom";
 import { useSocket } from "../contexts/SocketContext";
 
@@ -13,10 +15,19 @@ export default function Multiplayer() {
   const [mode, setMode] = useState<"create" | "join" | null>(null);
   const navigate = useNavigate();
   const socket = useSocket();
+  const joinRef = useRef<HTMLSpanElement>(null);
+  const createRef = useRef<HTMLSpanElement>(null);
+  const startRef = useRef<HTMLSpanElement>(null);
 
   // Handles creating a new roomID
   const createRoomID = async () => {
     try {
+      if (!playerName) {
+        shake(createRef.current);
+        toast.error("Please enter you name before creating a game.");
+        return;
+      }
+
       const response = await fetch(API_URL_BASE, {
         method: "POST",
         headers: {
@@ -38,8 +49,24 @@ export default function Multiplayer() {
     }
   };
 
+  // Handles setting the mode
+  const handleJoinMode = async () => {
+    if (!playerName) {
+      shake(joinRef.current);
+      toast.error("Please enter you name before joining a game.");
+      return;
+    }
+    setMode("join");
+  }
+
   // Handles when a user clicks "START GAME"
   const handleStartGame = async () => {
+    if (!roomID) {
+      shake(startRef.current);
+      toast.error("Please insert a valid Room ID");
+      return;
+    }
+
     if (mode === "join") {
       try {
         const response = await fetch(`http://localhost:8000/room/${roomID}`);
@@ -118,12 +145,16 @@ export default function Multiplayer() {
               <Link to="/">
                 <Button>Back to Home</Button>
               </Link>
-              <Button onClick={createRoomID} disabled={!playerName}>
-                Create Room
-              </Button>
-              <Button onClick={() => setMode("join")} disabled={!playerName}>
-                Join Room
-              </Button>
+              <span ref={createRef}>
+                <Button onClick={createRoomID} disabled={!playerName}>
+                  Create Room
+                </Button>
+              </span>
+              <span ref={joinRef}>
+                <Button onClick={handleJoinMode} disabled={!playerName}>
+                  Join Room
+                </Button>
+              </span>
             </div>
           )}
 
@@ -164,9 +195,11 @@ export default function Multiplayer() {
         </div>
         <div className="pt-6">
           {mode != null && (
-            <Button onClick={handleStartGame} disabled={!roomID}>
-              Start Game
-            </Button>
+            <span ref={startRef}>
+              <Button onClick={handleStartGame} disabled={!roomID}>
+                Start Game
+              </Button>
+            </span>
           )}
         </div>
       </div>
