@@ -315,10 +315,10 @@ export default function Battle() {
 
 
       {/* Bottom Section (Controls + Player Stats) */}
-      <div className="flex flex-col z-100">
-        <div className=" relative flex flex-row px-6 pb-6 gap-4">
+      <div className="sticky bottom-0 flex flex-col z-100">
+        <div className=" flex flex-row px-6 pb-6 gap-4">
           {/* Battle Display and Action Panel */}
-          <div className="relative flex w-15/20 justify-center items-baseline-last">
+          <div className="flex w-15/20 justify-center items-baseline-last">
             <BattleDisplayPanel
               mode={mode}
               moves={selfMoves}
