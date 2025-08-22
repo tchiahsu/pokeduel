@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { handleDeleteRoom } from "../utils/handleSocket";
 
 import { useSocket } from "../contexts/SocketContext";
@@ -94,6 +94,9 @@ export default function Battle() {
   const navigate = useNavigate();
   const socket = useSocket();
   const { roomId } = useParams();
+  // const location = useLocation();
+
+  // const gameData = (location.state as any)?.gameData;
 
   useEffect(() => {
     function onGameStart(events: any) {
