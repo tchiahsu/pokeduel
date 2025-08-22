@@ -28,7 +28,7 @@ type SelectionProps = {
 };
 
 // Team Selection Screen
-export default function Selection({ list, mode }: SelectionProps) {
+export default function Selection({ list, mode: propMode }: SelectionProps) {
     const [showPokedex, setShowPokedex] = useState(false)
     const [searchTerm, setSearchTerm] = useState('');
     const [fetchedPokemon, setFetchedPokemon] = useState<Pokemon | null>(null);
@@ -37,8 +37,8 @@ export default function Selection({ list, mode }: SelectionProps) {
     const [pokemonTeam, setPokemonTeam] = useState<Record<string, string[]>>({});
     const [teamSprites, setTeamSprites] = useState<Record<string, string>>({});
     const [leadPokemon, setLeadPokemon] = useState<string | null>(null);
-    const [wait, setWait] = useState(false);
-    const isMultiplayer = mode === "multiplayer";
+    // const [wait, setWait] = useState(false);
+    // const [isInitiator, setIsInitiator] = useState(false);
 
     const socket = useSocket();
     const navigate = useNavigate();
@@ -47,6 +47,8 @@ export default function Selection({ list, mode }: SelectionProps) {
     const anchorRef = useRef<Record<string, HTMLDivElement | null>>({});
     const backRef = useRef<HTMLSpanElement>(null);
 
+    // const selectionMode = (location.state && location.state.mode) || propMode;
+    // const isMultiplayer = selectionMode === "multiplayer";
     const { playerName } = location.state || {}
     const { roomId } = useParams();
     const initialMovesForCurrent = currPokemon ? (pokemonTeam[currPokemon.name] ?? []) : [];
@@ -186,15 +188,17 @@ export default function Selection({ list, mode }: SelectionProps) {
 
         const orderedTeam = addLeadToStart(pokemonTeam, leadPokemon);
         console.log("emit setPlayer", { name: playerName, teamSelection: orderedTeam })
+        socket.emit("setPlayer", { name: playerName, teamSelection: orderedTeam });
+        navigate(`/battle/${roomId}`);
 
-        if (isMultiplayer) {
-            socket.emit("setPlayer", { name: playerName, teamSelection: orderedTeam });
-            setWait(true);
-            setTimeout(() => setWait(false), 5000);
-        } else {
-            navigate(`/battle/${roomId}`, { state: { playerName, team: orderedTeam } });
-        }
-
+        // if (isMultiplayer) {
+        //     console.log("emit setPlayer", { name: playerName, teamSelection: orderedTeam });
+        //     socket.emit("setPlayer", { name: playerName, teamSelection: orderedTeam });
+        //     setWait(true);
+        //     setIsInitiator(true);
+        // } else {
+        //     navigate(`/battle/${roomId}`, { state: { playerName, team: orderedTeam } });
+        // }
     };
 
     /**
@@ -208,18 +212,17 @@ export default function Selection({ list, mode }: SelectionProps) {
         }
     }, [searchTerm]);
 
-    useEffect(() => {
-        const handleGameStart = () => {
-            setWait(false);
-            navigate(`/battle/${roomId}`);
-        }
+    // useEffect(() => {
+    //     const handleGameStart = (data: any) => {
+    //         setWait(false);
+    //         navigate(`/battle/${roomId}`, { state: { gameData: data } });
+    //     }
 
-        socket.on("gameStart", handleGameStart);
-
-        return () => {
-            socket.off("gameStart", handleGameStart);
-        };
-    }, [socket, navigate, roomId]);
+    //     socket.on("gameStart", handleGameStart);
+    //     // return () => {
+    //     //     socket.off("gameStart", handleGameStart);
+    //     // };
+    // }, [socket, navigate, roomId]);
 
     // Display the single pokemon fetches the list of pokemon
     const displayList = fetchedPokemon ? [fetchedPokemon] : list
@@ -360,7 +363,7 @@ export default function Selection({ list, mode }: SelectionProps) {
                     </div>
                 </div>
             </div>
-            {isMultiplayer && <IntermediatePopUp isVisible={wait} />}
+            {/* {isMultiplayer && isInitiator && <IntermediatePopUp isVisible={wait} />} */}
         </div>
     );
 }
