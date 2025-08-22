@@ -8,7 +8,7 @@ export default function SearchBar({ value, onChange, onEnter }: Props) {
     return (
         <input
             type="text"
-            placeholder="Search Pokémon..."
+            placeholder="Search your Favorite Pokémon..."
             value={value}
             onChange={(e) => onChange(e.target.value)}
             onKeyDown={(e) => {

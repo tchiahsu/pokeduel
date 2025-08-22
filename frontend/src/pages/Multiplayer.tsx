@@ -73,7 +73,8 @@ export default function Multiplayer() {
 
         if (!response.ok) {
           const data = await response.json();
-          alert(data.message || "Room not found");
+          console.log(data.message);
+          toast.error("Invalid Room ID");
           return;
         }
       } catch (error) {
@@ -96,7 +97,7 @@ export default function Multiplayer() {
   // Copy the text to system
   const copy = () => {
     navigator.clipboard.writeText(roomID);
-    alert("RoomID copied!");
+    toast.info("Room ID Copied!")
   };
 
   return (
@@ -118,7 +119,7 @@ export default function Multiplayer() {
         <>
           {/* Invisible Game Message */}
           <div className="select-none z-10 py-4">
-            <p>Challenge Friends to Become Champion</p>
+            <p>Enter your name and select game mode</p>
           </div>
 
           {/* Action Buttons */}

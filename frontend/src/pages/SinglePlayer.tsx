@@ -61,7 +61,7 @@ export default function SinglePlayer() {
 
             {/* Game Message */}
             <div className="select-none z-10 py-4">
-                <p>Test Your Skills in a Solo Adventure</p>
+                <p>Enter your name and start your Solo Adventure</p>
             </div>
 
             {/* Action Buttons */}

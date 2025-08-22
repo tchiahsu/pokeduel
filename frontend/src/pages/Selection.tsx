@@ -186,6 +186,13 @@ export default function Selection({ list }: SelectionProps) {
         navigate(`/battle/${roomId}`);
     };
 
+    // Copy the text to system
+    const copy = () => {
+        if (!roomId) return;
+        navigator.clipboard.writeText(roomId);
+        toast.info("Room ID Copied!")
+    };
+
     /**
      * When the search box is cleared, reset fetches result.
      * This ensures the main list reappears as soon as the input is empty.
@@ -214,17 +221,21 @@ export default function Selection({ list }: SelectionProps) {
                 </h3>
                 <div className='flex justify-center items-center mr-4 gap-3'>
                     <span ref={backRef}>
-                        <Button onClick={() => {handleDeleteRoom(roomId), navigate("/")}}>
-                            Quit
+                        <Button onClick={() => {handleDeleteRoom(roomId), navigate("/")}} size="xs">
+                            Quit Game
                         </Button>
                     </span>
 
-                    <Button onClick={fetchRandomTeam}>
-                        Randomize
+                    <Button onClick={copy} size="xs">
+                        Copy RoomId
+                    </Button>
+
+                    <Button onClick={fetchRandomTeam} size="xs">
+                        Randomize Team
                     </Button>
 
                     <span ref={startRef}>
-                        <Button onClick={emitTeamSelection} variant="yellow" disabled={!canStart}>
+                        <Button onClick={emitTeamSelection} variant="yellow" disabled={!canStart} size="xs">
                             Start Game
                         </Button>
                     </span>
@@ -235,34 +246,34 @@ export default function Selection({ list }: SelectionProps) {
             <div className="flex max-h-[87vh]">
 
                 {/* Left Panel */}
-                <div className="relative w-36 flex flex-col bg-gray-300 ml-6 mr-2 mb-6 rounded-lg opacity-80 items-center overflow-y-auto no-scrollbar">                                                     
-                    <h4 className="sticky top-0 z-10 text-lg font-bold bg-gray-300 pt-4">Your Team</h4>
+                <div className="relative w-36 flex flex-col bg-gray-300 ml-6 mr-2 mb-6 rounded-lg opacity-80 items-center">                                                     
+                    <h3 className="sticky top-0 z-10 text-lg font-bold bg-gray-300 pt-3">TEAM</h3>
                     {Object.keys(teamSprites).length > 0 && (
-                        <div className="grid grid-rows-auto gap-3 p-3">
+                        <div className="grid grid-rows-auto p-3 cursor-pointer">
                             {Object.entries(teamSprites).map(([poke, sprite]) => (
                                 <div
                                     key={poke}
                                     className="relative rounded-lg p-2"
                                     ref={(element) => {anchorRef.current[poke] = element}}>
-                                        <div className="flex-col relative group w-full h-24 flex items-center justify-center text-[12px]">
+                                        <div className="flex-col relative group w-full flex items-center justify-center text-[10px]">
                                             <div className={clsx("flex flex-col justify-center items-center group-hover:opacity-50",
                                                                  leadPokemon === poke ? "text-amber-500" : ""
                                             )}>
                                                 <img
                                                     src={sprite}
                                                     alt={poke}
-                                                    className="pointer-events-none select-none"
+                                                    className="pointer-events-none select-none w-18 h-18"
                                                 />
                                                 {poke}
                                             </div>
-                                            <div className="absolute inset-0 z-10 flex flex-col justify-center items-center pointer-events-none gap-1 pt-3">
+                                            <div className="absolute inset-0 z-10 flex flex-col justify-center items-center pointer-events-none gap-1 pt-3 cursor-pointer">
                                                 <TeamButton 
                                                     label="Starter"
                                                     color={leadPokemon === poke? "gray" : "yellow"}
                                                     onClick={() => setLeadPokemon(poke)}
                                                 />
                                                 <TeamButton 
-                                                    label="Show Moves"
+                                                    label="Edit"
                                                     color="blue"
                                                     onClick={() => {
                                                         setShowPokedex(true);

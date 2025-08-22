@@ -98,7 +98,7 @@ const PokeMove = ({ move, moves, setMoves }: PokeMoveProps) => {
                               isSelected ? " bg-yellow-200 text-orange-500 hover:bg-yellow-300" : "bg-blue-50 text-blue-800 hover:bg-blue-100")}>
 
             {/* Pokemon Move Button */}
-            <div className="flex">
+            <div className="flex cursor-pointer">
                 <div className="flex flex-1 py-1 text-[10px] justify-left items-center"
                      onClick={toggleDropdown}>   
                     {formattedName}
