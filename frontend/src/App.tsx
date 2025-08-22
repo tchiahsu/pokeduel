@@ -16,7 +16,7 @@ const socket: Socket = io(API_URL_BASE);
 
 function App() {
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
-
+  const mode: "singleplayer" | "multiplayer" = "multiplayer";
   // Fetch the pokemon into the frontend
   useEffect(() => {
     async function fetchPokemon() {
@@ -39,7 +39,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/multiplayer" element={<Multiplayer />} />
-            <Route path="/team-selection/:roomId" element={<Selection list={pokemonList} />} />
+            <Route path="/team-selection/:roomId" element={<Selection list={pokemonList} mode={mode} />} />
             <Route path="/battle/:roomId" element={<Battle />} />
             <Route path="/single-player" element={<SinglePlayer />} />
           </Routes>
