@@ -6,6 +6,7 @@ import { shake } from "../utils/effects";
 import type { Pokemon } from '../types/pokemon'
 import { toast } from 'sonner';
 import { handleDeleteRoom } from "../utils/handleSocket";
+import { motion } from "framer-motion";
 
 import SearchBar from '../components/TeamSelection/SearchBar';
 import Button from '../components/Button';
@@ -251,8 +252,12 @@ export default function Selection({ list }: SelectionProps) {
                     {Object.keys(teamSprites).length > 0 && (
                         <div className="grid grid-rows-auto p-3 cursor-pointer">
                             {Object.entries(teamSprites).map(([poke, sprite]) => (
-                                <div
+                                <motion.div
                                     key={poke}
+                                    initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: -20, scale: 0.9 }}
+                                    transition={{ duration: 0.3, ease: "easeOut" }}
                                     className="relative rounded-lg p-2"
                                     ref={(element) => {anchorRef.current[poke] = element}}>
                                         <div className="flex-col relative group w-full flex items-center justify-center text-[10px]">
@@ -287,7 +292,7 @@ export default function Selection({ list }: SelectionProps) {
                                                 />
                                             </div>
                                         </div>
-                                </div>
+                                </motion.div>
                             ))}
                         </div>
                     )}
@@ -335,7 +340,7 @@ export default function Selection({ list }: SelectionProps) {
                         </div>
 
                         {/* Pokemon Stats and Moves Sidebar Panel */}
-                        <div className={clsx("flex overflow-x-hidden rounded-lg pb-2", showPokedex && "px-4 w-md", !showPokedex && "px-0 w-0")}>
+                        <div className={clsx("flex overflow-x-hidden rounded-lg pb-2", showPokedex && "px-4 w-md ease-in-out duration-200", !showPokedex && "px-0 w-0 ease-in-out duration-200")}>
                             <Pokedex
                                 pokemon={currPokemon}
                                 close={handlePokedex}
