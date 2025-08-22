@@ -13,6 +13,7 @@ import selectionBg from '../assets/bg-field.jpg';
 import Pokedex from '../components/TeamSelection/Pokedex';
 import clsx from 'clsx'
 import TeamButton from '../components/TeamSelection/TeamButton';
+import IntermediatePopUp from '../components/TeamSelection/IntermediatePopUp';
 
 // Base URL for the backend server
 const API_URL_BASE = 'http://localhost:8000';
@@ -23,10 +24,11 @@ const API_URL_BASE = 'http://localhost:8000';
  */
 type SelectionProps = {
     list: Pokemon[];
+    mode: "singleplayer" | "multiplayer";
 };
 
 // Team Selection Screen
-export default function Selection({ list }: SelectionProps) {
+export default function Selection({ list, mode }: SelectionProps) {
     const [showPokedex, setShowPokedex] = useState(false)
     const [searchTerm, setSearchTerm] = useState('');
     const [fetchedPokemon, setFetchedPokemon] = useState<Pokemon | null>(null);
@@ -35,6 +37,8 @@ export default function Selection({ list }: SelectionProps) {
     const [pokemonTeam, setPokemonTeam] = useState<Record<string, string[]>>({});
     const [teamSprites, setTeamSprites] = useState<Record<string, string>>({});
     const [leadPokemon, setLeadPokemon] = useState<string | null>(null);
+    const [wait, setWait] = useState(false);
+    const isMultiplayer = mode === "multiplayer";
 
     const socket = useSocket();
     const navigate = useNavigate();
@@ -182,8 +186,15 @@ export default function Selection({ list }: SelectionProps) {
 
         const orderedTeam = addLeadToStart(pokemonTeam, leadPokemon);
         console.log("emit setPlayer", { name: playerName, teamSelection: orderedTeam })
-        socket.emit("setPlayer", { name: playerName, teamSelection: orderedTeam });
-        navigate(`/battle/${roomId}`);
+
+        if (isMultiplayer) {
+            socket.emit("setPlayer", { name: playerName, teamSelection: orderedTeam });
+            setWait(true);
+            setTimeout(() => setWait(false), 5000);
+        } else {
+            navigate(`/battle/${roomId}`, { state: { playerName, team: orderedTeam } });
+        }
+
     };
 
     /**
@@ -196,6 +207,19 @@ export default function Selection({ list }: SelectionProps) {
             setError(null);
         }
     }, [searchTerm]);
+
+    useEffect(() => {
+        const handleGameStart = () => {
+            setWait(false);
+            navigate(`/battle/${roomId}`);
+        }
+
+        socket.on("gameStart", handleGameStart);
+
+        return () => {
+            socket.off("gameStart", handleGameStart);
+        };
+    }, [socket, navigate, roomId]);
 
     // Display the single pokemon fetches the list of pokemon
     const displayList = fetchedPokemon ? [fetchedPokemon] : list
@@ -336,6 +360,7 @@ export default function Selection({ list }: SelectionProps) {
                     </div>
                 </div>
             </div>
+            {isMultiplayer && <IntermediatePopUp isVisible={wait} />}
         </div>
     );
 }

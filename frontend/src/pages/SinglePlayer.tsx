@@ -37,7 +37,7 @@ export default function SinglePlayer() {
 
       const data = await response.json();
       socket.emit("joinRoom", data.id);
-      navigate(`/team-selection/${data.id}`, { state: { playerName } });
+      navigate(`/team-selection/${data.id}`, { state: { playerName, mode: 'singleplayer' } });
     } catch (error) {
       console.error("Error creating room: ", error);
       alert("Failed to create room. Please try again.");

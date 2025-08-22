@@ -84,7 +84,7 @@ export default function Multiplayer() {
     }
 
     socket.emit("joinRoom", roomID);
-    navigate(`/team-selection/${roomID}`, { state: { playerName } });
+    navigate(`/team-selection/${roomID}`, { state: { playerName, mode: 'multiplayer' } });
   };
 
   // Handles when a user clicks Leave button in join mode
