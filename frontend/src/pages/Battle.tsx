@@ -325,7 +325,7 @@ export default function Battle() {
 
       {/* Bottom Section (Controls + Player Stats) */}
       <div className="sticky bottom-0 flex flex-col z-100">
-        <div className="flex justify-end px-6">
+        <div className="flex justify-start px-6 transform scale-x-[-1]">
           <ActivePokeCount teamCount={selfTeamCount} remainingPokemon={selfRemaining} />
         </div>
         <div className=" flex flex-row px-6 pb-6 gap-4">
