@@ -1,13 +1,6 @@
 import React from 'react';
 import pokeBall from '../../assets/poke_pixel.png';
 
-// interface Pokemon {
-//   name: string;
-//   image: string;
-//   hp: number;
-//   maxHP: number;
-// }
-
 interface ActivePokeProps {
   teamCount: number;
   remainingPokemon: number;

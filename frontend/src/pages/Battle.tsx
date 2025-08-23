@@ -3,7 +3,11 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { handleDeleteRoom } from "../utils/handleSocket";
 import { useSocket } from "../contexts/SocketContext";
 
-import battleBg from "../assets/bg_3.webp";
+import bg1 from "../assets/bg_3.webp";
+import bg2 from "../assets/bg_2.jpg";
+import bg3 from "../assets/bg-battle.jpg";
+import bg4 from "../assets/bg-hill.jpg";
+import bg5 from "../assets/bg-forrest.jpg";
 import StatsCard from "../components/BattlePage/StatsCard";
 import BattleActionsPanel from "../components/BattlePage/BattleActionsPanel";
 import BattleDisplayPanel from "../components/BattlePage/BattleDisplayPanel";
@@ -55,6 +59,7 @@ type Event = {
  * Battle Screen for handling game play.
  */
 export default function Battle() {
+  const [battleBg, setbattleBg] = useState<string>(bg1);
   const [actionMode, setActionMode] = useState<"none" | "attack" | "switch">("none");
   const [mode, setMode] = useState<"none" | "attack" | "switch" | "fainted">("none");
   const [status, setStatus] = useState<string | any>("Select an action to begin..."); // Used for messages in display panel
@@ -91,12 +96,19 @@ export default function Battle() {
   const [eventQueue, setEventQueue] = useState<Event[]>([]);
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null);
 
+  const bgImages = [bg1, bg2, bg3, bg4, bg5];
+
   const navigate = useNavigate();
   const socket = useSocket();
   const { roomId } = useParams();
   // const location = useLocation();
 
   // const gameData = (location.state as any)?.gameData;
+
+  useEffect(() => {
+    const randomIndex = Math.floor(Math.random() * bgImages.length);
+    setbattleBg(bgImages[randomIndex]);
+  }, []);
 
   useEffect(() => {
     function onGameStart(events: any) {
@@ -325,7 +337,7 @@ export default function Battle() {
 
       {/* Bottom Section (Controls + Player Stats) */}
       <div className="sticky bottom-0 flex flex-col z-100">
-        <div className="flex justify-end px-6">
+        <div className="flex justify-start px-6 transform scale-x-[-1]">
           <ActivePokeCount teamCount={selfTeamCount} remainingPokemon={selfRemaining} />
         </div>
         <div className=" flex flex-row px-6 pb-6 gap-4">
