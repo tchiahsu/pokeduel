@@ -112,7 +112,7 @@ export default class BattleModel {
   // Reference to the bot player instance (used if playing against AI)
   private botPlayer: BotPlayer;
   // Number to generate a random battle background
-  private backgroundIndex: number = Math.floor(Math.random() * 7);
+  private backgroundIndex: number = Math.floor(Math.random() * 9);
 
   /** Returns the ID of player 1.
    *
