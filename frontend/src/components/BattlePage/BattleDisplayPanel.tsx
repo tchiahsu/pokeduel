@@ -1,4 +1,5 @@
 import React from "react";
+import { toast } from 'sonner';
 
 /**
  * Represents a Pokemon in the Player's Team.
@@ -80,8 +81,8 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
             onClick={() => onMoveSelect?.(i)}
             className={`p-2 mt-2 w-full border border-gray-700 rounded ${bgColor} text-white font-bold hover:brightness-110`}
           >
-            <div>{displayName}</div>
-            <div className="text-sm">
+            <div className="select-none">{displayName}</div>
+            <div className="text-sm select-none">
               {move.pp}/{move.maxPP} PP
             </div>
           </button>
@@ -98,17 +99,22 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
       {team.map((poke, i) => (
         <button
           key={i}
-          disabled={poke.hp <= 0}
-          onClick={() => onSwitchSelect?.(i)}
+          onClick={() => {
+            if (poke.hp <= 0) {
+              toast.warning(`${poke.name} has fainted! Select another Pokemon`)
+              return;
+            }
+            onSwitchSelect?.(i);
+          }}
           className={`flex w-80 items-center justify-between p-3 border rounded-md ${
             poke.hp <= 0 ? "bg-gray-200 text-gray-500" : "bg-green-100 border-green-400"
           }`}
         >
           <div className="flex items-center gap-2">
             {poke.frontSprite && <img src={poke.frontSprite} alt={poke.name} className="w-6 h-6" />}
-            <span className="font-bold">{poke.name}</span>
+            <span className="font-bold select-none">{poke.name}</span>
           </div>
-          <span className="font-bold">
+          <span className="font-bold select-none">
             {poke.hp}/{poke.maxHP}
           </span>
         </button>
