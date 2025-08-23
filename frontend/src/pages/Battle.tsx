@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { handleDeleteRoom } from "../utils/handleSocket";
-
 import { useSocket } from "../contexts/SocketContext";
 
 import battleBg from "../assets/bg_3.webp";
@@ -56,6 +55,7 @@ type Event = {
  * Battle Screen for handling game play.
  */
 export default function Battle() {
+  const [actionMode, setActionMode] = useState<"none" | "attack" | "switch">("none");
   const [mode, setMode] = useState<"none" | "attack" | "switch" | "fainted">("none");
   const [status, setStatus] = useState<string | any>("Select an action to begin..."); // Used for messages in display panel
   const [showQuitConfirm, setShowQuitConfirm] = useState(false);
@@ -332,24 +332,25 @@ export default function Battle() {
           {/* Battle Display and Action Panel */}
           <div className="flex w-15/20 justify-center items-baseline-last">
             <BattleDisplayPanel
-              mode={mode}
+              mode={actionMode}
               moves={selfMoves}
               team={selfTeam}
               status={status}
               onMoveSelect={(index) => {
                 console.log("Selected move:", index);
                 setStatus(`You selected ${selfMoves[index].name}\nWaiting for opponent...`);
-                setMode("none");
+                setActionMode("none");
                 socket.emit("submitMove", { action: "attack", index: index });
               }}
               onSwitchSelect={(index) => {
                 // console.log("Selected switch with index:", index);
                 const selectedName = selfTeam[index].name;
                 setStatus(`You switched to ${selectedName}\nWaiting for opponent...`);
-                setMode("none");
+                setActionMode("none");
 
                 if (mode === "fainted") {
                   socket.emit("submitFaintedSwitch", { action: "switch", index: index });
+                  setMode("none");
                 } else {
                   socket.emit("submitMove", { action: "switch", index: index });
                 }
@@ -359,7 +360,11 @@ export default function Battle() {
 
           {/* Action Button Panel */}
           <div className="flex w-1/20 justify-center items-baseline-last">
-            <BattleActionsPanel onSelect={setMode} onQuit={handleQuit} />
+            <BattleActionsPanel
+              onSelect={(mode) => setActionMode(mode)}
+              onQuit={handleQuit} 
+              isFainted = {mode === "fainted"}
+            />
           </div>
 
           {/* Player Stats*/}
