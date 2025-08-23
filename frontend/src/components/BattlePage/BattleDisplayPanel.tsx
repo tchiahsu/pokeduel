@@ -30,6 +30,7 @@ interface BattleDisplayPanelProps {
   moves: Move[];
   team: Pokemon[];
   status?: string;
+  currentPokemon: string;
   onMoveSelect?: (index: number) => void;
   onSwitchSelect?: (index: number) => void;
 }
@@ -63,6 +64,7 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
   moves,
   team,
   status,
+  currentPokemon,
   onMoveSelect,
   onSwitchSelect,
 }) => {
@@ -102,6 +104,10 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
           onClick={() => {
             if (poke.hp <= 0) {
               toast.warning(`${poke.name} has fainted! Select another Pokemon`)
+              return;
+            }
+            if (poke.name === currentPokemon) {
+              toast.error("Cannot switch to current Pokemon");
               return;
             }
             onSwitchSelect?.(i);

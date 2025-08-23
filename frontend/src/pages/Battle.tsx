@@ -7,10 +7,12 @@ import bg1 from "../assets/bg_3.webp";
 import bg2 from "../assets/bg_2.jpg";
 import bg3 from "../assets/bg-battle.jpg";
 // import bg4 from "../assets/bg-hill.jpg";
+import bg4 from "../assets/bg-dark-forest.jpg";
 import bg5 from "../assets/bg-forrest.jpg";
 import bg6 from "../assets/bg-park2.jpg";
 import bg7 from "../assets/bg-path.jpg";
 import bg8 from "../assets/bg-snow.jpg";
+import bg9 from "../assets/bg-lava.jpg";
 import StatsCard from "../components/BattlePage/StatsCard";
 import BattleActionsPanel from "../components/BattlePage/BattleActionsPanel";
 import BattleDisplayPanel from "../components/BattlePage/BattleDisplayPanel";
@@ -99,7 +101,7 @@ export default function Battle() {
   const [eventQueue, setEventQueue] = useState<Event[]>([]);
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null);
 
-  const bgImages = [bg1, bg2, bg3, bg5, bg6, bg7, bg8];
+  const bgImages = [bg1, bg2, bg3, bg4, bg5, bg6, bg7, bg8, bg9];
 
   const navigate = useNavigate();
   const socket = useSocket();
@@ -348,6 +350,7 @@ export default function Battle() {
               moves={selfMoves}
               team={selfTeam}
               status={status}
+              currentPokemon={selfActive.name}
               onMoveSelect={(index) => {
                 console.log("Selected move:", index);
                 setStatus(`You selected ${selfMoves[index].name}\nWaiting for opponent...`);
