@@ -111,6 +111,8 @@ export default class BattleModel {
   private faintedPlayers: string[] = [];
   // Reference to the bot player instance (used if playing against AI)
   private botPlayer: BotPlayer;
+  // Number to generate a random battle background
+  private backgroundIndex: number = Math.floor(Math.random() * 7);
 
   /** Returns the ID of player 1.
    *
@@ -488,7 +490,7 @@ export default class BattleModel {
    *
    * @returns A mapping of player IDs to their respective personalized Events in an array.
    */
-  public getStartSummary(): Record<string, Event[]> {
+  public getStartSummary(): Record<string, { events: Event[], bgIndex: number }> {
     const { player: player1 } = this.getPlayerAndMoveByID(this.player1ID);
     const { player: player2 } = this.getPlayerAndMoveByID(this.player2ID);
 
@@ -507,7 +509,12 @@ export default class BattleModel {
       )
     );
 
-    return this.getTurnSummary();
+    const turnSummary = this.getTurnSummary();
+
+    return {
+      [this.player1ID]: { events: turnSummary[this.player1ID], bgIndex: this.backgroundIndex },
+      [this.player2ID]: { events: turnSummary[this.player2ID], bgIndex: this.backgroundIndex },
+    };
   }
 
   /**

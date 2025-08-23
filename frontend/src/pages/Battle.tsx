@@ -6,8 +6,11 @@ import { useSocket } from "../contexts/SocketContext";
 import bg1 from "../assets/bg_3.webp";
 import bg2 from "../assets/bg_2.jpg";
 import bg3 from "../assets/bg-battle.jpg";
-import bg4 from "../assets/bg-hill.jpg";
+// import bg4 from "../assets/bg-hill.jpg";
 import bg5 from "../assets/bg-forrest.jpg";
+import bg6 from "../assets/bg-park2.jpg";
+import bg7 from "../assets/bg-path.jpg";
+import bg8 from "../assets/bg-snow.jpg";
 import StatsCard from "../components/BattlePage/StatsCard";
 import BattleActionsPanel from "../components/BattlePage/BattleActionsPanel";
 import BattleDisplayPanel from "../components/BattlePage/BattleDisplayPanel";
@@ -96,7 +99,7 @@ export default function Battle() {
   const [eventQueue, setEventQueue] = useState<Event[]>([]);
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null);
 
-  const bgImages = [bg1, bg2, bg3, bg4, bg5];
+  const bgImages = [bg1, bg2, bg3, bg5, bg6, bg7, bg8];
 
   const navigate = useNavigate();
   const socket = useSocket();
@@ -106,13 +109,10 @@ export default function Battle() {
   // const gameData = (location.state as any)?.gameData;
 
   useEffect(() => {
-    const randomIndex = Math.floor(Math.random() * bgImages.length);
-    setbattleBg(bgImages[randomIndex]);
-  }, []);
-
-  useEffect(() => {
-    function onGameStart(events: any) {
+    function onGameStart(data: any) {
+      const { events, bgIndex } = data;
       setEventQueue(events);
+      setbattleBg(bgImages[bgIndex]);
     }
 
     function onCurrentState(data: any) {
