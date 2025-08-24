@@ -109,16 +109,19 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
 
           return;
         }
-
-        // Send out the new state and the next options to each player if no pokemon has fainted
-        const currentState = battleModel.getCurrentState();
-        const nextOptions = battleModel.getNextOptions();
-
-        io.to(player1ID).emit("currentState", currentState[player1ID]);
-        io.to(player2ID).emit("currentState", currentState[player2ID]);
-        io.to(player1ID).emit("nextOptions", nextOptions[player1ID]);
-        io.to(player2ID).emit("nextOptions", nextOptions[player2ID]);
       }
+    });
+
+    socket.on("requestState", () => {
+      // Send out the new state and the next options to the player
+      const roomID: string = roomManager.getPlayerRoom(socket.id);
+      const battleModel: BattleModel = roomManager.getBattleModel(roomID);
+      const playerID = socket.id;
+
+      const currentState = battleModel.getCurrentState();
+      const nextOptions = battleModel.getNextOptions();
+      io.to(playerID).emit("currentState", currentState[playerID]);
+      io.to(playerID).emit("nextOptions", nextOptions[playerID]);
     });
 
     // Event to handle a fainted switch
