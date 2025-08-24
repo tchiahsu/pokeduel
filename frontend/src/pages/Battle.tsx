@@ -329,7 +329,14 @@ export default function Battle() {
             ) : currentEvent?.user === "opponent" && currentEvent.animation === "attack" ? (
               <TakeDamageAnimation user="self" pokemon={selfCurrent.backSprite} />
             ) : currentEvent?.user === "self" && currentEvent.animation === "faint" ? (
-              <FaintAnimation user="self" pokemon={selfCurrent.backSprite} onComplete={() => setCurrentEvent(null)} />
+              <FaintAnimation
+                user="self"
+                pokemon={selfCurrent.backSprite}
+                onComplete={() => {
+                  setSelfIsSummoned(false);
+                  setCurrentEvent(null);
+                }}
+              />
             ) : selfIsSummoned ? (
               <img
                 className="w-3/4 h-auto select-none pointer-events-none"
@@ -359,7 +366,10 @@ export default function Battle() {
               <FaintAnimation
                 user="opponent"
                 pokemon={opponentPrevious?.frontSprite ?? ""}
-                onComplete={() => setCurrentEvent(null)}
+                onComplete={() => {
+                  setOpponentisSummoned(false);
+                  setCurrentEvent(null);
+                }}
               />
             ) : opponentIsSummoned ? (
               <img
