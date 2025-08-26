@@ -74,13 +74,12 @@ type switchData = {
  */
 export default function Battle() {
   const [battleBg, setbattleBg] = useState<string>(bg1);
-  const [actionMode, setActionMode] = useState<"none" | "attack" | "switch">("none");
-  const [mode, setMode] = useState<"none" | "attack" | "switch" | "fainted">("none");
-  const [status, setStatus] = useState<string | any>("Select an action to begin..."); // Used for messages in display panel
+  const [actionMode, setActionMode] = useState<"none" | "attack" | "switch" | "faint">("none");
+  const [status, setStatus] = useState<string | any>(); // Used for messages in display panel
   const [showQuitConfirm, setShowQuitConfirm] = useState(false);
 
-  const [selfTeam, setSelfTeam] = useState<TeamMember[]>([]);
-  const [selfMoves, setSelfMoves] = useState<Move[]>([]);
+  const [nextTeam, setNextTeam] = useState<TeamMember[]>([]);
+  const [nextMoves, setNextMoves] = useState<Move[]>([]);
 
   const [selfCurrent, setSelfCurrent] = useState<TeamMember>({
     name: "",
@@ -167,22 +166,22 @@ export default function Battle() {
     function onNextOptions(data: any) {
       console.log("nextOptions:", data);
       // parsing self data
-      const parsedMoves: Move[] = data.moves.map((moveObj: any) => ({
-        name: moveObj.name,
-        type: moveObj.type,
-        pp: moveObj.pp,
-        maxPP: moveObj.maxPP,
+      const nextMoves: Move[] = data.moves.map((moveData: any) => ({
+        name: moveData.name,
+        type: moveData.type,
+        pp: moveData.pp,
+        maxPP: moveData.maxPP,
       }));
 
-      const parsedTeam: TeamMember[] = data.pokemon.map((poke: any) => ({
-        name: poke.name,
-        hp: poke.hp,
-        maxHP: poke.maxHP || 100,
-        frontSprite: poke.sprite,
-        isCurrent: poke.isCurrent,
+      const nextTeam: TeamMember[] = data.pokemon.map((pokemon: any) => ({
+        name: pokemon.name,
+        hp: pokemon.hp,
+        maxHP: pokemon.maxHP || 100,
+        frontSprite: pokemon.sprite,
+        isCurrent: pokemon.isCurrent,
       }));
-      setSelfTeam(parsedTeam);
-      setSelfMoves(parsedMoves);
+      setNextTeam(nextTeam);
+      setNextMoves(nextMoves);
     }
 
     /**
@@ -193,20 +192,41 @@ export default function Battle() {
       setEventQueue((prevEvents) => [...prevEvents, ...events]);
     }
 
-    // function onRequestFaintedSwitch(data: any) {
-    //   setEventQueue((events) => [
-    //     ...events,
-    //     {
-    //       user: "self", // "self" | "opponent"
-    //       animation: "none", // "attack" | "switch" | "status" | "faint" | "none"
-    //       message: "Your Pokemon has fainted! Switch to another Pokemon",
-    //       type: "",
-    //       image: "",
-    //       name: "",
-    //       onComplete: () => setMode("fainted"),
-    //     },
-    //   ]);
-    // }
+    function onRequestFaintedSwitch(data: any) {
+      setEventQueue((events) => [
+        ...events,
+        {
+          user: "self", // "self" | "opponent"
+          animation: "none", // "attack" | "switch" | "status" | "faint" | "none"
+          message: "Your Pokemon has fainted! Switch to another Pokemon",
+          attackData: {} as attackData,
+          switchData: {} as switchData,
+          onComplete: () => {
+            setSelfPrevious(null);
+            setSelfCurrent({
+              name: selfCurrent.name,
+              hp: selfCurrent.hp,
+              maxHP: selfCurrent.maxHP,
+              backSprite: "",
+              frontSprite: "",
+            });
+            setActionMode("faint");
+          },
+        },
+      ]);
+    }
+
+    function onWaitForFaintedSwitch(data: any) {
+      setOpponentPrevious(null);
+      setOpponentCurrent({
+        name: opponentCurrent.name,
+        hp: opponentCurrent.hp,
+        maxHP: opponentCurrent.maxHP,
+        backSprite: "",
+        frontSprite: "",
+      });
+      setStatus(data.message);
+    }
 
     /**
      * Handles endGame event from the server.
@@ -221,10 +241,8 @@ export default function Battle() {
     socket.on("currentState", onCurrentState);
     socket.on("turnSummary", onTurnSummary);
     socket.on("nextOptions", onNextOptions);
-    // socket.on("requestFaintedSwitch", onRequestFaintedSwitch);
-    socket.on("waitForFaintedSwitch", (data: any) => {
-      setStatus(data.message || "Waiting for other player to switch pokemon");
-    });
+    socket.on("requestFaintedSwitch", onRequestFaintedSwitch);
+    socket.on("waitForFaintedSwitch", onWaitForFaintedSwitch);
     socket.on("endGame", onEndGame);
 
     return () => {
@@ -232,7 +250,7 @@ export default function Battle() {
       socket.off("currentState", onCurrentState);
       socket.off("nextOptions", onNextOptions);
       socket.off("turnSummary", onTurnSummary);
-      // socket.off("requestFaintedSwitch", onRequestFaintedSwitch);
+      socket.off("requestFaintedSwitch", onRequestFaintedSwitch);
       socket.off("waitForFaintedSwitch");
       socket.off("endGame", onEndGame);
     };
@@ -246,7 +264,6 @@ export default function Battle() {
 
       if (eventQueue[0].animation === "switch") {
         if (eventQueue[0].user === "self") {
-          // setSelfPrevious(selfCurrent);
           setSelfCurrent({
             name: eventQueue[0].switchData.name,
             hp: eventQueue[0].switchData.hp,
@@ -255,7 +272,6 @@ export default function Battle() {
             frontSprite: eventQueue[0].switchData.frontSprite,
           });
         } else {
-          // setOpponentPrevious(opponentCurrent);
           setOpponentCurrent({
             name: eventQueue[0].switchData.name,
             hp: eventQueue[0].switchData.hp,
@@ -265,6 +281,7 @@ export default function Battle() {
           });
         }
       }
+
       if (eventQueue[0].animation === "none") {
         setTimeout(() => {
           setCurrentEvent(null);
@@ -274,7 +291,7 @@ export default function Battle() {
     }
 
     if (battleStarted && !currentEvent && eventQueue.length === 0) {
-      setStatus("Select an action...");
+      setStatus("Select your next move...");
       socket.emit("requestState");
     }
   }, [eventQueue, currentEvent]);
@@ -392,28 +409,28 @@ export default function Battle() {
           <div className="flex w-15/20 justify-center items-baseline-last">
             <BattleDisplayPanel
               mode={actionMode}
-              moves={selfMoves}
-              team={selfTeam}
+              moves={nextMoves}
+              team={nextTeam}
               status={status}
               currentPokemon={selfCurrent.name}
               onMoveSelect={(index) => {
                 console.log("Selected move:", index);
-                setStatus(`You selected ${selfMoves[index].name}\nWaiting for opponent...`);
+                setStatus(`You selected ${nextMoves[index].name}\nWaiting for opponent...`);
                 setActionMode("none");
                 socket.emit("submitMove", { action: "attack", index: index });
               }}
               onSwitchSelect={(index) => {
                 // console.log("Selected switch with index:", index);
-                const selectedName = selfTeam[index].name;
+                const selectedName = nextTeam[index].name;
                 setStatus(`You switched to ${selectedName}\nWaiting for opponent...`);
-                setActionMode("none");
 
-                if (mode === "fainted") {
+                if (actionMode === "faint") {
                   socket.emit("submitFaintedSwitch", { action: "switch", index: index });
-                  setMode("none");
                 } else {
                   socket.emit("submitMove", { action: "switch", index: index });
                 }
+
+                setActionMode("none");
               }}
             />
           </div>
@@ -423,7 +440,7 @@ export default function Battle() {
             <BattleActionsPanel
               onSelect={(mode) => setActionMode(mode)}
               onQuit={handleQuit}
-              isFainted={mode === "fainted"}
+              isFainted={actionMode === "faint"}
             />
           </div>
 
