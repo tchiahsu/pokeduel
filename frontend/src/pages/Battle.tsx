@@ -46,7 +46,7 @@ interface TeamMember {
   frontSprite: string;
 }
 
-/*
+/**
  * A type representing an event in the battle (attack, switch, faint, or status effect).
  * Used to animate battle actions and display messages to the players.
  */
@@ -54,10 +54,19 @@ type Event = {
   user: string; // "self" | "opponent"
   animation: string; // "attack" | "switch" | "status" | "faint" | "none"
   message: string;
-  type: string;
-  image: string;
-  name: string;
+  attackData: attackData;
+  switchData: switchData;
   onComplete?: () => void;
+};
+
+type attackData = { newHP: number; type: string };
+
+type switchData = {
+  name: string;
+  hp: number;
+  maxHP: number;
+  backSprite: string;
+  frontSprite: string;
 };
 
 /**
@@ -65,15 +74,14 @@ type Event = {
  */
 export default function Battle() {
   const [battleBg, setbattleBg] = useState<string>(bg1);
-  const [actionMode, setActionMode] = useState<"none" | "attack" | "switch">("none");
-  const [mode, setMode] = useState<"none" | "attack" | "switch" | "fainted">("none");
-  const [status, setStatus] = useState<string | any>("Select an action to begin..."); // Used for messages in display panel
+  const [actionMode, setActionMode] = useState<"none" | "attack" | "switch" | "faint">("none");
+  const [status, setStatus] = useState<string | any>(); // Used for messages in display panel
   const [showQuitConfirm, setShowQuitConfirm] = useState(false);
 
-  const [selfTeam, setSelfTeam] = useState<TeamMember[]>([]);
-  const [selfMoves, setSelfMoves] = useState<Move[]>([]);
+  const [nextTeam, setNextTeam] = useState<TeamMember[]>([]);
+  const [nextMoves, setNextMoves] = useState<Move[]>([]);
 
-  const [selfActive, setSelfActive] = useState<TeamMember>({
+  const [selfCurrent, setSelfCurrent] = useState<TeamMember>({
     name: "",
     hp: 0,
     maxHP: 100,
@@ -81,7 +89,7 @@ export default function Battle() {
     frontSprite: "",
   });
 
-  const [opponentActive, setOpponentActive] = useState<TeamMember>({
+  const [opponentCurrent, setOpponentCurrent] = useState<TeamMember>({
     name: "",
     hp: 0,
     maxHP: 100,
@@ -89,8 +97,8 @@ export default function Battle() {
     frontSprite: "",
   });
 
-  const [selfPrevActive, setSelfPrevActive] = useState<TeamMember | null>(null);
-  const [opponentPrevActive, setOpponentPrevActive] = useState<TeamMember | null>(null);
+  const [selfPrevious, setSelfPrevious] = useState<TeamMember | null>(null);
+  const [opponentPrevious, setOpponentPrevious] = useState<TeamMember | null>(null);
 
   const [selfTeamCount, setSelfTeamCount] = useState(0);
   const [selfRemaining, setSelfRemaining] = useState(0);
@@ -100,6 +108,8 @@ export default function Battle() {
   const [opponentIsSummoned, setOpponentisSummoned] = useState(false);
   const [eventQueue, setEventQueue] = useState<Event[]>([]);
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null);
+
+  const [battleStarted, setBattleStarted] = useState(false);
 
   const bgImages = [bg1, bg2, bg3, bg4, bg5, bg6, bg7, bg8, bg9];
 
@@ -115,6 +125,7 @@ export default function Battle() {
       const { events, bgIndex } = data;
       setEventQueue(events);
       setbattleBg(bgImages[bgIndex]);
+      setBattleStarted(true);
     }
 
     function onCurrentState(data: any) {
@@ -129,8 +140,8 @@ export default function Battle() {
       setOpponentTeamCount(opponentData.teamCount);
       setOpponentRemaining(opponentData.remainingPokemon);
 
-      setSelfPrevActive(selfActive);
-      setSelfActive({
+      setSelfPrevious(selfCurrent);
+      setSelfCurrent({
         name: selfData.name,
         hp: selfData.hp,
         maxHP: selfData.maxHP,
@@ -138,8 +149,8 @@ export default function Battle() {
         frontSprite: selfData.frontSprite,
       });
 
-      setOpponentPrevActive(opponentActive);
-      setOpponentActive({
+      setOpponentPrevious(opponentCurrent);
+      setOpponentCurrent({
         name: opponentData.name,
         hp: opponentData.hp,
         maxHP: opponentData.maxHP,
@@ -155,22 +166,22 @@ export default function Battle() {
     function onNextOptions(data: any) {
       console.log("nextOptions:", data);
       // parsing self data
-      const parsedMoves: Move[] = data.moves.map((moveObj: any) => ({
-        name: moveObj.name,
-        type: moveObj.type,
-        pp: moveObj.pp,
-        maxPP: moveObj.maxPP,
+      const nextMoves: Move[] = data.moves.map((moveData: any) => ({
+        name: moveData.name,
+        type: moveData.type,
+        pp: moveData.pp,
+        maxPP: moveData.maxPP,
       }));
 
-      const parsedTeam: TeamMember[] = data.pokemon.map((poke: any) => ({
-        name: poke.name,
-        hp: poke.hp,
-        maxHP: poke.maxHP || 100,
-        frontSprite: poke.sprite,
-        isCurrent: poke.isCurrent,
+      const nextTeam: TeamMember[] = data.pokemon.map((pokemon: any) => ({
+        name: pokemon.name,
+        hp: pokemon.hp,
+        maxHP: pokemon.maxHP || 100,
+        frontSprite: pokemon.sprite,
+        isCurrent: pokemon.isCurrent,
       }));
-      setSelfTeam(parsedTeam);
-      setSelfMoves(parsedMoves);
+      setNextTeam(nextTeam);
+      setNextMoves(nextMoves);
     }
 
     /**
@@ -188,12 +199,33 @@ export default function Battle() {
           user: "self", // "self" | "opponent"
           animation: "none", // "attack" | "switch" | "status" | "faint" | "none"
           message: "Your Pokemon has fainted! Switch to another Pokemon",
-          type: "",
-          image: "",
-          name: "",
-          onComplete: () => setMode("fainted"),
+          attackData: {} as attackData,
+          switchData: {} as switchData,
+          onComplete: () => {
+            setSelfPrevious(null);
+            setSelfCurrent({
+              name: selfCurrent.name,
+              hp: selfCurrent.hp,
+              maxHP: selfCurrent.maxHP,
+              backSprite: "",
+              frontSprite: "",
+            });
+            setActionMode("faint");
+          },
         },
       ]);
+    }
+
+    function onWaitForFaintedSwitch(data: any) {
+      setOpponentPrevious(null);
+      setOpponentCurrent({
+        name: opponentCurrent.name,
+        hp: opponentCurrent.hp,
+        maxHP: opponentCurrent.maxHP,
+        backSprite: "",
+        frontSprite: "",
+      });
+      setStatus(data.message);
     }
 
     /**
@@ -210,9 +242,7 @@ export default function Battle() {
     socket.on("turnSummary", onTurnSummary);
     socket.on("nextOptions", onNextOptions);
     socket.on("requestFaintedSwitch", onRequestFaintedSwitch);
-    socket.on("waitForFaintedSwitch", (data: any) => {
-      setStatus(data.message || "Waiting for other player to switch pokemon");
-    });
+    socket.on("waitForFaintedSwitch", onWaitForFaintedSwitch);
     socket.on("endGame", onEndGame);
 
     return () => {
@@ -224,13 +254,33 @@ export default function Battle() {
       socket.off("waitForFaintedSwitch");
       socket.off("endGame", onEndGame);
     };
-  }, [socket, navigate, selfActive.name]);
+  }, [socket, navigate, selfCurrent.name]);
 
   useEffect(() => {
     if (!currentEvent && eventQueue.length > 0) {
       setCurrentEvent(eventQueue[0]);
       setEventQueue((prev) => prev.slice(1));
       setStatus(eventQueue[0].message);
+
+      if (eventQueue[0].animation === "switch") {
+        if (eventQueue[0].user === "self") {
+          setSelfCurrent({
+            name: eventQueue[0].switchData.name,
+            hp: eventQueue[0].switchData.hp,
+            maxHP: eventQueue[0].switchData.maxHP,
+            backSprite: eventQueue[0].switchData.backSprite,
+            frontSprite: eventQueue[0].switchData.frontSprite,
+          });
+        } else {
+          setOpponentCurrent({
+            name: eventQueue[0].switchData.name,
+            hp: eventQueue[0].switchData.hp,
+            maxHP: eventQueue[0].switchData.maxHP,
+            backSprite: eventQueue[0].switchData.backSprite,
+            frontSprite: eventQueue[0].switchData.frontSprite,
+          });
+        }
+      }
 
       if (eventQueue[0].animation === "none") {
         setTimeout(() => {
@@ -240,8 +290,9 @@ export default function Battle() {
       }
     }
 
-    if (!currentEvent && eventQueue.length === 0) {
-      setStatus("Select an action...");
+    if (battleStarted && !currentEvent && eventQueue.length === 0) {
+      setStatus("Select your next move...");
+      socket.emit("requestState");
     }
   }, [eventQueue, currentEvent]);
 
@@ -265,10 +316,10 @@ export default function Battle() {
       <div className="flex w-5/20 justify-bottom items-end px-6 pt-6 z-100">
         {/* Opponent Pokemon Card */}
         <StatsCard
-          name={opponentActive.name || "Loading..."}
-          image={opponentActive.frontSprite}
-          hp={opponentActive.hp || 0}
-          maxHP={opponentActive.maxHP || 100}
+          name={opponentCurrent.name || "Loading..."}
+          image={opponentCurrent.frontSprite}
+          hp={opponentCurrent.hp || 0}
+          maxHP={opponentCurrent.maxHP || 100}
         />
       </div>
 
@@ -283,24 +334,31 @@ export default function Battle() {
           <div className="flex justify-center items-baseline-last">
             {currentEvent?.user === "self" && currentEvent.animation === "switch" ? (
               <SelfSwitchAnimation
-                prevPokemon={selfPrevActive?.backSprite ?? ""}
-                newPokemon={selfActive.backSprite}
+                prevPokemon={selfPrevious?.backSprite ?? ""}
+                newPokemon={selfCurrent.backSprite}
                 onComplete={() => {
                   setSelfIsSummoned(true);
                   setCurrentEvent(null);
                 }}
               />
             ) : currentEvent?.user === "self" && currentEvent.animation === "attack" ? (
-              <SelfAttackAnimation pokemon={selfActive.backSprite} onComplete={() => setCurrentEvent(null)} />
+              <SelfAttackAnimation pokemon={selfCurrent.backSprite} onComplete={() => setCurrentEvent(null)} />
             ) : currentEvent?.user === "opponent" && currentEvent.animation === "attack" ? (
-              <TakeDamageAnimation user="self" pokemon={selfActive.backSprite} />
+              <TakeDamageAnimation user="self" pokemon={selfCurrent.backSprite} />
             ) : currentEvent?.user === "self" && currentEvent.animation === "faint" ? (
-              <FaintAnimation user="self" pokemon={selfActive.backSprite} onComplete={() => setCurrentEvent(null)} />
+              <FaintAnimation
+                user="self"
+                pokemon={selfCurrent.backSprite}
+                onComplete={() => {
+                  setSelfIsSummoned(false);
+                  setCurrentEvent(null);
+                }}
+              />
             ) : selfIsSummoned ? (
               <img
                 className="w-3/4 h-auto select-none pointer-events-none"
-                src={selfActive.backSprite}
-                alt={selfActive.name}
+                src={selfCurrent.backSprite}
+                alt={selfCurrent.name}
               />
             ) : null}
           </div>
@@ -310,27 +368,31 @@ export default function Battle() {
           <div className="flex justify-center items-baseline px-6">
             {currentEvent?.user === "opponent" && currentEvent.animation === "switch" ? (
               <OpponentSwitchAnimation
-                pokemon={opponentActive.frontSprite}
+                prevPokemon={opponentPrevious?.frontSprite ?? ""}
+                newPokemon={opponentCurrent.frontSprite}
                 onComplete={() => {
                   setOpponentisSummoned(true);
                   setCurrentEvent(null);
                 }}
               />
             ) : currentEvent?.user === "opponent" && currentEvent.animation === "attack" ? (
-              <OpponentAttackAnimation pokemon={opponentActive.frontSprite} onComplete={() => setCurrentEvent(null)} />
+              <OpponentAttackAnimation pokemon={opponentCurrent.frontSprite} onComplete={() => setCurrentEvent(null)} />
             ) : currentEvent?.user === "self" && currentEvent.animation === "attack" ? (
-              <TakeDamageAnimation user="opponent" pokemon={opponentActive.frontSprite} />
+              <TakeDamageAnimation user="opponent" pokemon={opponentCurrent.frontSprite} />
             ) : currentEvent?.user === "opponent" && currentEvent.animation === "faint" ? (
               <FaintAnimation
                 user="opponent"
-                pokemon={opponentPrevActive?.frontSprite ?? ""}
-                onComplete={() => setCurrentEvent(null)}
+                pokemon={opponentPrevious?.frontSprite ?? ""}
+                onComplete={() => {
+                  setOpponentisSummoned(false);
+                  setCurrentEvent(null);
+                }}
               />
             ) : opponentIsSummoned ? (
               <img
                 className="w-2/4 h-auto select-none pointer-events-none"
-                src={opponentActive.frontSprite}
-                alt={opponentActive.name}
+                src={opponentCurrent.frontSprite}
+                alt={opponentCurrent.name}
               />
             ) : null}
           </div>
@@ -347,28 +409,28 @@ export default function Battle() {
           <div className="flex w-15/20 justify-center items-baseline-last">
             <BattleDisplayPanel
               mode={actionMode}
-              moves={selfMoves}
-              team={selfTeam}
+              moves={nextMoves}
+              team={nextTeam}
               status={status}
-              currentPokemon={selfActive.name}
+              currentPokemon={selfCurrent.name}
               onMoveSelect={(index) => {
                 console.log("Selected move:", index);
-                setStatus(`You selected ${selfMoves[index].name}\nWaiting for opponent...`);
+                setStatus(`You selected ${nextMoves[index].name}\nWaiting for opponent...`);
                 setActionMode("none");
                 socket.emit("submitMove", { action: "attack", index: index });
               }}
               onSwitchSelect={(index) => {
                 // console.log("Selected switch with index:", index);
-                const selectedName = selfTeam[index].name;
+                const selectedName = nextTeam[index].name;
                 setStatus(`You switched to ${selectedName}\nWaiting for opponent...`);
-                setActionMode("none");
 
-                if (mode === "fainted") {
+                if (actionMode === "faint") {
                   socket.emit("submitFaintedSwitch", { action: "switch", index: index });
-                  setMode("none");
                 } else {
                   socket.emit("submitMove", { action: "switch", index: index });
                 }
+
+                setActionMode("none");
               }}
             />
           </div>
@@ -377,19 +439,19 @@ export default function Battle() {
           <div className="flex w-1/20 justify-center items-baseline-last">
             <BattleActionsPanel
               onSelect={(mode) => setActionMode(mode)}
-              onQuit={handleQuit} 
-              isFainted = {mode === "fainted"}
+              onQuit={handleQuit}
+              isFainted={actionMode === "faint"}
             />
           </div>
 
           {/* Player Stats*/}
           <div className="flex w-5/20 justify-bottom items-end">
             <StatsCard
-              key={selfActive.name} // re-render
-              name={selfActive.name}
-              image={selfActive.frontSprite}
-              hp={selfActive.hp}
-              maxHP={selfActive.maxHP}
+              key={selfCurrent.name} // re-render
+              name={selfCurrent.name}
+              image={selfCurrent.frontSprite}
+              hp={selfCurrent.hp}
+              maxHP={selfCurrent.maxHP}
             />
           </div>
         </div>

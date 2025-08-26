@@ -4,6 +4,7 @@ import Pokemon from "./Pokemon.js";
 import PokemonFactory from "./PokemonFactory.js";
 import StatusManager from "./StatusManager.js";
 import BotPlayer from "./BotPlayer.js";
+import Move from "./Move.js";
 
 /**
  * A type representing a player's move.
@@ -29,10 +30,19 @@ type Event = {
   user: string; // "self" | "opponent"
   animation: string; // "attack" | "switch" | "status" | "faint" | "none"
   message: string;
-  type: string;
-  image: string;
-  name: string;
+  attackData: attackData;
+  switchData: switchData;
   pokemon?: Pokemon;
+};
+
+type attackData = { newHP: number; type: string };
+
+type switchData = {
+  name: string;
+  hp: number;
+  maxHP: number;
+  backSprite: string;
+  frontSprite: string;
 };
 
 /**
@@ -422,22 +432,28 @@ export default class BattleModel {
   private createEvent(currentPlayer: string, action: string, message: string): Event {
     const { player, playerMove } = this.getPlayerAndMoveByID(currentPlayer);
     const playerPokemon = player.getCurrentPokemon();
+    const pokemonMove = playerPokemon.getMove(playerMove?.index) ?? null;
 
     const event: Event = {
       user: currentPlayer,
       animation: action,
       message: message,
-      type: "",
-      image: "",
-      name: "",
+      attackData: {} as attackData,
+      switchData: {} as switchData,
       pokemon: playerPokemon,
     };
 
-    if (action === "attack") {
-      event.type = playerPokemon.getMove(playerMove.index).getType();
-    } else if (action === "status") {
-      event.type = playerPokemon.getStatus();
+    if (action === "attack" && pokemonMove) {
+      event.attackData.type = pokemonMove.getType();
+      event.attackData.newHP = 0;
+    } else if (action === "switch") {
+      event.switchData.name = playerPokemon.getName();
+      event.switchData.hp = playerPokemon.getHP();
+      event.switchData.maxHP = playerPokemon.getMaxHP();
+      event.switchData.backSprite = playerPokemon.getBackSprite();
+      event.switchData.frontSprite = playerPokemon.getFrontSprite();
     }
+
     return event;
   }
 
@@ -455,16 +471,9 @@ export default class BattleModel {
         user: playerID === event.user ? "self" : "opponent",
         animation: event.animation,
         message: event.message,
-        type: event.type,
-        image: event.image,
-        name: event.name,
+        attackData: event.attackData,
+        switchData: event.switchData,
       };
-
-      if (event.animation === "switch" && event.pokemon) {
-        personalizedEvent.image =
-          personalizedEvent.user === "self" ? event.pokemon.getBackSprite() : event.pokemon.getFrontSprite();
-        personalizedEvent.name = event.pokemon.getName();
-      }
       return personalizedEvent;
     });
     return personalizedEvents;
@@ -490,7 +499,7 @@ export default class BattleModel {
    *
    * @returns A mapping of player IDs to their respective personalized Events in an array.
    */
-  public getStartSummary(): Record<string, { events: Event[], bgIndex: number }> {
+  public getStartSummary(): Record<string, { events: Event[]; bgIndex: number }> {
     const { player: player1 } = this.getPlayerAndMoveByID(this.player1ID);
     const { player: player2 } = this.getPlayerAndMoveByID(this.player2ID);
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
 /**
  * Represents a Pokemon in the Player's Team.
@@ -26,7 +26,7 @@ interface Move {
  * Props for the BattleDisplayPanel component.
  */
 interface BattleDisplayPanelProps {
-  mode: "none" | "attack" | "switch" | "fainted";
+  mode: "none" | "attack" | "switch" | "faint";
   moves: Move[];
   team: Pokemon[];
   status?: string;
@@ -103,7 +103,7 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
           key={i}
           onClick={() => {
             if (poke.hp <= 0) {
-              toast.warning(`${poke.name} has fainted! Select another Pokemon`)
+              toast.warning(`${poke.name} has fainted! Select another Pokemon`);
               return;
             }
             if (poke.name === currentPokemon) {
@@ -133,14 +133,14 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
    */
   const renderStatus = () => (
     <div className="text-gray-600 flex justify-left items-center h-full text-xl italic select-none pointer-events-none">
-      {status || "Select an action..."}
+      {status}
     </div>
   );
 
   return (
     <div className="flex-1 h-full bg-gray-300/80 rounded-lg p-4">
       {mode === "attack" && renderMoves()}
-      {(mode === "switch" || mode == "fainted") && renderSwitches()}
+      {(mode === "switch" || mode == "faint") && renderSwitches()}
       {mode === "none" && renderStatus()}
     </div>
   );

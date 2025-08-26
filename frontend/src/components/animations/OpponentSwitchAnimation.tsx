@@ -4,10 +4,32 @@ import closed from "../../assets/closed_pokeball.png";
 import opening from "../../assets/opening_pokeball.png";
 import opened from "../../assets/opened_pokeball.png";
 
-export default function OpponentSwitchAnimation({ pokemon, onComplete }: { pokemon: string; onComplete: () => void }) {
-  const [phase, setPhase] = useState<"closedBall" | "openingBall" | "openedBall" | "summon">("closedBall");
+export default function OpponentSwitchAnimation({
+  prevPokemon,
+  newPokemon,
+  onComplete,
+}: {
+  prevPokemon: string;
+  newPokemon: string;
+  onComplete: () => void;
+}) {
+  const [phase, setPhase] = useState<"recall" | "closedBall" | "openingBall" | "openedBall" | "summon">(
+    prevPokemon ? "recall" : "closedBall"
+  );
   return (
     <>
+      {phase === "recall" && (
+        <motion.img
+          src={prevPokemon}
+          alt="recall pokemon"
+          initial={{ x: 0, y: 0, filter: ["brightness(1)"], scale: 1 }}
+          animate={{ x: 100, y: -100, filter: ["brightness(50)"], opacity: 0, scale: 0 }}
+          transition={{ duration: 0.4, ease: easeInOut }}
+          onAnimationComplete={() => setPhase("closedBall")}
+          className="w-2/4 h-auto select-none pointer-events-none"
+        />
+      )}
+
       {phase === "closedBall" && (
         <motion.img
           src={closed}
@@ -46,7 +68,7 @@ export default function OpponentSwitchAnimation({ pokemon, onComplete }: { pokem
 
       {phase === "summon" && (
         <motion.img
-          src={pokemon}
+          src={newPokemon}
           alt="summon pokemon"
           initial={{ scale: 0, filter: ["brightness(50)"] }}
           animate={{
