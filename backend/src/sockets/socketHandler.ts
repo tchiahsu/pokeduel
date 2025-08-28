@@ -33,14 +33,14 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
         io.to(player1ID).emit("gameStart", startSummary[player1ID]);
         io.to(player2ID).emit("gameStart", startSummary[player2ID]);
 
-        const currentState = battleModel.getCurrentState();
-        const nextOptions = battleModel.getNextOptions();
+        // const currentState = battleModel.getCurrentState();
+        // const nextOptions = battleModel.getNextOptions();
 
-        io.to(player1ID).emit("currentState", currentState[player1ID]);
-        io.to(player2ID).emit("currentState", currentState[player2ID]);
+        // io.to(player1ID).emit("currentState", currentState[player1ID]);
+        // io.to(player2ID).emit("currentState", currentState[player2ID]);
 
-        io.to(player1ID).emit("nextOptions", nextOptions[player1ID]);
-        io.to(player2ID).emit("nextOptions", nextOptions[player2ID]);
+        // io.to(player1ID).emit("nextOptions", nextOptions[player1ID]);
+        // io.to(player2ID).emit("nextOptions", nextOptions[player2ID]);
       }
     });
 
