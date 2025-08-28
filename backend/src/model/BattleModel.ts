@@ -409,6 +409,7 @@ export default class BattleModel {
       this.processSwitch(faintedPlayer1);
     }
     this.faintedPlayers = [];
+    this.moves = {};
   }
 
   /**
