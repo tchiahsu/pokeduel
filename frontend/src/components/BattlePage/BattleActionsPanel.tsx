@@ -1,19 +1,20 @@
-import React from 'react';
-import { useRef } from 'react';
+import React from "react";
+import { useRef } from "react";
 
 import { GiMineExplosion } from "react-icons/gi";
 import { RiExchange2Line } from "react-icons/ri";
 import { IoMdExit } from "react-icons/io";
-import { toast } from 'sonner';
+import { toast } from "sonner";
 import { shake } from "../../utils/effects";
 
 interface BattleActionsPanelProps {
-  onSelect: (mode: 'none' | 'attack' | 'switch') => void;
+  onSelect: (mode: "none" | "attack" | "switch") => void;
   onQuit: () => void;
   isFainted: boolean;
+  disabled: boolean;
 }
 
-const BattleActionsPanel: React.FC<BattleActionsPanelProps> = ({ onSelect, onQuit, isFainted }) => {
+const BattleActionsPanel: React.FC<BattleActionsPanelProps> = ({ onSelect, onQuit, isFainted, disabled }) => {
   const attackButtonRef = useRef<HTMLButtonElement>(null);
   const handleAttackClick = () => {
     if (isFainted) {
@@ -22,19 +23,19 @@ const BattleActionsPanel: React.FC<BattleActionsPanelProps> = ({ onSelect, onQui
     } else {
       onSelect("attack");
     }
-  }
+  };
   return (
     <div className="flex flex-col flex-1 h-full p-4 rounded-lg bg-gray-300/80 justify-center items-center gap-4">
-      
       {/* Attack Button */}
       <div className="relative group">
         <div className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 text-xs rounded bg-white text-black opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
           ATTACK
         </div>
         <button
-        ref={attackButtonRef}
+          ref={attackButtonRef}
           onClick={handleAttackClick}
-          className="w-13 h-13 bg-[#FFA500]/80 hover:bg-gray-500/80 rounded-full flex items-center justify-center"
+          className="w-13 h-13 bg-[#FFA500]/80 hover:bg-gray-500/80 rounded-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={disabled}
         >
           <GiMineExplosion className="text-white text-3xl" />
         </button>
@@ -46,8 +47,9 @@ const BattleActionsPanel: React.FC<BattleActionsPanelProps> = ({ onSelect, onQui
           SWITCH
         </div>
         <button
-          onClick={() => onSelect('switch')}
-          className="w-13 h-13 bg-[#3B4CCA]/80 hover:bg-gray-500/80 rounded-full flex items-center justify-center"
+          onClick={() => onSelect("switch")}
+          className="w-13 h-13 bg-[#3B4CCA]/80 hover:bg-gray-500/80 rounded-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={disabled}
         >
           <RiExchange2Line className="text-white text-3xl" />
         </button>

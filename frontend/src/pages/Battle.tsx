@@ -73,7 +73,7 @@ type switchData = {
  * Battle Screen for handling game play.
  */
 export default function Battle() {
-  const [battleBg, setbattleBg] = useState<string>(bg1);
+  const [battleBg, setBattleBg] = useState<string>(bg1);
   const [actionMode, setActionMode] = useState<"none" | "attack" | "switch" | "faint">("none");
   const [status, setStatus] = useState<string | any>(); // Used for messages in display panel
   const [showQuitConfirm, setShowQuitConfirm] = useState(false);
@@ -108,7 +108,7 @@ export default function Battle() {
   const [opponentIsSummoned, setOpponentisSummoned] = useState(false);
   const [eventQueue, setEventQueue] = useState<Event[]>([]);
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null);
-
+  const isAnimating = currentEvent !== null;
   const [battleStarted, setBattleStarted] = useState(false);
 
   const bgImages = [bg1, bg2, bg3, bg4, bg5, bg6, bg7, bg8, bg9];
@@ -124,7 +124,7 @@ export default function Battle() {
     function onGameStart(data: any) {
       const { events, bgIndex } = data;
       setEventQueue(events);
-      setbattleBg(bgImages[bgIndex]);
+      setBattleBg(bgImages[bgIndex]);
       setBattleStarted(true);
     }
 
@@ -263,23 +263,15 @@ export default function Battle() {
       setStatus(eventQueue[0].message);
 
       if (eventQueue[0].animation === "switch") {
-        if (eventQueue[0].user === "self") {
-          setSelfCurrent({
-            name: eventQueue[0].switchData.name,
-            hp: eventQueue[0].switchData.hp,
-            maxHP: eventQueue[0].switchData.maxHP,
-            backSprite: eventQueue[0].switchData.backSprite,
-            frontSprite: eventQueue[0].switchData.frontSprite,
-          });
-        } else {
-          setOpponentCurrent({
-            name: eventQueue[0].switchData.name,
-            hp: eventQueue[0].switchData.hp,
-            maxHP: eventQueue[0].switchData.maxHP,
-            backSprite: eventQueue[0].switchData.backSprite,
-            frontSprite: eventQueue[0].switchData.frontSprite,
-          });
-        }
+        const switchData = {
+          name: eventQueue[0].switchData.name,
+          hp: eventQueue[0].switchData.hp,
+          maxHP: eventQueue[0].switchData.maxHP,
+          backSprite: eventQueue[0].switchData.backSprite,
+          frontSprite: eventQueue[0].switchData.frontSprite,
+        };
+
+        eventQueue[0].user === "self" ? setSelfCurrent(switchData) : setOpponentCurrent(switchData);
       }
 
       if (eventQueue[0].animation === "none") {
@@ -441,6 +433,7 @@ export default function Battle() {
               onSelect={(mode) => setActionMode(mode)}
               onQuit={handleQuit}
               isFainted={actionMode === "faint"}
+              disabled={isAnimating}
             />
           </div>
 
