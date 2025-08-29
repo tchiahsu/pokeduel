@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import { useEffect, useState } from "react";
 
 /**
  * Prop that represents stats card of a Pokemon.
@@ -11,7 +12,24 @@ interface StatsCardProps {
 }
 
 const StatsCard: React.FC<StatsCardProps> = ({ name, image, HP, maxHP }) => {
+  const [displayHP, setDisplayHP] = useState(HP);
   const HPPercentage = (HP / maxHP) * 100;
+
+  useEffect(() => {
+    if (HP < displayHP) {
+      const interval = setInterval(() => {
+        setDisplayHP((prevHP) => {
+          if (prevHP > HP) return prevHP - 1;
+          clearInterval(interval);
+          return HP;
+        });
+      }, 50);
+
+      return () => clearInterval(interval);
+    } else {
+      setDisplayHP(HP);
+    }
+  }, [HP]);
 
   // Gets the progress bar color based on HP
   const getHPColor = () => {
@@ -29,7 +47,7 @@ const StatsCard: React.FC<StatsCardProps> = ({ name, image, HP, maxHP }) => {
       </div>
       {/* For HP of Current Pokemon */}
       <div className="mt-14 text-lg text-left">
-        <strong>HP:</strong> {HP}/{maxHP}
+        <strong>HP:</strong> {displayHP}/{maxHP}
         {/* Progress bar as a nested div */}
         <div className="w-full h-4 bg-gray-400 rounded mt-1 overflow-hidden">
           <motion.div
