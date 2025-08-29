@@ -25,11 +25,10 @@ const API_URL_BASE = 'http://localhost:8000';
  */
 type SelectionProps = {
     list: Pokemon[];
-    mode: "singleplayer" | "multiplayer";
 };
 
 // Team Selection Screen
-export default function Selection({ list, mode: propMode }: SelectionProps) {
+export default function Selection({ list }: SelectionProps) {
     const [showPokedex, setShowPokedex] = useState(false)
     const [searchTerm, setSearchTerm] = useState('');
     const [fetchedPokemon, setFetchedPokemon] = useState<Pokemon | null>(null);
@@ -38,6 +37,7 @@ export default function Selection({ list, mode: propMode }: SelectionProps) {
     const [pokemonTeam, setPokemonTeam] = useState<Record<string, string[]>>({});
     const [teamSprites, setTeamSprites] = useState<Record<string, string>>({});
     const [leadPokemon, setLeadPokemon] = useState<string | null>(null);
+    const [playerReady, setPlayerReady] = useState(false);
 
     const socket = useSocket();
     const navigate = useNavigate();
@@ -46,7 +46,7 @@ export default function Selection({ list, mode: propMode }: SelectionProps) {
     const anchorRef = useRef<Record<string, HTMLDivElement | null>>({});
     const backRef = useRef<HTMLSpanElement>(null);
 
-    const { playerName } = location.state || {}
+    const { playerName, mode } = location.state || {}
     const { roomId } = useParams();
     const initialMovesForCurrent = currPokemon ? (pokemonTeam[currPokemon.name] ?? []) : [];
 
@@ -183,10 +183,15 @@ export default function Selection({ list, mode: propMode }: SelectionProps) {
             return;
         }
 
+        // CHECK IF THERE IS ANOTHER PLAYER IN THE ROOM ALREADY
+        // IF NOT, SHOW THE SCREEN
+        setPlayerReady(true);
+        // IF YES, GO TO GAME
+
         const orderedTeam = addLeadToStart(pokemonTeam, leadPokemon);
         console.log("emit setPlayer", { name: playerName, teamSelection: orderedTeam })
-        socket.emit("setPlayer", { name: playerName, teamSelection: orderedTeam });
-        navigate(`/battle/${roomId}`);
+        // socket.emit("setPlayer", { name: playerName, teamSelection: orderedTeam });
+        // navigate(`/battle/${roomId}`);
     };
 
     // Copy the text to system
@@ -212,6 +217,7 @@ export default function Selection({ list, mode: propMode }: SelectionProps) {
 
     return (
         <div className="relative min-h-screen min-w-screen flex flex-col">
+            {playerReady && mode === "multiplayer" && <IntermediatePopUp isVisible={true} changePlayerStatus={setPlayerReady} />}
             <img
                 src={selectionBg}
                 className="absolute inset-0 w-full h-full object-cover opacity-50 z-0"
@@ -229,9 +235,9 @@ export default function Selection({ list, mode: propMode }: SelectionProps) {
                         </Button>
                     </span>
 
-                    <Button onClick={copy} size="xs">
+                    {mode === "multiplayer" && <Button onClick={copy} size="xs">
                         Copy RoomId
-                    </Button>
+                    </Button>}
 
                     <Button onClick={fetchRandomTeam} size="xs">
                         Randomize Team
@@ -250,7 +256,7 @@ export default function Selection({ list, mode: propMode }: SelectionProps) {
 
                 {/* Left Panel */}
                 <div className="relative w-36 flex flex-col bg-gray-300 ml-6 mr-2 mb-6 rounded-lg opacity-80 items-center">                                                     
-                    <h3 className="sticky top-0 z-10 text-lg font-bold bg-gray-300 pt-3">TEAM</h3>
+                    <h3 className="sticky top-0 z-10 text-lg font-bold bg-gray-300 pt-6">TEAM</h3>
                     {Object.keys(teamSprites).length > 0 && (
                         <div className="grid grid-rows-auto p-3 cursor-pointer">
                             <AnimatePresence initial={false}>
