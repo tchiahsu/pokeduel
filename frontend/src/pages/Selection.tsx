@@ -1,12 +1,12 @@
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
-import { fetchPokemonData } from '../utils/SearchAPI';
+import { fetchPokemonData } from '../utils/searchAPI';
 import { useSocket } from "../contexts/SocketContext";
 import { shake } from "../utils/effects";
 import type { Pokemon } from '../types/pokemon'
 import { toast } from 'sonner';
 import { handleDeleteRoom } from "../utils/handleSocket";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 import SearchBar from '../components/TeamSelection/SearchBar';
 import Button from '../components/Button';
@@ -38,8 +38,6 @@ export default function Selection({ list, mode: propMode }: SelectionProps) {
     const [pokemonTeam, setPokemonTeam] = useState<Record<string, string[]>>({});
     const [teamSprites, setTeamSprites] = useState<Record<string, string>>({});
     const [leadPokemon, setLeadPokemon] = useState<string | null>(null);
-    // const [wait, setWait] = useState(false);
-    // const [isInitiator, setIsInitiator] = useState(false);
 
     const socket = useSocket();
     const navigate = useNavigate();
@@ -48,8 +46,6 @@ export default function Selection({ list, mode: propMode }: SelectionProps) {
     const anchorRef = useRef<Record<string, HTMLDivElement | null>>({});
     const backRef = useRef<HTMLSpanElement>(null);
 
-    // const selectionMode = (location.state && location.state.mode) || propMode;
-    // const isMultiplayer = selectionMode === "multiplayer";
     const { playerName } = location.state || {}
     const { roomId } = useParams();
     const initialMovesForCurrent = currPokemon ? (pokemonTeam[currPokemon.name] ?? []) : [];
@@ -191,15 +187,6 @@ export default function Selection({ list, mode: propMode }: SelectionProps) {
         console.log("emit setPlayer", { name: playerName, teamSelection: orderedTeam })
         socket.emit("setPlayer", { name: playerName, teamSelection: orderedTeam });
         navigate(`/battle/${roomId}`);
-
-        // if (isMultiplayer) {
-        //     console.log("emit setPlayer", { name: playerName, teamSelection: orderedTeam });
-        //     socket.emit("setPlayer", { name: playerName, teamSelection: orderedTeam });
-        //     setWait(true);
-        //     setIsInitiator(true);
-        // } else {
-        //     navigate(`/battle/${roomId}`, { state: { playerName, team: orderedTeam } });
-        // }
     };
 
     // Copy the text to system
@@ -219,18 +206,6 @@ export default function Selection({ list, mode: propMode }: SelectionProps) {
             setError(null);
         }
     }, [searchTerm]);
-
-    // useEffect(() => {
-    //     const handleGameStart = (data: any) => {
-    //         setWait(false);
-    //         navigate(`/battle/${roomId}`, { state: { gameData: data } });
-    //     }
-
-    //     socket.on("gameStart", handleGameStart);
-    //     // return () => {
-    //     //     socket.off("gameStart", handleGameStart);
-    //     // };
-    // }, [socket, navigate, roomId]);
 
     // Display the single pokemon fetches the list of pokemon
     const displayList = fetchedPokemon ? [fetchedPokemon] : list
@@ -278,49 +253,52 @@ export default function Selection({ list, mode: propMode }: SelectionProps) {
                     <h3 className="sticky top-0 z-10 text-lg font-bold bg-gray-300 pt-3">TEAM</h3>
                     {Object.keys(teamSprites).length > 0 && (
                         <div className="grid grid-rows-auto p-3 cursor-pointer">
-                            {Object.entries(teamSprites).map(([poke, sprite]) => (
-                                <motion.div
-                                    key={poke}
-                                    initial={{ opacity: 0, y: 20, scale: 0.9 }}
-                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    exit={{ opacity: 0, y: -20, scale: 0.9 }}
-                                    transition={{ duration: 0.3, ease: "easeOut" }}
-                                    className="relative rounded-lg p-2"
-                                    ref={(element) => {anchorRef.current[poke] = element}}>
-                                        <div className="flex-col relative group w-full flex items-center justify-center text-[10px]">
-                                            <div className={clsx("flex flex-col justify-center items-center group-hover:opacity-50",
-                                                                 leadPokemon === poke ? "text-amber-500" : ""
-                                            )}>
-                                                <img
-                                                    src={sprite}
-                                                    alt={poke}
-                                                    className="pointer-events-none select-none w-18 h-18"
-                                                />
-                                                {poke}
+                            <AnimatePresence initial={false}>
+                                {Object.entries(teamSprites).map(([poke, sprite]) => (
+                                    <motion.div
+                                        key={poke}
+                                        layout
+                                        initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: -20, scale: 0.9 }}
+                                        transition={{ duration: 0.3, ease: "easeOut", layout: { type: "spring", stiffness: 500, damping: 35 }, }}
+                                        className="relative rounded-lg p-2"
+                                        ref={(element) => {anchorRef.current[poke] = element}}>
+                                            <div className="flex-col relative group w-full flex items-center justify-center text-[10px]">
+                                                <div className={clsx("flex flex-col justify-center items-center group-hover:opacity-50",
+                                                                    leadPokemon === poke ? "text-amber-500" : ""
+                                                )}>
+                                                    <img
+                                                        src={sprite}
+                                                        alt={poke}
+                                                        className="pointer-events-none select-none w-18 h-18"
+                                                    />
+                                                    {poke}
+                                                </div>
+                                                <div className="absolute inset-0 z-10 flex flex-col justify-center items-center pointer-events-none gap-1 pt-3 cursor-pointer">
+                                                    <TeamButton 
+                                                        label="Starter"
+                                                        color={leadPokemon === poke? "gray" : "yellow"}
+                                                        onClick={() => setLeadPokemon(poke)}
+                                                    />
+                                                    <TeamButton 
+                                                        label="Edit"
+                                                        color="blue"
+                                                        onClick={() => {
+                                                            setShowPokedex(true);
+                                                            setCurrPokemon({ name: poke, sprite: sprite });
+                                                        }}                                                
+                                                    />
+                                                    <TeamButton 
+                                                        label="Remove"
+                                                        color="red"
+                                                        onClick={() => removeFromTeam(poke)}                                                
+                                                    />
+                                                </div>
                                             </div>
-                                            <div className="absolute inset-0 z-10 flex flex-col justify-center items-center pointer-events-none gap-1 pt-3 cursor-pointer">
-                                                <TeamButton 
-                                                    label="Starter"
-                                                    color={leadPokemon === poke? "gray" : "yellow"}
-                                                    onClick={() => setLeadPokemon(poke)}
-                                                />
-                                                <TeamButton 
-                                                    label="Edit"
-                                                    color="blue"
-                                                    onClick={() => {
-                                                        setShowPokedex(true);
-                                                        setCurrPokemon({ name: poke, sprite: sprite });
-                                                    }}                                                
-                                                />
-                                                <TeamButton 
-                                                    label="Remove"
-                                                    color="red"
-                                                    onClick={() => removeFromTeam(poke)}                                                
-                                                />
-                                            </div>
-                                        </div>
-                                </motion.div>
-                            ))}
+                                    </motion.div>
+                                ))}
+                            </AnimatePresence>
                         </div>
                     )}
                 </div>
@@ -379,7 +357,6 @@ export default function Selection({ list, mode: propMode }: SelectionProps) {
                     </div>
                 </div>
             </div>
-            {/* {isMultiplayer && isInitiator && <IntermediatePopUp isVisible={wait} />} */}
         </div>
     );
 }
