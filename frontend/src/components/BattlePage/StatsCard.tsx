@@ -15,25 +15,6 @@ const StatsCard: React.FC<StatsCardProps> = ({ name, image, HP, maxHP }) => {
   const [displayHP, setDisplayHP] = useState(HP);
   const HPPercentage = (HP / maxHP) * 100;
 
-  // useEffect(() => {
-  //   if (HP < displayHP) {
-  //     const interval = setInterval(() => {
-  //       setDisplayHP((prevHP) => {
-  //         const nextHP = prevHP - 1;
-  //         if (nextHP <= HP) {
-  //           clearInterval(interval);
-  //           return HP;
-  //         }
-  //         return nextHP;
-  //       });
-  //     }, 50);
-
-  //     return () => clearInterval(interval);
-  //   } else {
-  //     setDisplayHP(HP);
-  //   }
-  // }, [HP]);
-
   useEffect(() => {
     if (HP < displayHP) {
       const interval = setInterval(() => {
@@ -43,6 +24,8 @@ const StatsCard: React.FC<StatsCardProps> = ({ name, image, HP, maxHP }) => {
           return HP;
         });
       }, 50);
+
+      return () => clearInterval(interval);
     } else {
       setDisplayHP(HP);
     }
