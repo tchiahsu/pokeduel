@@ -33,7 +33,7 @@ const Button = ({ children, onClick, size="sm", variant="gray", disabled=false }
                             disabled ? "bg-gray-300 text-gray-500 opacity-50 pointer-events-auto" :
                             {
                                 "bg-gray-300 text-gray-500 hover:bg-red-300 hover:text-red-600 cursor-pointer": variant === "gray",
-                                "bg-yellow-200 text-yellow-600 hover:scale-105 animate-pulse-subtle duration-200 ease-in-out cursor-pointer": variant === "yellow",
+                                "bg-yellow-200 text-yellow-600 hover:scale-105 animate-pulse-subtle duration-200 ease-in-out shimmer cursor-pointer": variant === "yellow",
                             }
                         )}
         >
