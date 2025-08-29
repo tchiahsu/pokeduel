@@ -73,7 +73,7 @@ type switchData = {
  * Battle Screen for handling game play.
  */
 export default function Battle() {
-  const [battleBg, setbattleBg] = useState<string>(bg1);
+  const [battleBg, setBattleBg] = useState<string>(bg1);
   const [actionMode, setActionMode] = useState<"none" | "attack" | "switch" | "faint">("none");
   const [status, setStatus] = useState<string | any>(); // Used for messages in display panel
   const [showQuitConfirm, setShowQuitConfirm] = useState(false);
@@ -108,12 +108,11 @@ export default function Battle() {
   const [opponentIsSummoned, setOpponentisSummoned] = useState(false);
   const [eventQueue, setEventQueue] = useState<Event[]>([]);
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null);
-
+  const isAnimating = currentEvent !== null;
   const [isGameOver, setIsGameOver] = useState(false);
   const [gameOverMessage, setGameOverMessage] = useState("");
   const [winningTeam, setWinningTeam] = useState<string[]>([]);
   const [winnerName, setWinnerName] = useState("");
-
   const [battleStarted, setBattleStarted] = useState(false);
 
   const bgImages = [bg1, bg2, bg3, bg4, bg5, bg6, bg7, bg8, bg9];
@@ -129,7 +128,7 @@ export default function Battle() {
     function onGameStart(data: any) {
       const { events, bgIndex } = data;
       setEventQueue(events);
-      setbattleBg(bgImages[bgIndex]);
+      setBattleBg(bgImages[bgIndex]);
       setBattleStarted(true);
     }
 
@@ -249,7 +248,7 @@ export default function Battle() {
     socket.on("requestFaintedSwitch", onRequestFaintedSwitch);
     socket.on("waitForFaintedSwitch", onWaitForFaintedSwitch);
     socket.on("endGame", onEndGame);
-    socket.on("gameOver", ({ message, team}) => {
+    socket.on("gameOver", ({ message, team }) => {
       setGameOverMessage(message);
       setWinningTeam(team);
 
@@ -258,7 +257,6 @@ export default function Battle() {
 
       setIsGameOver(true);
     });
-    
 
     return () => {
       socket.off("gameStart", onGameStart);
@@ -266,7 +264,7 @@ export default function Battle() {
       socket.off("nextOptions", onNextOptions);
       socket.off("turnSummary", onTurnSummary);
       socket.off("requestFaintedSwitch", onRequestFaintedSwitch);
-      socket.off("waitForFaintedSwitch");
+      socket.off("waitForFaintedSwitch", onWaitForFaintedSwitch);
       socket.off("endGame", onEndGame);
     };
   }, [socket, navigate, selfCurrent.name]);
@@ -278,21 +276,23 @@ export default function Battle() {
       setStatus(eventQueue[0].message);
 
       if (eventQueue[0].animation === "switch") {
+        const newPokemonData = {
+          name: eventQueue[0].switchData.name,
+          hp: eventQueue[0].switchData.hp,
+          maxHP: eventQueue[0].switchData.maxHP,
+          backSprite: eventQueue[0].switchData.backSprite,
+          frontSprite: eventQueue[0].switchData.frontSprite,
+        };
+
+        eventQueue[0].user === "self" ? setSelfCurrent(newPokemonData) : setOpponentCurrent(newPokemonData);
+      } else if (eventQueue[0].animation === "attack") {
         if (eventQueue[0].user === "self") {
-          setSelfCurrent({
-            name: eventQueue[0].switchData.name,
-            hp: eventQueue[0].switchData.hp,
-            maxHP: eventQueue[0].switchData.maxHP,
-            backSprite: eventQueue[0].switchData.backSprite,
-            frontSprite: eventQueue[0].switchData.frontSprite,
+          setOpponentCurrent((prev) => {
+            return { ...prev, hp: eventQueue[0].attackData.newHP };
           });
         } else {
-          setOpponentCurrent({
-            name: eventQueue[0].switchData.name,
-            hp: eventQueue[0].switchData.hp,
-            maxHP: eventQueue[0].switchData.maxHP,
-            backSprite: eventQueue[0].switchData.backSprite,
-            frontSprite: eventQueue[0].switchData.frontSprite,
+          setSelfCurrent((prev) => {
+            return { ...prev, hp: eventQueue[0].attackData.newHP };
           });
         }
       }
@@ -318,16 +318,15 @@ export default function Battle() {
   };
   const cancelQuit = () => setShowQuitConfirm(false);
 
-  return (
-    isGameOver ? (
-      <EndGameBox
-        message={gameOverMessage}
-        team={winningTeam}
-        playerName={winnerName}
-        background={battleBg}
-        onClose={() => navigate("/")}
-      />
-    ) : (
+  return isGameOver ? (
+    <EndGameBox
+      message={gameOverMessage}
+      team={winningTeam}
+      playerName={winnerName}
+      background={battleBg}
+      onClose={() => navigate("/")}
+    />
+  ) : (
     <div className="relative w-screen h-screen overflow-hidden grid grid-rows-[1fr_4fr_1fr]">
       {/* Background */}
       <img
@@ -342,7 +341,7 @@ export default function Battle() {
         <StatsCard
           name={opponentCurrent.name || "Loading..."}
           image={opponentCurrent.frontSprite}
-          hp={opponentCurrent.hp || 0}
+          HP={opponentCurrent.hp || 0}
           maxHP={opponentCurrent.maxHP || 100}
         />
       </div>
@@ -465,6 +464,7 @@ export default function Battle() {
               onSelect={(mode) => setActionMode(mode)}
               onQuit={handleQuit}
               isFainted={actionMode === "faint"}
+              disabled={isAnimating}
             />
           </div>
 
@@ -474,7 +474,7 @@ export default function Battle() {
               key={selfCurrent.name} // re-render
               name={selfCurrent.name}
               image={selfCurrent.frontSprite}
-              hp={selfCurrent.hp}
+              HP={selfCurrent.hp}
               maxHP={selfCurrent.maxHP}
             />
           </div>
@@ -482,12 +482,7 @@ export default function Battle() {
       </div>
 
       {/* Quit Message */}
-      {showQuitConfirm && 
-        <QuitBattleBox 
-          onConfirm={confirmQuit} 
-          onCancel={cancelQuit} 
-        />}
+      {showQuitConfirm && <QuitBattleBox onConfirm={confirmQuit} onCancel={cancelQuit} />}
     </div>
-    )
   );
 }
