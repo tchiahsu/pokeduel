@@ -276,7 +276,7 @@ export default function Battle() {
       setStatus(eventQueue[0].message);
 
       if (eventQueue[0].animation === "switch") {
-        const switchData = {
+        const newPokemonData = {
           name: eventQueue[0].switchData.name,
           hp: eventQueue[0].switchData.hp,
           maxHP: eventQueue[0].switchData.maxHP,
@@ -284,7 +284,17 @@ export default function Battle() {
           frontSprite: eventQueue[0].switchData.frontSprite,
         };
 
-        eventQueue[0].user === "self" ? setSelfCurrent(switchData) : setOpponentCurrent(switchData);
+        eventQueue[0].user === "self" ? setSelfCurrent(newPokemonData) : setOpponentCurrent(newPokemonData);
+      } else if (eventQueue[0].animation === "attack") {
+        if (eventQueue[0].user === "self") {
+          setOpponentCurrent((prev) => {
+            return { ...prev, hp: eventQueue[0].attackData.newHP };
+          });
+        } else {
+          setSelfCurrent((prev) => {
+            return { ...prev, hp: eventQueue[0].attackData.newHP };
+          });
+        }
       }
 
       if (eventQueue[0].animation === "none") {
@@ -331,7 +341,7 @@ export default function Battle() {
         <StatsCard
           name={opponentCurrent.name || "Loading..."}
           image={opponentCurrent.frontSprite}
-          hp={opponentCurrent.hp || 0}
+          HP={opponentCurrent.hp || 0}
           maxHP={opponentCurrent.maxHP || 100}
         />
       </div>
@@ -464,7 +474,7 @@ export default function Battle() {
               key={selfCurrent.name} // re-render
               name={selfCurrent.name}
               image={selfCurrent.frontSprite}
-              hp={selfCurrent.hp}
+              HP={selfCurrent.hp}
               maxHP={selfCurrent.maxHP}
             />
           </div>

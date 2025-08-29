@@ -346,14 +346,14 @@ export default class BattleModel {
       return;
     }
 
-    // Add attack message from pokemon
-    const message = `${attackingPokemon.getName()} used ${move.getName()}!`;
-    this.events.push(this.createEvent(playerID, "attack", message));
-
     // Attack flow
     const damage: number = this.battleUtils.calculateDamage(attackingPokemon, move, defendingPokemon);
     move.reducePP();
     defendingPokemon.takeDamage(damage);
+
+    // Add attack message from pokemon
+    const message = `${attackingPokemon.getName()} used ${move.getName()}!`;
+    this.events.push(this.createEvent(playerID, "attack", message));
 
     // Display messages related to attack damage
     this.battleUtils.getModiferMessages().forEach((modifierMessage: string) => {
@@ -434,6 +434,9 @@ export default class BattleModel {
     const { player, playerMove } = this.getPlayerAndMoveByID(currentPlayer);
     const playerPokemon = player.getCurrentPokemon();
     const pokemonMove = playerPokemon.getMove(playerMove?.index) ?? null;
+    const oppositeID = this.getOppositePlayer(currentPlayer);
+    const { player: oppositePlayer } = this.getPlayerAndMoveByID(oppositeID);
+    const oppositePokemon = oppositePlayer.getCurrentPokemon();
 
     const event: Event = {
       user: currentPlayer,
@@ -446,7 +449,7 @@ export default class BattleModel {
 
     if (action === "attack" && pokemonMove) {
       event.attackData.type = pokemonMove.getType();
-      event.attackData.newHP = 0;
+      event.attackData.newHP = oppositePokemon.getHP();
     } else if (action === "switch") {
       event.switchData.name = playerPokemon.getName();
       event.switchData.hp = playerPokemon.getHP();
