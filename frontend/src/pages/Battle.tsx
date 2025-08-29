@@ -251,7 +251,7 @@ export default function Battle() {
       socket.off("nextOptions", onNextOptions);
       socket.off("turnSummary", onTurnSummary);
       socket.off("requestFaintedSwitch", onRequestFaintedSwitch);
-      socket.off("waitForFaintedSwitch");
+      socket.off("waitForFaintedSwitch", onWaitForFaintedSwitch);
       socket.off("endGame", onEndGame);
     };
   }, [socket, navigate, selfCurrent.name]);
