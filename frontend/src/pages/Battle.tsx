@@ -6,7 +6,6 @@ import { useSocket } from "../contexts/SocketContext";
 import bg1 from "../assets/bg_3.webp";
 import bg2 from "../assets/bg_2.jpg";
 import bg3 from "../assets/bg-battle.jpg";
-// import bg4 from "../assets/bg-hill.jpg";
 import bg4 from "../assets/bg-dark-forest.jpg";
 import bg5 from "../assets/bg-forrest.jpg";
 import bg6 from "../assets/bg-park2.jpg";
@@ -18,6 +17,7 @@ import BattleActionsPanel from "../components/BattlePage/BattleActionsPanel";
 import BattleDisplayPanel from "../components/BattlePage/BattleDisplayPanel";
 import ActivePokeCount from "../components/BattlePage/ActivePokeCount";
 import QuitBattleBox from "../components/BattlePage/QuitBattleBox";
+import EndGameBox from "../components/BattlePage/EndGameBox";
 import SelfSwitchAnimation from "../components/animations/SelfSwitchAnimation";
 import OpponentSwitchAnimation from "../components/animations/OpponentSwitchAnimation";
 import SelfAttackAnimation from "../components/animations/SelfAttackAnimation";
@@ -108,6 +108,11 @@ export default function Battle() {
   const [opponentIsSummoned, setOpponentisSummoned] = useState(false);
   const [eventQueue, setEventQueue] = useState<Event[]>([]);
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null);
+
+  const [isGameOver, setIsGameOver] = useState(false);
+  const [gameOverMessage, setGameOverMessage] = useState("");
+  const [winningTeam, setWinningTeam] = useState<string[]>([]);
+  const [winnerName, setWinnerName] = useState("");
 
   const [battleStarted, setBattleStarted] = useState(false);
 
@@ -229,12 +234,12 @@ export default function Battle() {
     }
 
     /**
-     * Handles endGame event from the server.
+     * Handles endGame event from the server if one player disconnects.
      * @param data containing the game over message
      */
     function onEndGame(data: any) {
       alert(data.message);
-      navigate("/"); // to be changed to a pop-up that navigates to summary page
+      navigate("/"); // to be changed to a pop-up with a go to home option
     }
 
     socket.on("gameStart", onGameStart);
@@ -244,6 +249,16 @@ export default function Battle() {
     socket.on("requestFaintedSwitch", onRequestFaintedSwitch);
     socket.on("waitForFaintedSwitch", onWaitForFaintedSwitch);
     socket.on("endGame", onEndGame);
+    socket.on("gameOver", ({ message, team}) => {
+      setGameOverMessage(message);
+      setWinningTeam(team);
+
+      const winner = message.split(" ")[0];
+      setWinnerName(winner);
+
+      setIsGameOver(true);
+    });
+    
 
     return () => {
       socket.off("gameStart", onGameStart);
@@ -304,6 +319,15 @@ export default function Battle() {
   const cancelQuit = () => setShowQuitConfirm(false);
 
   return (
+    isGameOver ? (
+      <EndGameBox
+        message={gameOverMessage}
+        team={winningTeam}
+        playerName={winnerName}
+        background={battleBg}
+        onClose={() => navigate("/")}
+      />
+    ) : (
     <div className="relative w-screen h-screen overflow-hidden grid grid-rows-[1fr_4fr_1fr]">
       {/* Background */}
       <img
@@ -458,7 +482,12 @@ export default function Battle() {
       </div>
 
       {/* Quit Message */}
-      {showQuitConfirm && <QuitBattleBox onConfirm={confirmQuit} onCancel={cancelQuit} />}
+      {showQuitConfirm && 
+        <QuitBattleBox 
+          onConfirm={confirmQuit} 
+          onCancel={cancelQuit} 
+        />}
     </div>
+    )
   );
 }

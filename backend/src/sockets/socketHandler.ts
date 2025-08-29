@@ -3,6 +3,37 @@ import RoomManager from "../services/RoomManager.js";
 import BattleModel from "../model/BattleModel.js";
 
 export default function registerSocketHandlers(io: Server, roomManager: RoomManager) {
+  //function to check if the game is over
+  function checkGameOver(battleModel: BattleModel, io: Server) {
+    if (!battleModel.isGameOver()) {
+      return false;
+    } else {
+      let winnerID: string;
+      let winnerPlayer: string;
+      let winnerTeam: string[] = [];
+
+      const p1ID = battleModel.getPlayer1ID();
+      const p2ID = battleModel.getPlayer2ID();
+      const { player: player1 } = battleModel.getPlayerAndMoveByID(p1ID);
+      const { player: player2 } = battleModel.getPlayerAndMoveByID(p2ID);
+
+      if (!player1.hasRemainingPokemon()) {
+        winnerID = battleModel.getOppositePlayer(p2ID);
+        winnerPlayer = player2.getName();
+        winnerTeam = player2.getTeam().map(poke => poke.getFrontSprite());
+      } else { //player 2 has no remaining pokemon
+        winnerID = battleModel.getOppositePlayer(p1ID);
+        winnerPlayer = player1.getName();
+        winnerTeam = player1.getTeam().map(poke => poke.getFrontSprite());
+      }
+      const message = `${winnerPlayer} has won!`;
+
+      io.to(p1ID).emit("gameOver", { message, team: winnerTeam });
+      io.to(p2ID).emit("gameOver", { message, team: winnerTeam });
+      return true;
+    }
+  }
+
   io.on("connection", (socket) => {
     console.log(`Player ${socket.id} has connected`);
 
@@ -52,6 +83,7 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
 
       if (roomManager.isSinglePlayerRoom(roomID)) {
         battleModel.addBotAttackMove();
+        // checkGameOver(battleModel, io);
       }
 
       if (battleModel.isReadyToHandleTurn()) {
@@ -64,6 +96,8 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
         io.to(player1ID).emit("turnSummary", turnSummary[player1ID]);
         io.to(player2ID).emit("turnSummary", turnSummary[player2ID]);
 
+        checkGameOver(battleModel, io);
+
         // Check if someone has fainted
         if (battleModel.hasFaintedPlayers()) {
           const [faintedPlayer1, faintedPlayer2] = battleModel.getFaintedPlayers();
@@ -72,18 +106,37 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
           if (roomManager.isSinglePlayerRoom(roomID)) {
             if (faintedPlayer1 && faintedPlayer2) {
               if (battleModel.isBotPlayer(faintedPlayer1)) {
+                const { player: botPlayer } = battleModel.getPlayerAndMoveByID(faintedPlayer1);
                 io.to(faintedPlayer2).emit("requestFaintedSwitch", battleModel.getSwitchOptions(faintedPlayer2));
+
+                if (botPlayer.hasRemainingPokemon()) {
+                  battleModel.addBotSwitchMove();
+                } else {
+                  checkGameOver(battleModel, io);
+                }
               } else {
                 io.to(faintedPlayer1).emit("requestFaintedSwitch", battleModel.getSwitchOptions(faintedPlayer1));
+                const { player: botPlayer } = battleModel.getPlayerAndMoveByID(faintedPlayer2);
+                if (botPlayer.hasRemainingPokemon()) {
+                  battleModel.addBotSwitchMove();
+                } else {
+                  checkGameOver(battleModel, io);
+                }
               }
-              battleModel.addBotSwitchMove();
+              // battleModel.addBotSwitchMove();
+              // checkGameOver(battleModel, io);
             } else {
               if (battleModel.isBotPlayer(faintedPlayer1)) {
-                battleModel.addBotSwitchMove();
-                battleModel.handleFaintedSwitch();
-                const alivePlayer = battleModel.getOppositePlayer(faintedPlayer1);
-                const turnSummary = battleModel.getTurnSummary();
-                io.to(alivePlayer).emit("turnSummary", turnSummary[alivePlayer]);
+                const { player: botPlayer } = battleModel.getPlayerAndMoveByID(faintedPlayer1);
+                if (botPlayer.hasRemainingPokemon()) {
+                  battleModel.addBotSwitchMove();
+                  battleModel.handleFaintedSwitch();
+                  const alivePlayer = battleModel.getOppositePlayer(faintedPlayer1);
+                  const turnSummary = battleModel.getTurnSummary();
+                  io.to(alivePlayer).emit("turnSummary", turnSummary[alivePlayer]);
+                } else {
+                  checkGameOver(battleModel, io);
+                }
                 // const currentState = battleModel.getCurrentState();
                 // io.to(alivePlayer).emit("currentState", currentState[alivePlayer]);
                 // const nextOptions = battleModel.getNextOptions();
@@ -106,7 +159,6 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
               message: `Waiting for other player to switch pokemon`,
             });
           }
-
           return;
         }
       }
@@ -139,6 +191,8 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
         // Send turn summary to each player
         io.to(player1ID).emit("turnSummary", turnSummary[player1ID]);
         io.to(player2ID).emit("turnSummary", turnSummary[player2ID]);
+
+        checkGameOver(battleModel, io);
 
         // Send out the new state and the next options to each player
         // const currentState = battleModel.getCurrentState();
