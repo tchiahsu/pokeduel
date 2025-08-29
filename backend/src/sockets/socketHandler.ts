@@ -4,34 +4,32 @@ import BattleModel from "../model/BattleModel.js";
 
 export default function registerSocketHandlers(io: Server, roomManager: RoomManager) {
   //function to check if the game is over
-  function checkGameOver(battleModel: BattleModel, io: Server) {
-    if (!battleModel.isGameOver()) {
-      return false;
-    } else {
-      let winnerID: string;
-      let winnerPlayer: string;
-      let winnerTeam: string[] = [];
+  function checkGameOver(battleModel: BattleModel): boolean {
+    if (battleModel.isGameOver()) {
+      let winningPlayer: string;
+      let winningTeam: string[] = [];
 
-      const p1ID = battleModel.getPlayer1ID();
-      const p2ID = battleModel.getPlayer2ID();
-      const { player: player1 } = battleModel.getPlayerAndMoveByID(p1ID);
-      const { player: player2 } = battleModel.getPlayerAndMoveByID(p2ID);
+      const player1ID = battleModel.getPlayer1ID();
+      const player2ID = battleModel.getPlayer2ID();
+      const { player: player1 } = battleModel.getPlayerAndMoveByID(player1ID);
+      const { player: player2 } = battleModel.getPlayerAndMoveByID(player2ID);
 
-      if (!player1.hasRemainingPokemon()) {
-        winnerID = battleModel.getOppositePlayer(p2ID);
-        winnerPlayer = player2.getName();
-        winnerTeam = player2.getTeam().map(poke => poke.getFrontSprite());
-      } else { //player 2 has no remaining pokemon
-        winnerID = battleModel.getOppositePlayer(p1ID);
-        winnerPlayer = player1.getName();
-        winnerTeam = player1.getTeam().map(poke => poke.getFrontSprite());
+      if (player1.hasRemainingPokemon()) {
+        winningPlayer = player1.getName();
+        winningTeam = player1.getTeam().map((pokemon) => pokemon.getFrontSprite());
+      } else {
+        //player 2 has no remaining pokemon
+        winningPlayer = player2.getName();
+        winningTeam = player2.getTeam().map((pokemon) => pokemon.getFrontSprite());
       }
-      const message = `${winnerPlayer} has won!`;
+      const message = `${winningPlayer} has won!`;
 
-      io.to(p1ID).emit("gameOver", { message, team: winnerTeam });
-      io.to(p2ID).emit("gameOver", { message, team: winnerTeam });
+      io.to(player1ID).emit("gameOver", { message, team: winningTeam });
+      io.to(player2ID).emit("gameOver", { message, team: winningTeam });
       return true;
     }
+
+    return false;
   }
 
   io.on("connection", (socket) => {
@@ -63,15 +61,6 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
         const startSummary = battleModel.getStartSummary();
         io.to(player1ID).emit("gameStart", startSummary[player1ID]);
         io.to(player2ID).emit("gameStart", startSummary[player2ID]);
-
-        // const currentState = battleModel.getCurrentState();
-        // const nextOptions = battleModel.getNextOptions();
-
-        // io.to(player1ID).emit("currentState", currentState[player1ID]);
-        // io.to(player2ID).emit("currentState", currentState[player2ID]);
-
-        // io.to(player1ID).emit("nextOptions", nextOptions[player1ID]);
-        // io.to(player2ID).emit("nextOptions", nextOptions[player2ID]);
       }
     });
 
@@ -96,7 +85,7 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
         io.to(player1ID).emit("turnSummary", turnSummary[player1ID]);
         io.to(player2ID).emit("turnSummary", turnSummary[player2ID]);
 
-        checkGameOver(battleModel, io);
+        checkGameOver(battleModel);
 
         // Check if someone has fainted
         if (battleModel.hasFaintedPlayers()) {
@@ -109,18 +98,14 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
                 const { player: botPlayer } = battleModel.getPlayerAndMoveByID(faintedPlayer1);
                 io.to(faintedPlayer2).emit("requestFaintedSwitch", battleModel.getSwitchOptions(faintedPlayer2));
 
-                if (botPlayer.hasRemainingPokemon()) {
-                  battleModel.addBotSwitchMove();
-                } else {
-                  checkGameOver(battleModel, io);
-                }
+                botPlayer.hasRemainingPokemon() ? battleModel.addBotSwitchMove() : checkGameOver(battleModel);
               } else {
                 io.to(faintedPlayer1).emit("requestFaintedSwitch", battleModel.getSwitchOptions(faintedPlayer1));
                 const { player: botPlayer } = battleModel.getPlayerAndMoveByID(faintedPlayer2);
                 if (botPlayer.hasRemainingPokemon()) {
                   battleModel.addBotSwitchMove();
                 } else {
-                  checkGameOver(battleModel, io);
+                  checkGameOver(battleModel);
                 }
               }
               // battleModel.addBotSwitchMove();
@@ -135,12 +120,8 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
                   const turnSummary = battleModel.getTurnSummary();
                   io.to(alivePlayer).emit("turnSummary", turnSummary[alivePlayer]);
                 } else {
-                  checkGameOver(battleModel, io);
+                  checkGameOver(battleModel);
                 }
-                // const currentState = battleModel.getCurrentState();
-                // io.to(alivePlayer).emit("currentState", currentState[alivePlayer]);
-                // const nextOptions = battleModel.getNextOptions();
-                // io.to(alivePlayer).emit("nextOptions", nextOptions[alivePlayer]);
               } else {
                 io.to(faintedPlayer1).emit("requestFaintedSwitch", battleModel.getSwitchOptions(faintedPlayer1));
               }
@@ -192,16 +173,7 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
         io.to(player1ID).emit("turnSummary", turnSummary[player1ID]);
         io.to(player2ID).emit("turnSummary", turnSummary[player2ID]);
 
-        checkGameOver(battleModel, io);
-
-        // Send out the new state and the next options to each player
-        // const currentState = battleModel.getCurrentState();
-        // const nextOptions = battleModel.getNextOptions();
-
-        // io.to(player1ID).emit("currentState", currentState[player1ID]);
-        // io.to(player2ID).emit("currentState", currentState[player2ID]);
-        // io.to(player1ID).emit("nextOptions", nextOptions[player1ID]);
-        // io.to(player2ID).emit("nextOptions", nextOptions[player2ID]);
+        checkGameOver(battleModel);
       }
     });
 
