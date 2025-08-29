@@ -84,7 +84,7 @@ export default function Battle() {
   const [selfCurrent, setSelfCurrent] = useState<TeamMember>({
     name: "",
     hp: 0,
-    maxHP: 100,
+    maxHP: 0,
     backSprite: "",
     frontSprite: "",
   });
@@ -92,7 +92,7 @@ export default function Battle() {
   const [opponentCurrent, setOpponentCurrent] = useState<TeamMember>({
     name: "",
     hp: 0,
-    maxHP: 100,
+    maxHP: 0,
     backSprite: "",
     frontSprite: "",
   });
@@ -180,7 +180,7 @@ export default function Battle() {
       const nextTeam: TeamMember[] = data.pokemon.map((pokemon: any) => ({
         name: pokemon.name,
         hp: pokemon.hp,
-        maxHP: pokemon.maxHP || 100,
+        maxHP: pokemon.maxHP,
         frontSprite: pokemon.sprite,
         isCurrent: pokemon.isCurrent,
       }));
@@ -342,7 +342,7 @@ export default function Battle() {
           name={opponentCurrent.name || "Loading..."}
           image={opponentCurrent.frontSprite}
           HP={opponentCurrent.hp || 0}
-          maxHP={opponentCurrent.maxHP || 100}
+          maxHP={opponentCurrent.maxHP}
         />
       </div>
 
