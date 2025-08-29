@@ -19,6 +19,7 @@ const InputBox = ({ placeholder = "Enter text", value, onChange, onEnter }: Inpu
             type="text"
             placeholder={placeholder}
             value={value}
+            maxLength={12}
             onChange={onChange}
             onKeyDown={(e) => {
                 if (onEnter && e.key === "Enter") {
