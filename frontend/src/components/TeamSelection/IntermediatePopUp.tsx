@@ -5,10 +5,9 @@ import pokeball from "../../assets/poke_pixel.png";
 
 type IntermediateProp = {
   isVisible: boolean;
-  changePlayerStatus: (value: boolean) => void;
 };
 
-const IntermediatePopUp = ({ isVisible, changePlayerStatus }: IntermediateProp) => {
+const IntermediatePopUp = ({ isVisible }: IntermediateProp) => {
   // control sequential animations
   const animation = useAnimation();
 
@@ -76,7 +75,7 @@ const IntermediatePopUp = ({ isVisible, changePlayerStatus }: IntermediateProp) 
         </p>
 
         {/* Exit Back to Team Selection */}
-        <Button onClick={() => changePlayerStatus(false)}>
+        <Button>
           Back
         </Button>
       </div>

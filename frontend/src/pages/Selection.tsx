@@ -37,7 +37,6 @@ export default function Selection({ list }: SelectionProps) {
     const [pokemonTeam, setPokemonTeam] = useState<Record<string, string[]>>({});
     const [teamSprites, setTeamSprites] = useState<Record<string, string>>({});
     const [leadPokemon, setLeadPokemon] = useState<string | null>(null);
-    const [playerReady, setPlayerReady] = useState(false);
     const [waitingScreen, setWaitingScreen] = useState(false);
 
     const socket = useSocket();
@@ -220,10 +219,8 @@ export default function Selection({ list }: SelectionProps) {
     useEffect(() => {
         const onWaiting = () => setWaitingScreen(true);
         const onGameStart = () => {
-            setTimeout(() => {
-                setWaitingScreen(false);
-                navigate(`/battle/${roomId}`);
-            }, 3000);
+            setWaitingScreen(false);
+            navigate(`/battle/${roomId}`);
         };
 
         socket.on("waitingForPlayer", onWaiting);
@@ -240,8 +237,7 @@ export default function Selection({ list }: SelectionProps) {
 
     return (
         <div className="relative min-h-screen min-w-screen flex flex-col">
-            {waitingScreen && mode === "multiplayer" && <IntermediatePopUp isVisible={true}
-                                                                           changePlayerStatus={setPlayerReady} />}
+            {waitingScreen && mode === "multiplayer" && <IntermediatePopUp isVisible={true} />}
             <img
                 src={selectionBg}
                 className="absolute inset-0 w-full h-full object-cover opacity-50 z-0"
