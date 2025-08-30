@@ -72,6 +72,8 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
 
         io.to(player1ID).emit("nextOptions", nextOptions[player1ID]);
         io.to(player2ID).emit("nextOptions", nextOptions[player2ID]);
+      } else {
+        io.to(socket.id).emit("waitingForPlayer", { message: "Waiting for the second player to join..." });
       }
     });
 

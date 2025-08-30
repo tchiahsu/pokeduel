@@ -38,6 +38,7 @@ export default function Selection({ list }: SelectionProps) {
     const [teamSprites, setTeamSprites] = useState<Record<string, string>>({});
     const [leadPokemon, setLeadPokemon] = useState<string | null>(null);
     const [playerReady, setPlayerReady] = useState(false);
+    const [waitingScreen, setWaitingScreen] = useState(false);
 
     const socket = useSocket();
     const navigate = useNavigate();
@@ -183,15 +184,16 @@ export default function Selection({ list }: SelectionProps) {
             return;
         }
 
-        // CHECK IF THERE IS ANOTHER PLAYER IN THE ROOM ALREADY
-        // IF NOT, SHOW THE SCREEN
-        setPlayerReady(true);
-        // IF YES, GO TO GAME
-
         const orderedTeam = addLeadToStart(pokemonTeam, leadPokemon);
+
+        if (mode === "multiplayer") setWaitingScreen(true);
+
         console.log("emit setPlayer", { name: playerName, teamSelection: orderedTeam })
-        // socket.emit("setPlayer", { name: playerName, teamSelection: orderedTeam });
-        // navigate(`/battle/${roomId}`);
+        socket.emit("setPlayer", { name: playerName, teamSelection: orderedTeam });
+
+        if (mode !== "multiplayer") {
+            navigate(`/battle/${roomId}`);
+        }
     };
 
     // Copy the text to system
@@ -212,12 +214,34 @@ export default function Selection({ list }: SelectionProps) {
         }
     }, [searchTerm]);
 
+    /**
+     * Displays the intermediate page while player waits for the other player to start battle
+     */
+    useEffect(() => {
+        const onWaiting = () => setWaitingScreen(true);
+        const onGameStart = () => {
+            setTimeout(() => {
+                setWaitingScreen(false);
+                navigate(`/battle/${roomId}`);
+            }, 3000);
+        };
+
+        socket.on("waitingForPlayer", onWaiting);
+        socket.on("gameStart", onGameStart);
+
+        return () => {
+            socket.off("waitingForPlayer", onWaiting);
+            socket.off("gameStart", onGameStart);
+        };
+    }, [socket, navigate, roomId])
+
     // Display the single pokemon fetches the list of pokemon
     const displayList = fetchedPokemon ? [fetchedPokemon] : list
 
     return (
         <div className="relative min-h-screen min-w-screen flex flex-col">
-            {playerReady && mode === "multiplayer" && <IntermediatePopUp isVisible={true} changePlayerStatus={setPlayerReady} />}
+            {waitingScreen && mode === "multiplayer" && <IntermediatePopUp isVisible={true}
+                                                                           changePlayerStatus={setPlayerReady} />}
             <img
                 src={selectionBg}
                 className="absolute inset-0 w-full h-full object-cover opacity-50 z-0"
