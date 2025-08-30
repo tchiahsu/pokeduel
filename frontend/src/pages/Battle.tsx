@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { handleDeleteRoom } from "../utils/handleSocket";
 import { useSocket } from "../contexts/SocketContext";
+import type { Event, attackData, switchData } from "../types/data";
 
 import bg1 from "../assets/bg_3.webp";
 import bg2 from "../assets/bg_2.jpg";
@@ -12,6 +13,7 @@ import bg6 from "../assets/bg-park2.jpg";
 import bg7 from "../assets/bg-path.jpg";
 import bg8 from "../assets/bg-snow.jpg";
 import bg9 from "../assets/bg-lava.jpg";
+
 import StatsCard from "../components/BattlePage/StatsCard";
 import BattleActionsPanel from "../components/BattlePage/BattleActionsPanel";
 import BattleDisplayPanel from "../components/BattlePage/BattleDisplayPanel";
@@ -45,29 +47,6 @@ interface TeamMember {
   backSprite: string;
   frontSprite: string;
 }
-
-/**
- * A type representing an event in the battle (attack, switch, faint, or status effect).
- * Used to animate battle actions and display messages to the players.
- */
-type Event = {
-  user: string; // "self" | "opponent"
-  animation: string; // "attack" | "switch" | "status" | "faint" | "none"
-  message: string;
-  attackData: attackData;
-  switchData: switchData;
-  onComplete?: () => void;
-};
-
-type attackData = { newHP: number; type: string };
-
-type switchData = {
-  name: string;
-  hp: number;
-  maxHP: number;
-  backSprite: string;
-  frontSprite: string;
-};
 
 /**
  * Battle Screen for handling game play.
@@ -197,7 +176,7 @@ export default function Battle() {
       setEventQueue((prevEvents) => [...prevEvents, ...events]);
     }
 
-    function onRequestFaintedSwitch(data: any) {
+    function onRequestFaintedSwitch() {
       setEventQueue((events) => [
         ...events,
         {
