@@ -5,9 +5,11 @@ import pokeball from "../../assets/poke_pixel.png";
 
 type IntermediateProp = {
   isVisible: boolean;
+  message?: string | null;
+  onClick: () => void;
 };
 
-const IntermediatePopUp = ({ isVisible }: IntermediateProp) => {
+const IntermediatePopUp = ({ isVisible, message, onClick }: IntermediateProp) => {
   // control sequential animations
   const animation = useAnimation();
 
@@ -71,12 +73,12 @@ const IntermediatePopUp = ({ isVisible }: IntermediateProp) => {
 
         {/* Waiting for Game Message */}
         <p className="text-lg font-semibold text-gray-700 pointer-events-none">
-          Waiting for opponent to start...
+          {message}
         </p>
 
         {/* Exit Back to Team Selection */}
-        <Button>
-          Back
+        <Button onClick={onClick}>
+          Quit Game
         </Button>
       </div>
     </div>
