@@ -1,7 +1,7 @@
 import type { Pokemon } from '../types/pokemon'
 
 // Base URL for the backend server
-const API_URL_BASE = 'http://localhost:8000';
+const API_URL_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
 /**
  * Fetches the stats for a specific pokemon by name
