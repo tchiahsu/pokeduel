@@ -69,7 +69,7 @@ export default function Multiplayer() {
 
     if (mode === "join") {
       try {
-        const response = await fetch(`http://localhost:8000/room/${roomID}`);
+        const response = await fetch(`${API_URL_BASE}/${roomID}`);
 
         if (!response.ok) {
           const data = await response.json();
