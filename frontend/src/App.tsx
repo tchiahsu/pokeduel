@@ -16,7 +16,7 @@ const socket: Socket = io(API_URL_BASE);
 
 function App() {
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
-  const mode: "singleplayer" | "multiplayer" = "multiplayer";
+  // const mode: "singleplayer" | "multiplayer" = "multiplayer";
   // Fetch the pokemon into the frontend
   useEffect(() => {
     async function fetchPokemon() {
