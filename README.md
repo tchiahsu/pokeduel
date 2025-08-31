@@ -11,14 +11,14 @@
 
 ## About the Game
 
-**PokeDuel** is a turn-based Pokemon-inspired battle game where players can challenge friends or test their skills against the computer. Built as a full-stack project, it replicates the excitemenet of Pokemon-style battles while showcasing modern web technologies.
+**PokeDuel** is a turn-based Pokemon inspired battle game where players can challenge friends or test their skills against the computer. Built as a full-stack project, it replicates the excitement of Pokemon style battles while showcasing modern web technologies.
 
 ## Gameplay
 
 ### Core Mechanics
 - Choose **up to 6 Pokemon** to form your team.
 - Each Pokemon has **up to 4 unique moves.**
-- Battles are **1v1 turn-based**. Turn is determined by **attack speed**.
+- Battles are **1v1 turn-based** and turn is determined by **attack speed**.
 - Players can **switch Pokemon** during their turn (switching has priority).
 - **Victory Condition**: Knock out all opposing Pokemon.
   
