@@ -22,7 +22,7 @@ app.use("/pokemon", pokemonRouter);
 app.use("/moves", moveRouter);
 
 server.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}/`);
+  console.log(`Server running on Render at port ${PORT}`);
 });
 
 registerSocketHandlers(io, roomManager);
