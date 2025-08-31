@@ -1,6 +1,6 @@
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
-import { fetchPokemonData } from '../utils/searchAPI';
+import { fetchPokemonData } from '../utils/SearchAPI';
 import { useSocket } from "../contexts/SocketContext";
 import { shake } from "../utils/effects";
 import type { Pokemon } from '../types/pokemon'
@@ -17,7 +17,7 @@ import TeamButton from '../components/TeamSelection/TeamButton';
 import IntermediatePopUp from '../components/TeamSelection/IntermediatePopUp';
 
 // Base URL for the backend server
-const API_URL_BASE = 'http://localhost:8000';
+const API_URL_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
 /**
  * Props for the Selection page:

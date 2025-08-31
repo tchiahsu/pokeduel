@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { useSocket } from "../contexts/SocketContext";
 
 export default function Multiplayer() {
-  const API_URL_BASE = "http://localhost:8000/room";
+  const API_URL_BASE = (import.meta.env.VITE_BACKEND_URL ?? "http://localhost:8000") + "/room";
   const [playerName, setPlayerName] = useState("");
   const [roomID, setRoomID] = useState("");
   const [mode, setMode] = useState<"create" | "join" | null>(null);

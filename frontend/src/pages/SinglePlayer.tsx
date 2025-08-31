@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { shake } from "../utils/effects";
 
 export default function SinglePlayer() {
-  const API_URL_BASE = "http://localhost:8000/room";
+  const API_URL_BASE = (import.meta.env.VITE_BACKEND_URL ?? "http://localhost:8000") + "/room";
   const [playerName, setPlayerName] = useState("");
   const socket = useSocket();
   const startRef = useRef<HTMLSpanElement>(null);

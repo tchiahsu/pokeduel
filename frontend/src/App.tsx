@@ -11,7 +11,7 @@ import { SocketContext } from "./contexts/SocketContext";
 import "./App.css";
 import type { Pokemon } from "./types/pokemon";
 
-const API_URL_BASE = "http://localhost:8000";
+const API_URL_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 const socket: Socket = io(API_URL_BASE);
 
 function App() {
