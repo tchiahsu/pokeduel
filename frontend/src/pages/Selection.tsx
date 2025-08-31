@@ -14,7 +14,6 @@ import selectionBg from '../assets/bg-field.jpg';
 import Pokedex from '../components/TeamSelection/Pokedex';
 import clsx from 'clsx'
 import TeamButton from '../components/TeamSelection/TeamButton';
-import IntermediatePopUp from '../components/TeamSelection/IntermediatePopUp';
 
 // Base URL for the backend server
 const API_URL_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
@@ -25,11 +24,10 @@ const API_URL_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000"
  */
 type SelectionProps = {
     list: Pokemon[];
-    mode: "singleplayer" | "multiplayer";
 };
 
 // Team Selection Screen
-export default function Selection({ list, mode: propMode }: SelectionProps) {
+export default function Selection({ list }: SelectionProps) {
     const [showPokedex, setShowPokedex] = useState(false)
     const [searchTerm, setSearchTerm] = useState('');
     const [fetchedPokemon, setFetchedPokemon] = useState<Pokemon | null>(null);
@@ -46,7 +44,7 @@ export default function Selection({ list, mode: propMode }: SelectionProps) {
     const anchorRef = useRef<Record<string, HTMLDivElement | null>>({});
     const backRef = useRef<HTMLSpanElement>(null);
 
-    const { playerName } = location.state || {}
+    const { playerName, mode } = location.state || {}
     const { roomId } = useParams();
     const initialMovesForCurrent = currPokemon ? (pokemonTeam[currPokemon.name] ?? []) : [];
 
@@ -184,9 +182,11 @@ export default function Selection({ list, mode: propMode }: SelectionProps) {
         }
 
         const orderedTeam = addLeadToStart(pokemonTeam, leadPokemon);
+
         console.log("emit setPlayer", { name: playerName, teamSelection: orderedTeam })
         socket.emit("setPlayer", { name: playerName, teamSelection: orderedTeam });
-        navigate(`/battle/${roomId}`);
+
+        navigate(`/battle/${roomId}`, { state: { mode } });
     };
 
     // Copy the text to system
@@ -229,9 +229,9 @@ export default function Selection({ list, mode: propMode }: SelectionProps) {
                         </Button>
                     </span>
 
-                    <Button onClick={copy} size="xs">
+                    {mode === "multiplayer" && <Button onClick={copy} size="xs">
                         Copy RoomId
-                    </Button>
+                    </Button>}
 
                     <Button onClick={fetchRandomTeam} size="xs">
                         Randomize Team
@@ -250,7 +250,7 @@ export default function Selection({ list, mode: propMode }: SelectionProps) {
 
                 {/* Left Panel */}
                 <div className="relative w-36 flex flex-col bg-gray-300 ml-6 mr-2 mb-6 rounded-lg opacity-80 items-center">                                                     
-                    <h3 className="sticky top-0 z-10 text-lg font-bold bg-gray-300 pt-3">TEAM</h3>
+                    <h3 className="sticky top-0 z-10 text-lg font-bold bg-gray-300 pt-6">TEAM</h3>
                     {Object.keys(teamSprites).length > 0 && (
                         <div className="grid grid-rows-auto p-3 cursor-pointer">
                             <AnimatePresence initial={false}>

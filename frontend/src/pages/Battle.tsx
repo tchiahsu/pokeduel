@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { handleDeleteRoom } from "../utils/handleSocket";
 import { useSocket } from "../contexts/SocketContext";
+import type { Event, attackData, switchData } from "../types/data";
 
 import bg1 from "../assets/bg_3.webp";
 import bg2 from "../assets/bg_2.jpg";
@@ -12,6 +13,7 @@ import bg6 from "../assets/bg-park2.jpg";
 import bg7 from "../assets/bg-path.jpg";
 import bg8 from "../assets/bg-snow.jpg";
 import bg9 from "../assets/bg-lava.jpg";
+
 import StatsCard from "../components/BattlePage/StatsCard";
 import BattleActionsPanel from "../components/BattlePage/BattleActionsPanel";
 import BattleDisplayPanel from "../components/BattlePage/BattleDisplayPanel";
@@ -24,6 +26,7 @@ import SelfAttackAnimation from "../components/animations/SelfAttackAnimation";
 import OpponentAttackAnimation from "../components/animations/OpponentAttackAnimation";
 import TakeDamageAnimation from "../components/animations/TakeDamageAnimation";
 import FaintAnimation from "../components/animations/FaintAnimation";
+import IntermediatePopUp from "../components/BattlePage/IntermediatePopUp";
 
 /**
  * Represents a move that a current pokemon can use.
@@ -45,29 +48,6 @@ interface TeamMember {
   backSprite: string;
   frontSprite: string;
 }
-
-/**
- * A type representing an event in the battle (attack, switch, faint, or status effect).
- * Used to animate battle actions and display messages to the players.
- */
-type Event = {
-  user: string; // "self" | "opponent"
-  animation: string; // "attack" | "switch" | "status" | "faint" | "none"
-  message: string;
-  attackData: attackData;
-  switchData: switchData;
-  onComplete?: () => void;
-};
-
-type attackData = { newHP: number; type: string };
-
-type switchData = {
-  name: string;
-  hp: number;
-  maxHP: number;
-  backSprite: string;
-  frontSprite: string;
-};
 
 /**
  * Battle Screen for handling game play.
@@ -114,22 +94,45 @@ export default function Battle() {
   const [winningTeam, setWinningTeam] = useState<string[]>([]);
   const [winnerName, setWinnerName] = useState("");
   const [battleStarted, setBattleStarted] = useState(false);
+  const loadingTimeoutRef = useRef<number | null>(null);
 
   const bgImages = [bg1, bg2, bg3, bg4, bg5, bg6, bg7, bg8, bg9];
 
   const navigate = useNavigate();
   const socket = useSocket();
   const { roomId } = useParams();
-  // const location = useLocation();
-
-  // const gameData = (location.state as any)?.gameData;
+  const location = useLocation();
+  const mode = (location.state as { mode?: "singleplayer" | "multiplayer" } | undefined)?.mode ?? "singleplayer";
+  const [isMultiplayer, setIsMultiplayer] = useState(mode === "multiplayer");
+  const [waitingMessage, setWaitingMessage] = useState<string | null>(
+    mode === "multiplayer" ? "Waiting for opponent to join..." : null);
 
   useEffect(() => {
     function onGameStart(data: any) {
       const { events, bgIndex } = data;
-      setEventQueue(events);
+
       setBattleBg(bgImages[bgIndex]);
-      setBattleStarted(true);
+
+      const delay = isMultiplayer ? 3000 : 0;
+      if (isMultiplayer) setWaitingMessage("Loading Battle...");
+
+      const battleStartSequence = () => {
+        setEventQueue(events);
+        setBattleStarted(true);
+        setWaitingMessage(null);
+        loadingTimeoutRef.current = null;
+      }
+      
+      if (delay > 0) {
+        loadingTimeoutRef.current = window.setTimeout(battleStartSequence, delay);
+      } else {
+        battleStartSequence();
+      }
+    }
+
+    function onWaitingForPlayer() {
+      if (!isMultiplayer) setIsMultiplayer(true);
+      if (!battleStarted) setWaitingMessage("Waiting for opponent to join...");
     }
 
     function onCurrentState(data: any) {
@@ -196,7 +199,7 @@ export default function Battle() {
       setEventQueue((prevEvents) => [...prevEvents, ...events]);
     }
 
-    function onRequestFaintedSwitch(data: any) {
+    function onRequestFaintedSwitch() {
       setEventQueue((events) => [
         ...events,
         {
@@ -241,6 +244,7 @@ export default function Battle() {
       navigate("/"); // to be changed to a pop-up with a go to home option
     }
 
+    socket.on("waitingForPlayer", onWaitingForPlayer);
     socket.on("gameStart", onGameStart);
     socket.on("currentState", onCurrentState);
     socket.on("turnSummary", onTurnSummary);
@@ -259,6 +263,7 @@ export default function Battle() {
     });
 
     return () => {
+      socket.off("waitingForPlayer", onWaitingForPlayer);
       socket.off("gameStart", onGameStart);
       socket.off("currentState", onCurrentState);
       socket.off("nextOptions", onNextOptions);
@@ -309,7 +314,7 @@ export default function Battle() {
       setStatus("Select your next move...");
       socket.emit("requestState");
     }
-  }, [eventQueue, currentEvent]);
+  }, [eventQueue, currentEvent, battleStarted, socket]);
 
   //Functions to handle quitting the battle
   const handleQuit = () => setShowQuitConfirm(true);
@@ -334,6 +339,13 @@ export default function Battle() {
         className="absolute inset-0 w-full h-full object-cover -z-10 pointer-events-none"
         alt="Battle Background"
       />
+
+      {/* Intermediate Page */}
+      {!battleStarted && mode === "multiplayer" && (
+        <div className="absolute inset-0 z-[200] flex items-center justify-center bg-black/60">
+          <IntermediatePopUp isVisible={true} message={waitingMessage} onClick={() => {handleDeleteRoom(roomId), navigate("/")}} />
+        </div>
+      )}
 
       {/* Top Section */}
       <div className="flex w-5/20 justify-bottom items-end px-6 pt-6 z-100">

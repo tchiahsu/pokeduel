@@ -27,7 +27,7 @@ const Button = ({ children, onClick, size="sm", variant="gray", disabled=false }
     return (
         <button
             onClick={onClick}
-            className={clsx("border-2 rounded-lg py-2 px-4",
+            className={clsx("border-2 rounded-lg py-2 px-4 min-w-[100px]",
                             "transition-transform duration-200 ease-in-out",
                             buttonSize,
                             disabled ? "bg-gray-300 text-gray-500 opacity-50 pointer-events-auto" :
