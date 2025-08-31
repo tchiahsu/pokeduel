@@ -1,27 +1,41 @@
+import { motion } from "motion/react";
+import { useEffect, useState } from "react";
+
 /**
  * Prop that represents stats card of a Pokemon.
  */
 interface StatsCardProps {
   name: string;
   image: string | undefined;
-  hp: number;
+  HP: number;
   maxHP: number;
 }
 
-const StatsCard: React.FC<StatsCardProps> = ({ name, image, hp, maxHP }) => {
-  // const [currentHp, setCurrentHp] = useState<number>(hp);
+const StatsCard: React.FC<StatsCardProps> = ({ name, image, HP, maxHP }) => {
+  const [displayHP, setDisplayHP] = useState(HP);
+  const HPPercentage = (HP / maxHP) * 100;
 
-  // useEffect(() => {
-  //   setCurrentHp(hp);
-  // }, [hp]);
+  useEffect(() => {
+    if (HP < displayHP) {
+      const interval = setInterval(() => {
+        setDisplayHP((prevHP) => {
+          if (prevHP > HP) return prevHP - 1;
+          clearInterval(interval);
+          return HP;
+        });
+      }, 50);
 
-  const hpPercentage = (hp / maxHP) * 100;
+      return () => clearInterval(interval);
+    } else {
+      setDisplayHP(HP);
+    }
+  }, [HP]);
 
-  // Gets the progress bar color based on hp
-  const getHpColor = () => {
-    if (hpPercentage <= 20) return 'bg-red-600';
-    if (hpPercentage <= 50) return 'bg-yellow-500';
-    return 'bg-green-600';
+  // Gets the progress bar color based on HP
+  const getHPColor = () => {
+    if (HPPercentage <= 20) return "bg-red-600";
+    if (HPPercentage <= 50) return "bg-yellow-500";
+    return "bg-green-600";
   };
 
   return (
@@ -29,16 +43,17 @@ const StatsCard: React.FC<StatsCardProps> = ({ name, image, hp, maxHP }) => {
       {/* For Name and Sprite of Current Pokemon */}
       <div className="flex justify-between items-center">
         <span className="text-xl font-bold">{name}</span>
-        <img src={image} alt={name} className="w-12 h-auto" /> 
+        <img src={image} alt={name} className="w-12 h-auto" />
       </div>
-      {/* For Hp of Current Pokemon */}
+      {/* For HP of Current Pokemon */}
       <div className="mt-14 text-lg text-left">
-        <strong>HP:</strong> {hp}/{maxHP}
+        <strong>HP:</strong> {displayHP}/{maxHP}
         {/* Progress bar as a nested div */}
         <div className="w-full h-4 bg-gray-400 rounded mt-1 overflow-hidden">
-          <div
-            className={`h-full ${getHpColor()}`}
-            style={{ width: `${hpPercentage}%` }}
+          <motion.div
+            animate={{ width: `${HPPercentage}%` }}
+            className={`h-full ${getHPColor()}`}
+            transition={{ duration: 1.5, ease: "easeOut" }}
           />
         </div>
       </div>
