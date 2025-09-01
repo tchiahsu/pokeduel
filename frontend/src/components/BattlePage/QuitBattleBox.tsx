@@ -8,8 +8,8 @@ interface QuitBattleBox {
 
 const QuitBattleBox: React.FC<QuitBattleBox> = ({ onConfirm, onCancel }) => {
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-gray-300/80 rounded-lg p-6 shadow-lg text-center space-y-4">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm">
+            <div className="flex flex-col gap-10 bg-gray-300/80 rounded-xl p-4 shadow-lg justify-center items-center text-center w-2/3 h-1/5 max-w-2xl ease-in-out duration-200">
                 <p className="text-lg font-bold">Are you sure you want to quit?</p>
                 <div className="flex justify-center gap-4">
                     <Button
