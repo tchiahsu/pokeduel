@@ -91,5 +91,5 @@ http://localhost:5173
 
 ## Contributors
 - [Harrison Pham](https://github.com/pham-harrison)
-- [Bhoomika Gupta](https://github.com/bhoomig11)
 - [Tony Hsu Tai](https://github.com/tchiahsu)
+- [Bhoomika Gupta](https://github.com/bhoomig11)
