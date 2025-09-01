@@ -105,7 +105,8 @@ export default function Battle() {
   const mode = (location.state as { mode?: "singleplayer" | "multiplayer" } | undefined)?.mode ?? "singleplayer";
   const [isMultiplayer, setIsMultiplayer] = useState(mode === "multiplayer");
   const [waitingMessage, setWaitingMessage] = useState<string | null>(
-    mode === "multiplayer" ? "Waiting for opponent to join..." : null);
+    mode === "multiplayer" ? "Waiting for opponent to join..." : null
+  );
 
   useEffect(() => {
     function onGameStart(data: any) {
@@ -121,8 +122,8 @@ export default function Battle() {
         setBattleStarted(true);
         setWaitingMessage(null);
         loadingTimeoutRef.current = null;
-      }
-      
+      };
+
       if (delay > 0) {
         loadingTimeoutRef.current = window.setTimeout(battleStartSequence, delay);
       } else {
@@ -276,36 +277,37 @@ export default function Battle() {
 
   useEffect(() => {
     if (!currentEvent && eventQueue.length > 0) {
-      setCurrentEvent(eventQueue[0]);
+      const nextEvent = eventQueue[0];
+      setCurrentEvent(nextEvent);
       setEventQueue((prev) => prev.slice(1));
-      setStatus(eventQueue[0].message);
+      setStatus(nextEvent.message);
 
-      if (eventQueue[0].animation === "switch") {
+      if (nextEvent.animation === "switch") {
         const newPokemonData = {
-          name: eventQueue[0].switchData.name,
-          hp: eventQueue[0].switchData.hp,
-          maxHP: eventQueue[0].switchData.maxHP,
-          backSprite: eventQueue[0].switchData.backSprite,
-          frontSprite: eventQueue[0].switchData.frontSprite,
+          name: nextEvent.switchData.name,
+          hp: nextEvent.switchData.hp,
+          maxHP: nextEvent.switchData.maxHP,
+          backSprite: nextEvent.switchData.backSprite,
+          frontSprite: nextEvent.switchData.frontSprite,
         };
 
-        eventQueue[0].user === "self" ? setSelfCurrent(newPokemonData) : setOpponentCurrent(newPokemonData);
-      } else if (eventQueue[0].animation === "attack") {
-        if (eventQueue[0].user === "self") {
+        nextEvent.user === "self" ? setSelfCurrent(newPokemonData) : setOpponentCurrent(newPokemonData);
+      } else if (nextEvent.animation === "attack") {
+        if (nextEvent.user === "self") {
           setOpponentCurrent((prev) => {
-            return { ...prev, hp: eventQueue[0].attackData.newHP };
+            return { ...prev, hp: nextEvent.attackData.newHP };
           });
         } else {
           setSelfCurrent((prev) => {
-            return { ...prev, hp: eventQueue[0].attackData.newHP };
+            return { ...prev, hp: nextEvent.attackData.newHP };
           });
         }
       }
 
-      if (eventQueue[0].animation === "none") {
+      if (nextEvent.animation === "none") {
         setTimeout(() => {
           setCurrentEvent(null);
-          eventQueue[0].onComplete?.();
+          nextEvent.onComplete?.();
         }, 1000);
       }
     }
@@ -343,7 +345,13 @@ export default function Battle() {
       {/* Intermediate Page */}
       {!battleStarted && mode === "multiplayer" && (
         <div className="absolute inset-0 z-[200] flex items-center justify-center bg-black/60">
-          <IntermediatePopUp isVisible={true} message={waitingMessage} onClick={() => {handleDeleteRoom(roomId), navigate("/")}} />
+          <IntermediatePopUp
+            isVisible={true}
+            message={waitingMessage}
+            onClick={() => {
+              handleDeleteRoom(roomId), navigate("/");
+            }}
+          />
         </div>
       )}
 
@@ -486,7 +494,7 @@ export default function Battle() {
               key={selfCurrent.name} // re-render
               name={selfCurrent.name}
               image={selfCurrent.frontSprite}
-              HP={selfCurrent.hp}
+              HP={actionMode === "faint" ? 0 : selfCurrent.hp}
               maxHP={selfCurrent.maxHP}
             />
           </div>
