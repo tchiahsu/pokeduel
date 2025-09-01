@@ -8,7 +8,7 @@ import { TeamSelection } from "../types/types.js";
 export default class BotPlayer {
   // The identifiers for the bot player
   private ID: string = "BOT_PLAYER_ID";
-  private NAME: string = "BOT_PLAYER";
+  private NAME: string = "COMPUTER";
 
   // The range of Pokemon the bot can have
   private MIN_TEAM_AMOUNT = 4;
