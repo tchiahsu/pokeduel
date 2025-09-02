@@ -27,7 +27,7 @@ const InputBox = ({ placeholder = "Enter text", value, onChange, onEnter }: Inpu
                 }
             }}
             className="bg-gray-200 border-2 border-gray-400 rounded-lg py-2 px-4 text-gray-700
-                       focus:outline-none focus:border-red-500 w-full"
+                       focus:outline-none focus:border-blue-500 w-full"
         />
     );
 };
