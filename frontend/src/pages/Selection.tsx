@@ -230,7 +230,7 @@ export default function Selection({ list }: SelectionProps) {
     const displayList = fetchedPokemon ? [fetchedPokemon] : list
 
     return (
-        <div className="relative min-h-screen min-w-screen flex flex-col">
+        <div className="relative min-h-screen min-w-screen flex flex-col text-black">
             <img
                 src={selectionBg}
                 className="absolute inset-0 w-full h-full object-cover opacity-50 z-0"
