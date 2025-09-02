@@ -36,6 +36,7 @@ export default function Selection({ list }: SelectionProps) {
     const [pokemonTeam, setPokemonTeam] = useState<Record<string, string[]>>({});
     const [teamSprites, setTeamSprites] = useState<Record<string, string>>({});
     const [leadPokemon, setLeadPokemon] = useState<string | null>(null);
+    const [randomUsed, setRandomUsed] = useState(false);
 
     const socket = useSocket();
     const navigate = useNavigate();
@@ -43,6 +44,7 @@ export default function Selection({ list }: SelectionProps) {
     const startRef = useRef<HTMLSpanElement>(null);
     const anchorRef = useRef<Record<string, HTMLDivElement | null>>({});
     const backRef = useRef<HTMLSpanElement>(null);
+    const randomRef = useRef<HTMLSpanElement>(null);
 
     const { playerName, mode } = location.state || {}
     const { roomId } = useParams();
@@ -52,6 +54,12 @@ export default function Selection({ list }: SelectionProps) {
 
     const fetchRandomTeam = async () => {
         try {
+            if (randomUsed) {
+                shake(randomRef.current);
+                toast.error("You have a team already selected. Clear current team to randomize again!")
+                return;
+            }
+
             const res = await fetch(`${API_URL_BASE}/pokemon/random-team`);
             const team = await res.json();
             
@@ -64,9 +72,10 @@ export default function Selection({ list }: SelectionProps) {
                 if (pokeData) nextSprites[name] = pokeData.sprite;
             })
             );
-            setTeamSprites(nextSprites);
 
-            setLeadPokemon(Object.keys(team)[0] ?? null);      
+            setTeamSprites(nextSprites);
+            setLeadPokemon(Object.keys(team)[0] ?? null);  
+            setRandomUsed(true);
         } catch (error) {
             console.error(`Error fetching random team: `, error);
             return null;
@@ -150,10 +159,20 @@ export default function Selection({ list }: SelectionProps) {
             const { [name]: _, ...rest } = prev;
             return rest;
         });
+
         if (leadPokemon === name) {
             const remaining = Object.keys(pokemonTeam).filter(poke => poke !== name);
             setLeadPokemon(remaining[0] ?? null);
         };
+    }
+
+    /**
+     * Clear current pokemon team
+     */
+    const clearTeam = () => {
+        if (randomUsed) setRandomUsed(false);
+        setPokemonTeam({});
+        setTeamSprites({});
     }
 
     /**
@@ -225,7 +244,7 @@ export default function Selection({ list }: SelectionProps) {
                 <div className='flex justify-center items-center mr-4 gap-3'>
                     <span ref={backRef}>
                         <Button onClick={() => {handleDeleteRoom(roomId), navigate("/")}} size="xs">
-                            Quit Game
+                            Quit
                         </Button>
                     </span>
 
@@ -233,13 +252,19 @@ export default function Selection({ list }: SelectionProps) {
                         Copy RoomId
                     </Button>}
 
-                    <Button onClick={fetchRandomTeam} size="xs">
-                        Randomize Team
+                    <Button onClick={clearTeam} size="xs">
+                        Clear
                     </Button>
+
+                    <span ref={randomRef}>
+                        <Button onClick={fetchRandomTeam} disabled={randomUsed} size="xs">
+                            Randomize
+                        </Button>
+                    </span>
 
                     <span ref={startRef}>
                         <Button onClick={emitTeamSelection} variant="yellow" disabled={!canStart} size="xs">
-                            Start Game
+                            Start
                         </Button>
                     </span>
                 </div>
