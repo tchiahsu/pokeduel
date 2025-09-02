@@ -13,7 +13,7 @@ interface StatsCardProps {
 
 const StatsCard: React.FC<StatsCardProps> = ({ name, image, HP, maxHP }) => {
   const [displayHP, setDisplayHP] = useState(HP);
-  const HPPercentage = (HP / maxHP) * 100;
+  const HPPercentage = (displayHP / maxHP) * 100;
 
   useEffect(() => {
     if (HP < displayHP) {
@@ -23,7 +23,7 @@ const StatsCard: React.FC<StatsCardProps> = ({ name, image, HP, maxHP }) => {
           clearInterval(interval);
           return HP;
         });
-      }, 50);
+      }, 75);
 
       return () => clearInterval(interval);
     } else {
@@ -53,7 +53,7 @@ const StatsCard: React.FC<StatsCardProps> = ({ name, image, HP, maxHP }) => {
           <motion.div
             animate={{ width: `${HPPercentage}%` }}
             className={`h-full ${getHPColor()}`}
-            transition={{ duration: 1.5, ease: "easeOut" }}
+            transition={{ ease: "easeOut" }}
           />
         </div>
       </div>
