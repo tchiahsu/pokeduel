@@ -173,11 +173,10 @@ const Pokedex = ({ pokemon, close, initialMoves, onConfirm, team }: PokedexProps
             
             {/* Pokemon Moves Table */}
             <div className="relative px-4 pb-4 flex-1 flex flex-col text-xs overflow-y-auto no-scrollbar">
-                <div className="sticky top-0 flex justify-between items-center bg-white py-3">
-                    <h3 className="text-[13px] font-semibold text-gray-800 text-left indent-0.5">Select Moves</h3>
-                    <span className={clsx("text-[13px] font-bold",
-                                          moves.length && "text-green-600", !moves.length && "text-red-500")}
-                    >
+                <div className={clsx("sticky top-0 flex justify-between items-center bg-white py-3",
+                                        moves.length && "text-green-600", !moves.length && "text-red-500")}>
+                    <h3 className="text-[13px] font-semibold text-left indent-0.5">Select Moves</h3>
+                    <span className="text-[13px] font-bold">
                         {moves.length}/4
                     </span>
                 </div>

@@ -45,7 +45,7 @@ export default function SinglePlayer() {
   };
 
   return (
-        <div className="relative min-h-screen min-w-screen flex flex-col items-center justify-center">
+        <div className="relative min-h-screen min-w-screen flex flex-col items-center justify-center text-black">
             
             {/* Background Image */}
             <img

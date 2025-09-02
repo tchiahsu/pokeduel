@@ -334,7 +334,7 @@ export default function Battle() {
       onClose={() => navigate("/")}
     />
   ) : (
-    <div className="relative w-screen h-screen overflow-hidden grid grid-rows-[1fr_4fr_1fr]">
+    <div className="relative w-screen h-screen overflow-hidden grid grid-rows-[1fr_4fr_1fr] text-gray-700">
       {/* Background */}
       <img
         src={battleBg}

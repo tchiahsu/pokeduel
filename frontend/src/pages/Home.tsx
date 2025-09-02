@@ -19,7 +19,7 @@ export default function Home() {
             </div>
 
             {/* Game Message */}
-            <div className="select-none z-10 py-4">
+            <div className="select-none z-10 py-4 text-black">
                 <p>Battle Friends, Become Champion</p>
             </div>
 
