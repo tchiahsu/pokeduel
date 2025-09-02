@@ -56,7 +56,7 @@ export default function Selection({ list }: SelectionProps) {
         try {
             if (randomUsed) {
                 shake(randomRef.current);
-                toast.error("You can only randomize team once!")
+                toast.error("You have a team already selected. Clear current team to randomize again!")
                 return;
             }
 
