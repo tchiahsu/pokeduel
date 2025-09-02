@@ -131,7 +131,7 @@ export default function Multiplayer() {
             />
             <div className="flex gap-4">
               <Link to="/">
-                <Button>Back to Home</Button>
+                <Button variant="red">Back to Home</Button>
               </Link>
               <span ref={createRef}>
                 <Button onClick={createRoomID} disabled={!playerName}>

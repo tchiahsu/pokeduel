@@ -12,11 +12,11 @@ type ButtonProps = {
     children: React.ReactNode;
     onClick?: () => void;
     size?: "xs" | "sm" | "md";
-    variant?: "gray" | "yellow"
+    variant?: "blue" | "yellow" | "red"
     disabled?: boolean;
 };
 
-const Button = ({ children, onClick, size="sm", variant="gray", disabled=false }: ButtonProps) => {
+const Button = ({ children, onClick, size="sm", variant="blue", disabled=false }: ButtonProps) => {
     
     const buttonSize = clsx({
         "text-xs": size === "xs",
@@ -32,8 +32,9 @@ const Button = ({ children, onClick, size="sm", variant="gray", disabled=false }
                             buttonSize,
                             disabled ? "bg-gray-300 text-gray-500 opacity-50 pointer-events-auto" :
                             {
-                                "bg-gray-300 text-gray-500 hover:bg-red-300 hover:text-red-600 cursor-pointer": variant === "gray",
+                                "bg-gray-300 text-gray-500 hover:bg-blue-300 hover:text-blue-600 cursor-pointer": variant === "blue",
                                 "bg-yellow-200 text-yellow-600 hover:scale-105 animate-pulse-subtle duration-200 ease-in-out shimmer cursor-pointer": variant === "yellow",
+                                "bg-gray-300 text-gray-500 hover:bg-red-300 hover:text-red-600 cursor-pointer": variant === "red",
                             }
                         )}
         >
