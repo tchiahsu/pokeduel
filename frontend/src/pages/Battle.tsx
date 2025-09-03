@@ -356,7 +356,7 @@ export default function Battle() {
       )}
 
       {/* Top Section */}
-      <div className="flex w-5/20 min-h-[20vh] justify-bottom items-end px-6 pt-6 z-100">
+      <div className="flex w-5/20 h-full justify-bottom items-end px-6 pt-6 z-100">
         {/* Opponent Pokemon Card */}
         <StatsCard
           name={opponentCurrent.name || "Loading..."}
@@ -479,7 +479,7 @@ export default function Battle() {
           </div>
 
           {/* Action Button Panel */}
-          <div className="flex w-1/8 min-h-[20vh] justify-center items-baseline-last">
+          <div className="flex w-1/8 h-full justify-center items-baseline-last">
             <BattleActionsPanel
               onSelect={(mode) => setActionMode(mode)}
               onQuit={handleQuit}
