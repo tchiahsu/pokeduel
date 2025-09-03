@@ -247,7 +247,7 @@ export default function Battle() {
       setDisconnectPopUp(true);
     }
 
-    function onGameOver({ message, team}: any) {
+    function onGameOver({ message, team }: any) {
       setGameOverMessage(message);
       setWinningTeam(team);
       const winner = message.split(" ")[0];
@@ -324,8 +324,7 @@ export default function Battle() {
   //Functions to handle quitting the battle
   const handleQuit = () => setShowQuitConfirm(true);
   const confirmQuit = () => {
-    socket.emit("quitGame"),
-    handleDeleteRoom(roomId);
+    socket.emit("quitGame"), handleDeleteRoom(roomId);
     navigate("/");
   };
   const cancelQuit = () => setShowQuitConfirm(false);
@@ -430,7 +429,7 @@ export default function Battle() {
             ) : currentEvent?.user === "opponent" && currentEvent.animation === "faint" ? (
               <FaintAnimation
                 user="opponent"
-                pokemon={opponentPrevious?.frontSprite ?? ""}
+                pokemon={opponentCurrent.frontSprite ?? ""}
                 onComplete={() => {
                   setOpponentisSummoned(false);
                   setCurrentEvent(null);
