@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { handleDeleteRoom } from "../utils/handleSocket";
 import { useSocket } from "../contexts/SocketContext";
-import { removeHyphen } from "../utils/helpers";
+import { removeHyphen, roomIdToNumber } from "../utils/helpers";
 import type { Event, attackData, switchData } from "../types/data";
 
 import bg1 from "../assets/bg_3.webp";
@@ -54,7 +54,6 @@ interface TeamMember {
  * Battle Screen for handling game play.
  */
 export default function Battle() {
-  const [battleBg, setBattleBg] = useState<string>(bg1);
   const [actionMode, setActionMode] = useState<"none" | "attack" | "switch" | "faint">("none");
   const [status, setStatus] = useState<string | any>(); // Used for messages in display panel
   const [showQuitConfirm, setShowQuitConfirm] = useState(false);
@@ -108,12 +107,11 @@ export default function Battle() {
   const [waitingMessage, setWaitingMessage] = useState<string | null>(
     mode === "multiplayer" ? "Waiting for opponent to join..." : null
   );
+  const battleBg = bgImages[roomIdToNumber(roomId)];
 
   useEffect(() => {
     function onGameStart(data: any) {
       const { events, bgIndex } = data;
-
-      setBattleBg(bgImages[bgIndex]);
 
       const delay = isMultiplayer ? 3000 : 0;
       if (isMultiplayer) setWaitingMessage("Loading Battle...");
@@ -465,7 +463,7 @@ export default function Battle() {
               }}
               onSwitchSelect={(index) => {
                 // console.log("Selected switch with index:", index);
-                const selectedName = removeHyphen(nextTeam[index].name);
+                const selectedName = nextTeam[index].name;
                 setStatus(`You switched to ${selectedName}\nWaiting for opponent...`);
 
                 if (actionMode === "faint") {
