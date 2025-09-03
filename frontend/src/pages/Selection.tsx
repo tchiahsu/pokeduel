@@ -1,6 +1,6 @@
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
-import { fetchPokemonData } from '../utils/SearchAPI';
+import { fetchPokemonData } from '../utils/searchAPI';
 import { useSocket } from "../contexts/SocketContext";
 import { shake, removeHyphen, addHyphen, toTitleCase } from "../utils/helpers";
 import type { Pokemon } from '../types/pokemon'
