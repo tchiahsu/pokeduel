@@ -5,6 +5,7 @@ import PokemonFactory from "./PokemonFactory.js";
 import StatusManager from "./StatusManager.js";
 import BotPlayer from "./BotPlayer.js";
 import Move from "./Move.js";
+import NameUtil from "../services/NameUtil.js";
 
 /**
  * A type representing a player's move.
@@ -123,6 +124,8 @@ export default class BattleModel {
   private botPlayer: BotPlayer;
   // Number to generate a random battle background
   private backgroundIndex: number = Math.floor(Math.random() * 9);
+  // Utility functions to polish Pokemon Name
+  private nameUtil: NameUtil = new NameUtil();
 
   /** Returns the ID of player 1.
    *
@@ -244,7 +247,8 @@ export default class BattleModel {
       const { player } = this.getPlayerAndMoveByID(playerID);
       const currentPokemon = player.getCurrentPokemon();
       if (this.battleUtils.pokemonIsDefeated(player)) {
-        this.events.push(this.createEvent(playerID, "faint", `${currentPokemon.getName()} has fainted!`));
+        const poke = this.nameUtil.capitalize(currentPokemon.getName());
+        this.events.push(this.createEvent(playerID, "faint", `${poke} has fainted!`));
         player.reduceRemainingPokemon();
         this.faintedPlayers.push(playerID);
         this.gameOver = !player.hasRemainingPokemon() || this.gameOver;
@@ -304,7 +308,9 @@ export default class BattleModel {
   private processSwitch(playerID: string): void {
     const { player, playerMove } = this.getPlayerAndMoveByID(playerID);
     player.switchPokemon(playerMove.index);
-    const message = `${player.getName()} switched to ${player.getCurrentPokemon().getName()}!`;
+    const currPlayer = this.nameUtil.capitalize(player.getName());
+    const newPokemon = this.nameUtil.capitalize(player.getCurrentPokemon().getName());
+    const message = `${currPlayer} switched to ${newPokemon}!`;
     this.events.push(this.createEvent(playerID, "switch", message));
   }
 
@@ -352,7 +358,9 @@ export default class BattleModel {
     defendingPokemon.takeDamage(damage);
 
     // Add attack message from pokemon
-    const message = `${attackingPokemon.getName()} used ${move.getName()}!`;
+    const attacker = this.nameUtil.capitalize(attackingPokemon.getName());
+    const attackerMove = this.nameUtil.capitalize(move.getName());
+    const message = `${attacker} used ${attackerMove}!`;
     this.events.push(this.createEvent(playerID, "attack", message));
 
     // Display messages related to attack damage
@@ -507,18 +515,23 @@ export default class BattleModel {
     const { player: player1 } = this.getPlayerAndMoveByID(this.player1ID);
     const { player: player2 } = this.getPlayerAndMoveByID(this.player2ID);
 
+    const p1Name = this.nameUtil.capitalize(player1.getName());
+    const p1Pokemon = this.nameUtil.capitalize(player1.getCurrentPokemon().getName());
+    const p2Name = this.nameUtil.capitalize(player2.getName());
+    const p2Pokemon = this.nameUtil.capitalize(player2.getCurrentPokemon().getName());
+
     this.events.push(
       this.createEvent(
         this.player1ID,
         "switch",
-        `${player1.getName()} sent out ${player1.getCurrentPokemon().getName()}!`
+        `${p1Name} sent out ${p1Pokemon}!`
       )
     );
     this.events.push(
       this.createEvent(
         this.player2ID,
         "switch",
-        `${player2.getName()} sent out ${player2.getCurrentPokemon().getName()}!`
+        `${p2Name} sent out ${p2Pokemon}!`
       )
     );
 
