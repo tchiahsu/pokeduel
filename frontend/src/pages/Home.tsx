@@ -32,7 +32,6 @@ export default function Home() {
                     <Button>Multiplayer</Button>
                 </Link>
             </div>
-
         </div>
     );
 }
