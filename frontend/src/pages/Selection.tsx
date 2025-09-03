@@ -24,10 +24,11 @@ const API_URL_BASE = 'http://localhost:8000';
  */
 type SelectionProps = {
     list: Pokemon[];
+    loading: boolean;
 };
 
 // Team Selection Screen
-export default function Selection({ list }: SelectionProps) {
+export default function Selection({ list, loading }: SelectionProps) {
     const [showPokedex, setShowPokedex] = useState(false)
     const [searchTerm, setSearchTerm] = useState('');
     const [fetchedPokemon, setFetchedPokemon] = useState<Pokemon | null>(null);
@@ -37,6 +38,7 @@ export default function Selection({ list }: SelectionProps) {
     const [teamSprites, setTeamSprites] = useState<Record<string, string>>({});
     const [leadPokemon, setLeadPokemon] = useState<string | null>(null);
     const [randomUsed, setRandomUsed] = useState(false);
+    const [isLoadingRandom, setIsLoadingRandom] = useState(false);
 
     const socket = useSocket();
     const navigate = useNavigate();
@@ -60,6 +62,8 @@ export default function Selection({ list }: SelectionProps) {
                 return;
             }
 
+            setIsLoadingRandom(true)
+
             const res = await fetch(`${API_URL_BASE}/pokemon/random-team`);
             const team = await res.json();
             
@@ -79,6 +83,8 @@ export default function Selection({ list }: SelectionProps) {
         } catch (error) {
             console.error(`Error fetching random team: `, error);
             return null;
+        } finally {
+            setIsLoadingRandom(false)
         }
     }
 
@@ -276,6 +282,11 @@ export default function Selection({ list }: SelectionProps) {
                 {/* Left Panel */}
                 <div className="relative w-36 flex flex-col bg-gray-300 ml-6 mr-2 mb-6 rounded-lg opacity-80 items-center">                                                     
                     <h3 className="sticky top-0 z-10 text-lg font-bold bg-gray-300 pt-6">TEAM</h3>
+                    
+                    {/* LOADING ANIMATION WHILE FETCHING */}
+                    {isLoadingRandom && <div className="animate-spin rounded-full h-10 w-10 my-9 border-b-5 border-l-5 border-blue-500"></div>}
+                    
+                    {/* SELECTED POKEMON TEAM */}
                     {Object.keys(teamSprites).length > 0 && (
                         <div className="grid grid-rows-auto p-3 cursor-pointer">
                             <AnimatePresence initial={false}>
@@ -335,7 +346,16 @@ export default function Selection({ list }: SelectionProps) {
                     <div className='flex sticky top-0 bg-gray-300 z-10 p-4 gap-2 rounded-lg'>
                         <SearchBar value = {searchTerm} onChange={setSearchTerm} onEnter={handleSearch}></SearchBar>
                         <Button onClick={handleSearch}>Search</Button>
+                        
                     </div>
+                    
+                    {/* LOADING ANIMATION WHILE FETCHING */}
+                    {loading && 
+                        <div className="flex flex-row justify-center items-center">
+                            <div className="animate-spin rounded-full h-10 w-10 m-9 border-b-5 border-blue-500"></div>
+                            <div>Loading default Pokemon ... </div>
+                        </div>
+                    }
                     
                     {/* Pokemon selection table */}
                     <div className="flex flex-1 overflow-hidden">
