@@ -1,5 +1,6 @@
 import React from "react";
 import { toast } from "sonner";
+import { removeHyphen } from "../../utils/helpers";
 
 /**
  * Represents a Pokemon in the Player's Team.
@@ -103,7 +104,7 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
    * Renders a grid of Pokemon to switch to in the team.
    */
   const renderSwitches = () => (
-    <div className="grid grid-cols-3 gap-1 place-items-center h-full">
+    <div className="grid grid-cols-3 gap-3 place-items-center h-full text-sm">
       {team.map((poke, i) => (
         <button
           key={i}
@@ -118,17 +119,16 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
             }
             onSwitchSelect?.(i);
           }}
-          className={`flex w-80 items-center justify-between p-3 border rounded-md ${
+          className={`flex w-full items-center justify-between gap-5 p-3 border rounded-md flex-row ${
             poke.hp <= 0 ? "bg-gray-200 text-gray-500" : "bg-green-100 border-green-400"
           }`}
         >
+          {/* Button Content */}
           <div className="flex items-center gap-2">
-            {poke.frontSprite && <img src={poke.frontSprite} alt={poke.name} className="w-6 h-6" />}
-            <span className="font-bold select-none">{poke.name}</span>
+            {poke.frontSprite && <img src={poke.frontSprite} alt={poke.name} className="h-full w-auto max-w-10" />}
           </div>
-          <span className="font-bold select-none">
-            {poke.hp}/{poke.maxHP}
-          </span>
+          <span className="flex font-bold select-none">{removeHyphen(poke.name)}</span>
+          <span className="text-sm">{poke.hp}/{poke.maxHP}</span>
         </button>
       ))}
     </div>

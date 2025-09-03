@@ -28,3 +28,15 @@ export const toTitleCase = (name: string | undefined) => {
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(" ");
 }
+
+// Convert roomID to a number between 1 and 9
+export const roomIdToNumber = (id: string | undefined) => {
+    if (!id) return 0;
+
+    let hash = 0;
+    for (let i = 0; i < id.length; i++) {
+        hash = (hash << 5) - hash + id.charCodeAt(i);
+        hash |= 0;
+    }
+    return Math.abs(hash) % 9
+}
