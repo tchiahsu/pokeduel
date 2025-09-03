@@ -2,7 +2,7 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { fetchPokemonData } from '../utils/searchAPI';
 import { useSocket } from "../contexts/SocketContext";
-import { shake, removeHyphen, addHyphen } from "../utils/helpers";
+import { shake, removeHyphen, addHyphen, toTitleCase } from "../utils/helpers";
 import type { Pokemon } from '../types/pokemon'
 import { toast } from 'sonner';
 import { handleDeleteRoom } from "../utils/handleSocket";
@@ -302,14 +302,14 @@ export default function Selection({ list, loading }: SelectionProps) {
                                         ref={(element) => {anchorRef.current[poke] = element}}>
                                             <div className="flex-col relative group w-full flex items-center justify-center text-[10px]">
                                                 <div className={clsx("flex flex-col justify-center items-center group-hover:opacity-50",
-                                                                    leadPokemon === poke ? "text-amber-500" : ""
+                                                                    leadPokemon === poke ? "text-blue-500" : ""
                                                 )}>
                                                     <img
                                                         src={sprite}
                                                         alt={poke}
                                                         className="pointer-events-none select-none w-18 h-18"
                                                     />
-                                                    {removeHyphen(poke)}
+                                                    {toTitleCase(removeHyphen(poke))}
                                                 </div>
                                                 <div className="absolute inset-0 z-10 flex flex-col justify-center items-center pointer-events-none gap-1 pt-3 cursor-pointer">
                                                     <TeamButton 
