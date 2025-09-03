@@ -2,7 +2,7 @@ import React from "react";
 import { useRef } from "react";
 
 import { toast } from "sonner";
-import { shake } from "../../utils/effects";
+import { shake } from "../../utils/helpers";
 
 interface BattleActionsPanelProps {
   onSelect: (mode: "none" | "attack" | "switch") => void;

@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
  * Prop that represents stats card of a Pokemon.
  */
 interface StatsCardProps {
-  name: string;
+  name: string | undefined;
   image: string | undefined;
   HP: number;
   maxHP: number;

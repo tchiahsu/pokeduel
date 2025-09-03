@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { searchMoveStats } from '../../utils/searchAPI';
-import { shake } from '../../utils/effects';
+import { shake } from '../../utils/helpers';
 import { toast } from 'sonner';
 
 import MoveStat from './MoveStat'

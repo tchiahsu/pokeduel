@@ -2,7 +2,7 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { fetchPokemonData } from '../utils/searchAPI';
 import { useSocket } from "../contexts/SocketContext";
-import { shake } from "../utils/effects";
+import { shake, removeHyphen, addHyphen } from "../utils/helpers";
 import type { Pokemon } from '../types/pokemon'
 import { toast } from 'sonner';
 import { handleDeleteRoom } from "../utils/handleSocket";
@@ -92,7 +92,7 @@ export default function Selection({ list, loading }: SelectionProps) {
      * Searches the information for the given pokemon name
      */
     const handleSearch = async () => {
-        const name = searchTerm.trim().toLowerCase();
+        const name = addHyphen(searchTerm.trim().toLowerCase());
         
         if (!name) {
             setFetchedPokemon(null);
@@ -309,7 +309,7 @@ export default function Selection({ list, loading }: SelectionProps) {
                                                         alt={poke}
                                                         className="pointer-events-none select-none w-18 h-18"
                                                     />
-                                                    {poke}
+                                                    {removeHyphen(poke)}
                                                 </div>
                                                 <div className="absolute inset-0 z-10 flex flex-col justify-center items-center pointer-events-none gap-1 pt-3 cursor-pointer">
                                                     <TeamButton 
@@ -384,7 +384,7 @@ export default function Selection({ list, loading }: SelectionProps) {
                                         }
                                 }}>
                                     <img src={poke.sprite} alt={poke.name} className="w-36 h-36 pointer-events-none" />
-                                    <span className="text-xs mt-1 capitalize">{poke.name}</span>
+                                    <span className="text-xs mt-1 capitalize">{removeHyphen(poke.name)}</span>
                                 </div>
                             ))}
                         </div>

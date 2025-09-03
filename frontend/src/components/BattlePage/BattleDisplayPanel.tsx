@@ -30,7 +30,7 @@ interface BattleDisplayPanelProps {
   moves: Move[];
   team: Pokemon[];
   status?: string;
-  currentPokemon: string;
+  currentPokemon: string | undefined;
   onMoveSelect?: (index: number) => void;
   onSwitchSelect?: (index: number) => void;
 }

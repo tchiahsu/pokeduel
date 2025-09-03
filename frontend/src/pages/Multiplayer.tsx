@@ -4,7 +4,7 @@ import homeBg from "../assets/bg-forrest.jpg";
 import Button from "../components/Button";
 import InputBox from "../components/InputBox";
 import { toast } from "sonner";
-import { shake } from "../utils/effects";
+import { shake } from "../utils/helpers";
 import { useNavigate } from "react-router-dom";
 import { useSocket } from "../contexts/SocketContext";
 
