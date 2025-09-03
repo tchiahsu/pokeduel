@@ -32,6 +32,23 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
     return false;
   }
 
+  //function to handle if one opponent quits
+  function handlePlayerQuit(socketID: string) {
+    const roomID: string = roomManager.getPlayerRoom(socketID);
+    const battleModel: BattleModel = roomManager.getBattleModel(roomID);
+    roomManager.removePlayerFromRoom(socketID);
+
+    if (battleModel && battleModel.hasTwoPlayers()) {
+      const remainingPlayer =
+        socketID === battleModel.getPlayer1ID() ? battleModel.getPlayer2ID() : battleModel.getPlayer1ID();
+      io.to(remainingPlayer).emit("endGame", {
+        message: `Opponent has disconnected`,
+      });
+    } else if (roomManager.isWaitingRoomEmpty(roomID) || roomManager.isSinglePlayerRoom(roomID)) {
+      roomManager.deleteRoom(roomID);
+    }
+  }
+
   io.on("connection", (socket) => {
     console.log(`Player ${socket.id} has connected`);
 
@@ -189,19 +206,13 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
     });
 
     // Event to handle disconnect
-    socket.on("disconnect", () => {
-      const roomID: string = roomManager.getPlayerRoom(socket.id);
-      const battleModel: BattleModel = roomManager.getBattleModel(roomID);
-      roomManager.removePlayerFromRoom(socket.id);
-      if (battleModel && battleModel.hasTwoPlayers()) {
-        const remainingPlayer =
-          socket.id === battleModel.getPlayer1ID() ? battleModel.getPlayer2ID() : battleModel.getPlayer1ID();
-        io.to(remainingPlayer).emit("endGame", {
-          message: `Opponent has disconnected`,
-        });
-      } else if (roomManager.isWaitingRoomEmpty(roomID) || roomManager.isSinglePlayerRoom(roomID)) {
-        roomManager.deleteRoom(roomID);
-      }
+    socket.on(("disconnect"), () => {
+      handlePlayerQuit(socket.id);
+    });
+
+    // Event to handle disconnect
+    socket.on("quitGame", () => {
+      handlePlayerQuit(socket.id);
     });
   });
 }

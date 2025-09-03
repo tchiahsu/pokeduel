@@ -28,6 +28,7 @@ import OpponentAttackAnimation from "../components/animations/OpponentAttackAnim
 import TakeDamageAnimation from "../components/animations/TakeDamageAnimation";
 import FaintAnimation from "../components/animations/FaintAnimation";
 import IntermediatePopUp from "../components/BattlePage/IntermediatePopUp";
+import DisconnectPopUp from "../components/BattlePage/DisconnectPopUp";
 
 /**
  * Represents a move that a current pokemon can use.
@@ -96,6 +97,8 @@ export default function Battle() {
   const [winnerName, setWinnerName] = useState("");
   const [battleStarted, setBattleStarted] = useState(false);
   const loadingTimeoutRef = useRef<number | null>(null);
+  const [showDisconnectPopup, setDisconnectPopUp] = useState(false);
+  const [disconnectMessage, setDisconnectMessage] = useState("");
 
   const bgImages = [bg1, bg2, bg3, bg4, bg5, bg6, bg7, bg8, bg9];
 
@@ -242,8 +245,8 @@ export default function Battle() {
      * @param data containing the game over message
      */
     function onEndGame(data: any) {
-      alert(data.message);
-      navigate("/"); // to be changed to a pop-up with a go to home option
+      setDisconnectMessage(data.message);
+      setDisconnectPopUp(true);
     }
 
     socket.on("waitingForPlayer", onWaitingForPlayer);
@@ -322,7 +325,9 @@ export default function Battle() {
   //Functions to handle quitting the battle
   const handleQuit = () => setShowQuitConfirm(true);
   const confirmQuit = () => {
-    handleDeleteRoom(roomId), navigate("/");
+    socket.emit("quitGame"),
+    handleDeleteRoom(roomId);
+    navigate("/");
   };
   const cancelQuit = () => setShowQuitConfirm(false);
 
@@ -504,6 +509,15 @@ export default function Battle() {
 
       {/* Quit Message */}
       {showQuitConfirm && <QuitBattleBox onConfirm={confirmQuit} onCancel={cancelQuit} />}
+      {showDisconnectPopup && (
+        <DisconnectPopUp
+          onExit={() => {
+            setDisconnectPopUp(false);
+            navigate("/");
+          }}
+          message={disconnectMessage}
+        />
+      )}
     </div>
   );
 }
