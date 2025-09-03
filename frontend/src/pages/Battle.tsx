@@ -244,6 +244,14 @@ export default function Battle() {
       navigate("/"); // to be changed to a pop-up with a go to home option
     }
 
+    function onGameOver({ message, team}: any) {
+      setGameOverMessage(message);
+      setWinningTeam(team);
+      const winner = message.split(" ")[0];
+      setWinnerName(winner);
+      setIsGameOver(true);
+    }
+
     socket.on("waitingForPlayer", onWaitingForPlayer);
     socket.on("gameStart", onGameStart);
     socket.on("currentState", onCurrentState);
@@ -252,15 +260,7 @@ export default function Battle() {
     socket.on("requestFaintedSwitch", onRequestFaintedSwitch);
     socket.on("waitForFaintedSwitch", onWaitForFaintedSwitch);
     socket.on("endGame", onEndGame);
-    socket.on("gameOver", ({ message, team }) => {
-      setGameOverMessage(message);
-      setWinningTeam(team);
-
-      const winner = message.split(" ")[0];
-      setWinnerName(winner);
-
-      setIsGameOver(true);
-    });
+    socket.on("gameOver", onGameOver);
 
     return () => {
       socket.off("waitingForPlayer", onWaitingForPlayer);
@@ -271,8 +271,9 @@ export default function Battle() {
       socket.off("requestFaintedSwitch", onRequestFaintedSwitch);
       socket.off("waitForFaintedSwitch", onWaitForFaintedSwitch);
       socket.off("endGame", onEndGame);
+      socket.off("gameOver", onGameOver);
     };
-  }, [socket, navigate, selfCurrent.name]);
+  }, [socket, navigate]);
 
   useEffect(() => {
     if (!currentEvent && eventQueue.length > 0) {
