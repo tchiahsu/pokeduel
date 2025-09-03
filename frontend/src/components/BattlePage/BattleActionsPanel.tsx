@@ -1,9 +1,6 @@
 import React from "react";
 import { useRef } from "react";
 
-import { GiMineExplosion } from "react-icons/gi";
-import { RiExchange2Line } from "react-icons/ri";
-import { IoMdExit } from "react-icons/io";
 import { toast } from "sonner";
 import { shake } from "../../utils/effects";
 
@@ -25,48 +22,33 @@ const BattleActionsPanel: React.FC<BattleActionsPanelProps> = ({ onSelect, onQui
     }
   };
   return (
-    <div className="flex flex-col flex-1 h-full p-4 rounded-lg bg-gray-300/80 justify-center items-center gap-4">
+    <div className="flex flex-col flex-1 h-full p-4 rounded-lg bg-gray-300/80 justify-center items-center gap-4 text-white">
       {/* Attack Button */}
-      <div className="relative group">
-        <div className="absolute left-[-100px] top-1/2 -translate-y-1/2 px-2 py-1 text-xs rounded bg-white text-black opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-          ATTACK
-        </div>
         <button
           ref={attackButtonRef}
           onClick={handleAttackClick}
-          className="w-13 h-13 bg-[#FFA500]/80 hover:bg-[#FFA500]/60 rounded-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-2 bg-[#FFA500] hover:bg-[#FFA500]/60 rounded-lg flex items-center justify-center hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={disabled}
         >
-          <GiMineExplosion className="text-white text-3xl" />
+          ATTACK
         </button>
-      </div>
 
       {/* Switch Button */}
-      <div className="relative group">
-        <div className="absolute left-[-100px] top-1/2 -translate-y-1/2 px-2 py-1 text-xs rounded bg-white text-black opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-          SWITCH
-        </div>
         <button
           onClick={() => onSelect("switch")}
-          className="w-13 h-13 bg-[#3B4CCA]/80 hover:bg-[#3B4CCA]/60 rounded-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-2 bg-[#3B4CCA] hover:bg-[#3B4CCA]/60 rounded-lg flex items-center justify-center hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={disabled}
         >
-          <RiExchange2Line className="text-white text-3xl" />
+          SWITCH
         </button>
-      </div>
 
       {/* Quit Button */}
-      <div className="relative group">
-        <div className="absolute left-[-75px] top-1/2 -translate-y-1/2 px-2 py-1 text-xs rounded bg-white text-black opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-          QUIT
-        </div>
         <button
           onClick={onQuit}
-          className="w-13 h-13 bg-[#FF0000]/80 hover:bg-[#FF0000]/60 rounded-full flex items-center justify-center"
+          className="w-full py-2 bg-[#FF0000] hover:bg-[#FF0000]/60 rounded-lg flex items-center hover:scale-105 justify-center"
         >
-          <IoMdExit className="text-white text-3xl" />
+          QUIT
         </button>
-      </div>
     </div>
   );
 };
