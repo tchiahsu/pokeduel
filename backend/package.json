@@ -5,7 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "npx tsc && nodemon dist/server.js"
+    "dev": "npx tsc && nodemon dist/server.js",
+    "build": "npx tsc",
+    "start": "node dist/server.js"
   },
   "repository": {
     "type": "git",
