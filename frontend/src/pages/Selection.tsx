@@ -281,7 +281,7 @@ export default function Selection({ list, loading }: SelectionProps) {
 
                 {/* Left Panel */}
                 <div className="relative w-36 flex flex-col bg-gray-300 ml-6 mr-2 mb-6 rounded-lg opacity-80 items-center">                                                     
-                    <h3 className="sticky top-0 z-10 text-lg font-bold bg-gray-300 pt-6">TEAM</h3>
+                    <h3 className="sticky top-0 z-10 text-lg font-bold bg-gray-300 pt-3">TEAM</h3>
                     
                     {/* LOADING ANIMATION WHILE FETCHING */}
                     {isLoadingRandom && <div className="animate-spin rounded-full h-10 w-10 my-9 border-b-5 border-l-5 border-blue-500"></div>}

@@ -80,7 +80,13 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
         return (
           <button
             key={i}
-            onClick={() => onMoveSelect?.(i)}
+            onClick={() => {
+              if (move.pp === 0) {
+                toast.warning(`You can't use this ability anymore! You have ran out of power points for this move!`);
+                return;
+              }
+              onMoveSelect?.(i)
+            }}
             className={`p-2 mt-2 w-full border border-gray-700 rounded ${bgColor} text-white font-bold hover:brightness-110`}
           >
             <div className="select-none">{displayName}</div>
