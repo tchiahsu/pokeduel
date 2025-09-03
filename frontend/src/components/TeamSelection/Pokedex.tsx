@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useMemo } from 'react';
 import { searchPokeStats, searchPokeMoves } from '../../utils/searchAPI';
 import type { Pokemon } from '../../types/pokemon';
-import { shake } from '../../utils/effects';
+import { shake, removeHyphen } from '../../utils/helpers';
 import { toast } from 'sonner';
 import clsx from 'clsx';
 
@@ -132,7 +132,7 @@ const Pokedex = ({ pokemon, close, initialMoves, onConfirm, team }: PokedexProps
                 {pokeData ? (
                     <div className="space-y-3 relative">
                         {/* Pokemon Name */}
-                        <h2 className="text-[13px] font-bold text-blue-950 capitalize">{pokemon?.name}</h2> 
+                        <h2 className="text-[13px] font-bold text-blue-950 capitalize">{removeHyphen(pokemon?.name)}</h2> 
 
                         {/* Pokemon Stats */}    
                         <div className="bg-gray-50 rounded-lg pl-4 pr-4 space-y-1 capitalize">

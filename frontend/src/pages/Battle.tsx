@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { handleDeleteRoom } from "../utils/handleSocket";
 import { useSocket } from "../contexts/SocketContext";
+import { removeHyphen } from "../utils/helpers";
 import type { Event, attackData, switchData } from "../types/data";
 
 import bg1 from "../assets/bg_3.webp";
@@ -359,7 +360,7 @@ export default function Battle() {
       <div className="flex w-5/20 h-full justify-bottom items-end px-6 pt-6 z-100">
         {/* Opponent Pokemon Card */}
         <StatsCard
-          name={opponentCurrent.name || "Loading..."}
+          name={removeHyphen(opponentCurrent.name) || "Loading..."}
           image={opponentCurrent.frontSprite}
           HP={opponentCurrent.hp || 0}
           maxHP={opponentCurrent.maxHP}
@@ -455,7 +456,7 @@ export default function Battle() {
               moves={nextMoves}
               team={nextTeam}
               status={status}
-              currentPokemon={selfCurrent.name}
+              currentPokemon={removeHyphen(selfCurrent.name)}
               onMoveSelect={(index) => {
                 console.log("Selected move:", index);
                 setStatus(`You selected ${nextMoves[index].name}\nWaiting for opponent...`);
@@ -464,7 +465,7 @@ export default function Battle() {
               }}
               onSwitchSelect={(index) => {
                 // console.log("Selected switch with index:", index);
-                const selectedName = nextTeam[index].name;
+                const selectedName = removeHyphen(nextTeam[index].name);
                 setStatus(`You switched to ${selectedName}\nWaiting for opponent...`);
 
                 if (actionMode === "faint") {
@@ -492,7 +493,7 @@ export default function Battle() {
           <div className="flex w-5/20 justify-bottom items-end">
             <StatsCard
               key={selfCurrent.name} // re-render
-              name={selfCurrent.name}
+              name={removeHyphen(selfCurrent.name)}
               image={selfCurrent.frontSprite}
               HP={actionMode === "faint" ? 0 : selfCurrent.hp}
               maxHP={selfCurrent.maxHP}

@@ -5,7 +5,7 @@ import Button from "../components/Button";
 import InputBox from "../components/InputBox";
 import { useSocket } from "../contexts/SocketContext";
 import { toast } from "sonner";
-import { shake } from "../utils/effects";
+import { shake } from "../utils/helpers";
 
 export default function SinglePlayer() {
   const API_URL_BASE = "http://localhost:8000/room";

@@ -16,16 +16,21 @@ const socket: Socket = io(API_URL_BASE);
 
 function App() {
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
-  const mode: "singleplayer" | "multiplayer" = "multiplayer";
+  const [isLoading, setIsLoading] = useState(true);
+
   // Fetch the pokemon into the frontend
   useEffect(() => {
     async function fetchPokemon() {
       try {
+        setIsLoading(true);
         const res = await fetch(`${API_URL_BASE}/pokemon/default`);
         const data = await res.json();
         setPokemonList(data);
       } catch (e) {
         console.error("Error fetching default Pokemon:", e);
+        setIsLoading(false);
+      } finally {
+        setIsLoading(false);
       }
     }
     fetchPokemon();
@@ -39,7 +44,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/multiplayer" element={<Multiplayer />} />
-            <Route path="/team-selection/:roomId" element={<Selection list={pokemonList} />} />
+            <Route path="/team-selection/:roomId" element={<Selection list={pokemonList} loading={isLoading} />} />
             <Route path="/battle/:roomId" element={<Battle />} />
             <Route path="/single-player" element={<SinglePlayer />} />
           </Routes>
