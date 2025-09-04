@@ -14,15 +14,15 @@ import "./App.css";
 import type { Pokemon } from "./types/pokemon";
 import BackgroundMusic from "./components/BackgroundMusic";
 
-import bg1 from "../assets/bg_3.webp";
-import bg2 from "../assets/bg_2.jpg";
-import bg3 from "../assets/bg-battle.jpg";
-import bg4 from "../assets/bg-dark-forest.jpg";
-import bg5 from "../assets/bg-forrest.jpg";
-import bg6 from "../assets/bg-park2.jpg";
-import bg7 from "../assets/bg-path.jpg";
-import bg8 from "../assets/bg-snow.jpg";
-import bg9 from "../assets/bg-lava.jpg";
+import bg1 from "../src/assets/bg_3.webp";
+import bg2 from "../src/assets/bg_2.jpg";
+import bg3 from "../src/assets/bg-battle.jpg";
+import bg4 from "../src/assets/bg-dark-forest.jpg";
+import bg5 from "../src/assets/bg-forrest.jpg";
+import bg6 from "../src/assets/bg-park2.jpg";
+import bg7 from "../src/assets/bg-path.jpg";
+import bg8 from "../src/assets/bg-snow.jpg";
+import bg9 from "../src/assets/bg-lava.jpg";
 
 
 const API_URL_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
