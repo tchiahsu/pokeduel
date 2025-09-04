@@ -281,38 +281,39 @@ export default function Battle() {
   useEffect(() => {
     if (!currentEvent && eventQueue.length > 0) {
       const nextEvent = eventQueue[0];
-      setCurrentEvent(nextEvent);
-      setEventQueue((prev) => prev.slice(1));
       setStatus(nextEvent.message);
 
-      if (nextEvent.animation === "switch") {
-        const newPokemonData = {
-          name: nextEvent.switchData.name,
-          hp: nextEvent.switchData.hp,
-          maxHP: nextEvent.switchData.maxHP,
-          backSprite: nextEvent.switchData.backSprite,
-          frontSprite: nextEvent.switchData.frontSprite,
-        };
+      setTimeout(() => {
+        setCurrentEvent(nextEvent);
+        setEventQueue((prev) => prev.slice(1));
 
-        nextEvent.user === "self" ? setSelfCurrent(newPokemonData) : setOpponentCurrent(newPokemonData);
-      } else if (nextEvent.animation === "attack") {
-        if (nextEvent.user === "self") {
-          setOpponentCurrent((prev) => {
-            return { ...prev, hp: nextEvent.attackData.newHP };
-          });
-        } else {
-          setSelfCurrent((prev) => {
-            return { ...prev, hp: nextEvent.attackData.newHP };
-          });
-        }
-      }
-
-      if (nextEvent.animation === "none") {
-        setTimeout(() => {
+        if (nextEvent.animation === "none") {
           setCurrentEvent(null);
           nextEvent.onComplete?.();
-        }, 1000);
-      }
+        }
+
+        if (nextEvent.animation === "switch") {
+          const newPokemonData = {
+            name: nextEvent.switchData.name,
+            hp: nextEvent.switchData.hp,
+            maxHP: nextEvent.switchData.maxHP,
+            backSprite: nextEvent.switchData.backSprite,
+            frontSprite: nextEvent.switchData.frontSprite,
+          };
+
+          nextEvent.user === "self" ? setSelfCurrent(newPokemonData) : setOpponentCurrent(newPokemonData);
+        } else if (nextEvent.animation === "attack") {
+          if (nextEvent.user === "self") {
+            setOpponentCurrent((prev) => {
+              return { ...prev, hp: nextEvent.attackData.newHP };
+            });
+          } else {
+            setSelfCurrent((prev) => {
+              return { ...prev, hp: nextEvent.attackData.newHP };
+            });
+          }
+        }
+      }, 1500);
     }
 
     if (battleStarted && !currentEvent && eventQueue.length === 0) {
