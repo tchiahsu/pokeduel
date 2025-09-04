@@ -1,4 +1,4 @@
-const API_URL_BASE = "http://localhost:8000/room";
+const API_URL_BASE = (import.meta.env.VITE_BACKEND_URL ?? "http://localhost:8000") + "/room";
   
 // Handles deleting a room
 export const handleDeleteRoom = async (roomID: string | undefined) => {
