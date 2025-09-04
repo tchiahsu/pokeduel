@@ -10,6 +10,7 @@ import Battle from "./pages/Battle";
 import { SocketContext } from "./contexts/SocketContext";
 import "./App.css";
 import type { Pokemon } from "./types/pokemon";
+import BackgroundMusic from "./components/BackgroundMusic";
 
 const API_URL_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 const socket: Socket = io(API_URL_BASE);
@@ -40,6 +41,7 @@ function App() {
     <SocketContext.Provider value={socket}>
       <HashRouter>
         <Toaster position="top-center" />
+        <BackgroundMusic />
         <div>
           <Routes>
             <Route path="/" element={<Home />} />
