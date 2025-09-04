@@ -313,7 +313,7 @@ export default function Battle() {
             });
           }
         }
-      }, 1000);
+      }, 1500);
     }
 
     if (battleStarted && !currentEvent && eventQueue.length === 0) {
