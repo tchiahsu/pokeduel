@@ -14,6 +14,7 @@ interface StatsCardProps {
 const StatsCard: React.FC<StatsCardProps> = ({ name, image, HP, maxHP }) => {
   const [displayHP, setDisplayHP] = useState(HP);
   const HPPercentage = (displayHP / maxHP) * 100;
+  const isLoading = name === "Loading...";
 
   useEffect(() => {
     if (HP < displayHP) {
@@ -41,9 +42,10 @@ const StatsCard: React.FC<StatsCardProps> = ({ name, image, HP, maxHP }) => {
   return (
     <div className="bg-gray-300/80 rounded-lg p-4 flex-1 h-full shadow-lg select-none pointer-events-none">
       {/* For Name and Sprite of Current Pokemon */}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center">     
         <span className="text-xl font-bold">{name}</span>
-        <img src={image} alt={name} className="w-12 h-auto" />
+        {isLoading && <div className="animate-spin rounded-full h-10 w-10 my-9 border-b-5 border-l-5 border-blue-500"></div>}   
+        {!isLoading && <img src={image} alt={name} className="w-12 h-auto" />}
       </div>
       {/* For HP of Current Pokemon */}
       <div className="mt-14 text-lg text-left">

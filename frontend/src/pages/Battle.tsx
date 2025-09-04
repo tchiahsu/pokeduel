@@ -496,7 +496,7 @@ export default function Battle() {
           <div className="flex w-5/20 justify-bottom items-end">
             <StatsCard
               key={selfCurrent.name} // re-render
-              name={removeHyphen(selfCurrent.name)}
+              name={removeHyphen(selfCurrent.name) || "Loading..."}
               image={selfCurrent.frontSprite}
               HP={actionMode === "faint" ? 0 : selfCurrent.hp}
               maxHP={selfCurrent.maxHP}
