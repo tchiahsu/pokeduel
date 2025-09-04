@@ -114,7 +114,7 @@ export default function Battle() {
 
   useEffect(() => {
     function onGameStart(data: any) {
-      const { events, bgIndex } = data;
+      const { events } = data;
 
       const delay = isMultiplayer ? 3000 : 0;
       if (isMultiplayer) setWaitingMessage("Loading Battle...");
@@ -497,7 +497,7 @@ export default function Battle() {
           <div className="flex w-5/20 justify-bottom items-end">
             <StatsCard
               key={selfCurrent.name} // re-render
-              name={removeHyphen(selfCurrent.name)}
+              name={removeHyphen(selfCurrent.name) || "Loading..."}
               image={selfCurrent.frontSprite}
               HP={actionMode === "faint" ? 0 : selfCurrent.hp}
               maxHP={selfCurrent.maxHP}

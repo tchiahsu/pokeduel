@@ -7,7 +7,7 @@
 ![Socket.io](https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io&badgeColor=010101)
 ![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
 
-### **Play Now**: [Click here to play the game!](https://pokeduel-1r5s.onrender.com/)
+### **Play Now**: [Click here to play the game!](https://pokeduel-gbbx.onrender.com)
 
 ## About the Game
 
