@@ -40,3 +40,12 @@ export const roomIdToNumber = (id: string | undefined) => {
     }
     return Math.abs(hash) % 9
 }
+
+// Preload images
+export const preloadImg = (images: string[]) => {
+    images.forEach((img) => {
+        const image = new Image();
+        image.decoding = "async";
+        image.src = img;
+    })
+}
