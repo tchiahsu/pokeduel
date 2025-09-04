@@ -13,7 +13,7 @@ const BackgroundMusic = () => {
         audio.play().then(() => {
           setIsPlaying(true);
         }).catch((err) => {
-          console.warn("Autoplay prevented. Music will play after user interaction.");
+          console.warn("Autoplay prevented. Music will play after user interaction.", err);
         });
       }
     };
