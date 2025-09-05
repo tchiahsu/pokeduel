@@ -11,7 +11,7 @@ export default function SelfSwitchAnimation({
   newPokemon: string;
   onComplete: () => void;
 }) {
-  const [phase, setPhase] = useState<"recall" | "throw" | "summon">(prevPokemon ? "recall" : "throw");
+  const [phase, setPhase] = useState<"recall" | "hold" | "throw" | "summon">(prevPokemon ? "recall" : "hold");
 
   return (
     <>
@@ -27,18 +27,30 @@ export default function SelfSwitchAnimation({
         />
       )}
 
+      {phase === "hold" && (
+        <motion.img
+          src={pokeball}
+          alt="throw pokeball"
+          initial={{ x: -300, y: 0, opacity: 0, scale: 0.07, rotate: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: prevPokemon ? 0 : 1.5, duration: 0.01, ease: easeInOut }}
+          onAnimationComplete={() => setPhase("throw")}
+          className="w-3/4 h-auto select-none pointer-events-none"
+        />
+      )}
+
       {phase === "throw" && (
         <motion.img
           src={pokeball}
           alt="throw pokeball"
-          initial={{ x: 0, y: 0, scale: 0.07, rotate: 0 }}
+          initial={{ x: -300, y: 0, scale: 0.07, rotate: 0 }}
           animate={{
             x: [-300, -100, 0],
             y: [0, -185, -175, 0],
             scale: 0.07,
             rotate: -1500,
           }}
-          transition={{ delay: prevPokemon ? 0 : 1.5, duration: 0.9, ease: easeInOut }}
+          transition={{ duration: 0.9, ease: easeInOut }}
           onAnimationComplete={() => setPhase("summon")}
           className="w-3/4 h-auto select-none pointer-events-none"
         />

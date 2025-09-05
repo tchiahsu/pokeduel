@@ -11,7 +11,7 @@ export default class BotPlayer {
   private NAME: string = "COMPUTER";
 
   // The range of Pokemon the bot can have
-  private MIN_TEAM_AMOUNT = 4;
+  private MIN_TEAM_AMOUNT = 6;
   private MAX_TEAM_AMOUNT = 6;
 
   // The range of Pokemon from the entire list of Pokemon the bot can use

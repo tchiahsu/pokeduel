@@ -29,7 +29,7 @@ const StatsCard: React.FC<StatsCardProps> = ({ name, image, hp, maxHP }) => {
         }, 75);
 
         return () => clearInterval(interval);
-      }, 1500);
+      }, 1700);
 
       return () => clearTimeout(timeout);
     } else {

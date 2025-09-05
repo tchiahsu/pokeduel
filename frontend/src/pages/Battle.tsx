@@ -109,6 +109,7 @@ export default function Battle() {
   useEffect(() => {
     function onGameStart(data: any) {
       const { events } = data;
+      console.log("gameStart", events);
 
       const delay = isMultiplayer ? 3000 : 0;
       if (isMultiplayer) setWaitingMessage("Loading Battle...");
