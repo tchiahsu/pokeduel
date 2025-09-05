@@ -86,7 +86,7 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
                 toast.warning(`You can't use this ability anymore! You have ran out of power points for this move!`);
                 return;
               }
-              onMoveSelect?.(i)
+              onMoveSelect?.(i);
             }}
             className={`p-2 w-full shadow-lg rounded ${bgColor} text-white font-bold hover:brightness-110 cursor-pointer hover:scale-102 active:scale-98`}
           >
@@ -94,7 +94,9 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
               <div className="flex justify-start select-none">{displayName}</div>
               <div className="flex flex-row justify-between">
                 <div className="flex">{move.type}</div>
-                <div className="flex text-sm select-none">{move.pp}/{move.maxPP} PP</div>
+                <div className="flex text-sm select-none">
+                  {move.pp}/{move.maxPP} PP
+                </div>
               </div>
             </div>
           </button>
@@ -130,8 +132,12 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
           <div className="flex items-center gap-2">
             {poke.frontSprite && <img src={poke.frontSprite} alt={poke.name} className="h-full w-auto max-w-10" />}
           </div>
-          <span className="flex font-bold select-none overflow-hidden whitespace-nowrap">{removeHyphen(poke.name)}</span>
-          <span className="text-sm">{poke.hp}/{poke.maxHP}</span>
+          <span className="flex font-bold select-none overflow-hidden whitespace-nowrap">
+            {removeHyphen(poke.name)}
+          </span>
+          <span className="text-sm">
+            {poke.hp}/{poke.maxHP}
+          </span>
         </button>
       ))}
     </div>
@@ -142,7 +148,9 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
    */
   const renderStatus = () => (
     <div className="flex flex-col text-gray-600 justify-center items-start text-xl italic select-none pointer-events-none h-full">
-      {status?.split("\n").map((line) => <p key={line}>{line}</p>)}
+      {status?.split("\n").map((line) => (
+        <p key={line}>{line}</p>
+      ))}
     </div>
   );
 

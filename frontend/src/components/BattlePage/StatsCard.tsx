@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toTitleCase } from "../../utils/helpers";
 
 /**
@@ -13,30 +13,9 @@ interface StatsCardProps {
 }
 
 const StatsCard: React.FC<StatsCardProps> = ({ name, image, hp, maxHP }) => {
-  const [displayHP, setDisplayHP] = useState(hp);
+  const [displayHP] = useState(hp);
   const HPPercentage = (displayHP / maxHP) * 100;
   const isLoading = name === "Loading...";
-
-  // useEffect(() => {
-  //   if (hp < displayHP) {
-  //     const timeout = setTimeout(() => {
-  //       const interval = setInterval(() => {
-  //         setDisplayHP((prevHP) => {
-  //           if (prevHP > hp) return prevHP - 1;
-  //           clearInterval(interval);
-  //           return hp;
-  //         });
-  //       }, 75);
-
-  //       return () => clearInterval(interval);
-  //     }, 1700);
-
-  //     return () => clearTimeout(timeout);
-  //   } else {
-  //     setDisplayHP(hp);
-  //   }
-  // }, [hp]);
-
   // Gets the progress bar color based on HP
   const getHPColor = () => {
     if (HPPercentage <= 20) return "bg-red-600";
