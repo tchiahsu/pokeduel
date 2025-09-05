@@ -1,5 +1,6 @@
-import { motion, time } from "motion/react";
+import { motion } from "motion/react";
 import { useEffect, useState } from "react";
+import { toTitleCase } from "../../utils/helpers";
 
 /**
  * Prop that represents stats card of a Pokemon.
@@ -47,7 +48,7 @@ const StatsCard: React.FC<StatsCardProps> = ({ name, image, hp, maxHP }) => {
     <div className="bg-gray-300/80 rounded-lg p-4 flex-1 h-full shadow-lg select-none pointer-events-none">
       {/* For Name and Sprite of Current Pokemon */}
       <div className="flex justify-between items-center">
-        <span className="text-xl font-bold">{name}</span>
+        <span className="text-xl font-bold">{toTitleCase(name)}</span>
         {isLoading && (
           <div className="animate-spin rounded-full h-10 w-10 my-9 border-b-5 border-l-5 border-blue-500"></div>
         )}
