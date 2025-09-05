@@ -515,25 +515,13 @@ export default class BattleModel {
     const { player: player1 } = this.getPlayerAndMoveByID(this.player1ID);
     const { player: player2 } = this.getPlayerAndMoveByID(this.player2ID);
 
-    const p1Name = this.nameUtil.capitalize(player1.getName());
+    const p1Name = player1.getName();
     const p1Pokemon = this.nameUtil.capitalize(player1.getCurrentPokemon().getName());
-    const p2Name = this.nameUtil.capitalize(player2.getName());
+    const p2Name = player2.getName();
     const p2Pokemon = this.nameUtil.capitalize(player2.getCurrentPokemon().getName());
 
-    this.events.push(
-      this.createEvent(
-        this.player1ID,
-        "switch",
-        `${p1Name} sent out ${p1Pokemon}!`
-      )
-    );
-    this.events.push(
-      this.createEvent(
-        this.player2ID,
-        "switch",
-        `${p2Name} sent out ${p2Pokemon}!`
-      )
-    );
+    this.events.push(this.createEvent(this.player1ID, "switch", `${p1Name} sent out ${p1Pokemon}!`));
+    this.events.push(this.createEvent(this.player2ID, "switch", `${p2Name} sent out ${p2Pokemon}!`));
 
     const turnSummary = this.getTurnSummary();
 
