@@ -30,7 +30,7 @@ const bgImages = [bg1, bg2, bg3];
 function App() {
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [muted, setMuted] = useState(true)
+  const [muted, setMuted] = useState(false)
   const [showInstructions, setShowInstructions] = useState(false); 
 
   const openInstructions = () => {
