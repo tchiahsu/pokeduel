@@ -17,25 +17,25 @@ const StatsCard: React.FC<StatsCardProps> = ({ name, image, hp, maxHP }) => {
   const HPPercentage = (displayHP / maxHP) * 100;
   const isLoading = name === "Loading...";
 
-  useEffect(() => {
-    if (hp < displayHP) {
-      const timeout = setTimeout(() => {
-        const interval = setInterval(() => {
-          setDisplayHP((prevHP) => {
-            if (prevHP > hp) return prevHP - 1;
-            clearInterval(interval);
-            return hp;
-          });
-        }, 75);
+  // useEffect(() => {
+  //   if (hp < displayHP) {
+  //     const timeout = setTimeout(() => {
+  //       const interval = setInterval(() => {
+  //         setDisplayHP((prevHP) => {
+  //           if (prevHP > hp) return prevHP - 1;
+  //           clearInterval(interval);
+  //           return hp;
+  //         });
+  //       }, 75);
 
-        return () => clearInterval(interval);
-      }, 1700);
+  //       return () => clearInterval(interval);
+  //     }, 1700);
 
-      return () => clearTimeout(timeout);
-    } else {
-      setDisplayHP(hp);
-    }
-  }, [hp]);
+  //     return () => clearTimeout(timeout);
+  //   } else {
+  //     setDisplayHP(hp);
+  //   }
+  // }, [hp]);
 
   // Gets the progress bar color based on HP
   const getHPColor = () => {
@@ -49,14 +49,12 @@ const StatsCard: React.FC<StatsCardProps> = ({ name, image, hp, maxHP }) => {
       {/* For Name and Sprite of Current Pokemon */}
       <div className="flex justify-between items-center">
         <span className="text-xl font-bold">{toTitleCase(name)}</span>
-        {isLoading && (
-          <div className="animate-spin rounded-full h-10 w-10 border-b-5 border-l-5 border-blue-500"></div>
-        )}
+        {isLoading && <div className="animate-spin rounded-full h-10 w-10 border-b-5 border-l-5 border-blue-500"></div>}
         {!isLoading && <img src={image} alt={name} className="w-12 h-auto" />}
       </div>
       {/* For HP of Current Pokemon */}
       <div className="mt-14 text-lg text-left">
-        <strong>HP:</strong> {displayHP}/{maxHP}
+        <strong>HP:</strong> {hp}/{maxHP}
         {/* Progress bar as a nested div */}
         <div className="w-full h-4 bg-gray-400 rounded mt-1 overflow-hidden">
           <motion.div

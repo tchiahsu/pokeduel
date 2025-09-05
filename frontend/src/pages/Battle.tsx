@@ -23,6 +23,7 @@ import TakeDamageAnimation from "../components/animations/TakeDamageAnimation";
 import FaintAnimation from "../components/animations/FaintAnimation";
 import IntermediatePopUp from "../components/BattlePage/IntermediatePopUp";
 import DisconnectPopUp from "../components/BattlePage/DisconnectPopUp";
+import StatsCardAnimation from "../components/animations/StatsCardAnimation";
 
 /**
  * Represents a move that a current pokemon can use.
@@ -380,12 +381,21 @@ export default function Battle() {
       {/* Top Section */}
       <div className="flex w-5/20 h-full justify-bottom items-end px-6 pt-6 z-100">
         {/* Opponent Pokemon Card */}
-        <StatsCard
-          name={removeHyphen(opponentCurrent.name) || "Loading..."}
-          image={opponentCurrent.frontSprite}
-          hp={opponentCurrent.hp || 0}
-          maxHP={opponentCurrent.maxHP}
-        />
+        {opponentPrevious?.name === opponentCurrent.name ? (
+          <StatsCardAnimation
+            name={removeHyphen(opponentCurrent.name) || "Loading..."}
+            image={opponentCurrent.frontSprite}
+            hp={opponentCurrent.hp || 0}
+            maxHP={opponentCurrent.maxHP}
+          />
+        ) : (
+          <StatsCard
+            name={removeHyphen(opponentCurrent.name) || "Loading..."}
+            image={opponentCurrent.frontSprite}
+            hp={opponentCurrent.hp || 0}
+            maxHP={opponentCurrent.maxHP}
+          />
+        )}
       </div>
 
       {/* Middle Section Player Pokémon */}
@@ -512,7 +522,7 @@ export default function Battle() {
 
           {/* Player Stats*/}
           <div className="flex w-5/20 justify-bottom items-end">
-            <StatsCard
+            <StatsCardAnimation
               key={selfCurrent.name} // re-render
               name={removeHyphen(selfCurrent.name) || "Loading..."}
               image={selfCurrent.frontSprite}
