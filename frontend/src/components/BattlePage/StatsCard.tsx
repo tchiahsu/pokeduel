@@ -55,8 +55,9 @@ const StatsCard: React.FC<StatsCardProps> = ({ name, image, hp, maxHP }) => {
         {/* Progress bar as a nested div */}
         <div className="w-full h-4 bg-gray-400 rounded mt-1 overflow-hidden">
           <motion.div
+            initial={false}
             animate={{ width: `${HPPercentage}%` }}
-            style={displayHP === hp ? { width: "0%" } : {}}
+            style={displayHP === 0 ? { width: "0%" } : {}}
             className={`h-full ${getHPColor()}`}
             transition={{ ease: "easeOut" }}
           />
