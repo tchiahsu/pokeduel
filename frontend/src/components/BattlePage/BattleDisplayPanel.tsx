@@ -127,7 +127,7 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
           <div className="flex items-center gap-2">
             {poke.frontSprite && <img src={poke.frontSprite} alt={poke.name} className="h-full w-auto max-w-10" />}
           </div>
-          <span className="flex font-bold select-none">{removeHyphen(poke.name)}</span>
+          <span className="flex font-bold select-none overflow-hidden whitespace-nowrap">{removeHyphen(poke.name)}</span>
           <span className="text-sm">{poke.hp}/{poke.maxHP}</span>
         </button>
       ))}
