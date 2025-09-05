@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { motion, time } from "motion/react";
 import { useEffect, useState } from "react";
 
 /**
@@ -18,15 +18,19 @@ const StatsCard: React.FC<StatsCardProps> = ({ name, image, hp, maxHP }) => {
 
   useEffect(() => {
     if (hp < displayHP) {
-      const interval = setInterval(() => {
-        setDisplayHP((prevHP) => {
-          if (prevHP > hp) return prevHP - 1;
-          clearInterval(interval);
-          return hp;
-        });
-      }, 75);
+      const timeout = setTimeout(() => {
+        const interval = setInterval(() => {
+          setDisplayHP((prevHP) => {
+            if (prevHP > hp) return prevHP - 1;
+            clearInterval(interval);
+            return hp;
+          });
+        }, 75);
 
-      return () => clearInterval(interval);
+        return () => clearInterval(interval);
+      }, 1500);
+
+      return () => clearTimeout(timeout);
     } else {
       setDisplayHP(hp);
     }

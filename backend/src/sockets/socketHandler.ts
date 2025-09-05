@@ -113,7 +113,7 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
         io.to(player1ID).emit("turnSummary", turnSummary[player1ID]);
         io.to(player2ID).emit("turnSummary", turnSummary[player2ID]);
 
-        checkGameOver(battleModel);
+        if (checkGameOver(battleModel)) return;
 
         // Check if someone has fainted
         if (battleModel.hasFaintedPlayers()) {
@@ -142,9 +142,12 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
               if (battleModel.isBotPlayer(faintedPlayer1)) {
                 const { player: botPlayer } = battleModel.getPlayerAndMoveByID(faintedPlayer1);
                 if (botPlayer.hasRemainingPokemon()) {
+                  const alivePlayer = battleModel.getOppositePlayer(faintedPlayer1);
+                  io.to(alivePlayer).emit("waitForFaintedSwitch", {
+                    message: `Waiting for other player to switch pokemon`,
+                  });
                   battleModel.addBotSwitchMove();
                   battleModel.handleFaintedSwitch();
-                  const alivePlayer = battleModel.getOppositePlayer(faintedPlayer1);
                   const turnSummary = battleModel.getTurnSummary();
                   io.to(alivePlayer).emit("turnSummary", turnSummary[alivePlayer]);
                 } else {
@@ -206,7 +209,7 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
     });
 
     // Event to handle disconnect
-    socket.on(("disconnect"), () => {
+    socket.on("disconnect", () => {
       handlePlayerQuit(socket.id);
     });
 
