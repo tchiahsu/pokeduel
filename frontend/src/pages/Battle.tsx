@@ -7,13 +7,7 @@ import type { Event, attackData, switchData } from "../types/data";
 
 import bg1 from "../assets/bg_3.webp";
 import bg2 from "../assets/bg_2.jpg";
-import bg3 from "../assets/bg-battle.jpg";
-import bg4 from "../assets/bg-dark-forest.jpg";
-import bg5 from "../assets/bg-forrest.jpg";
-import bg6 from "../assets/bg-park2.jpg";
-import bg7 from "../assets/bg-path.jpg";
-import bg8 from "../assets/bg-snow.jpg";
-import bg9 from "../assets/bg-lava.jpg";
+import bg3 from "../assets/bg-snow.jpg";
 
 import StatsCard from "../components/BattlePage/StatsCard";
 import BattleActionsPanel from "../components/BattlePage/BattleActionsPanel";
@@ -99,7 +93,7 @@ export default function Battle() {
   const [showDisconnectPopup, setDisconnectPopUp] = useState(false);
   const [disconnectMessage, setDisconnectMessage] = useState("");
 
-  const bgImages = [bg1, bg2, bg3, bg4, bg5, bg6, bg7, bg8, bg9];
+  const bgImages = [bg1, bg2, bg3];
 
   const navigate = useNavigate();
   const socket = useSocket();
