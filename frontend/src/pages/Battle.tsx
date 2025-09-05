@@ -276,7 +276,7 @@ export default function Battle() {
       socket.off("endGame", onEndGame);
       socket.off("gameOver", onGameOver);
     };
-  }, [socket, navigate]);
+  }, [socket, navigate, selfCurrent, opponentCurrent]);
 
   useEffect(() => {
     if (!currentEvent && eventQueue.length > 0) {
