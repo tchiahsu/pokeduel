@@ -1,31 +1,9 @@
-import { useState} from 'react';
 import { Link } from 'react-router-dom';
 import homeBg from '../assets/bg-forrest.jpg';
 import Button from '../components/Button';
 
-import InstructionsPopup from '../components/InstructionPopUp';
-import { IoInformation, IoVolumeMute, IoVolumeHigh } from "react-icons/io5";
-import UtilityButton from '../components/UtilityButton';
-
-
-
 // Home Screen
 export default function Home() {
-    const [muted, setMuted] = useState(false);
-    const [showInstructions, setShowInstructions] = useState(false); 
-
-    const toggleMute = () => {
-        setMuted(!muted);
-    }
-
-    const openInstructions = () => {
-        setShowInstructions(true);
-    };
-
-    const closeInstructions = () => {
-        setShowInstructions(false);
-    };
-
     return (
         <div className="relative min-h-screen min-w-screen flex flex-col items-center justify-center">
             
@@ -34,16 +12,6 @@ export default function Home() {
                 src={homeBg}
                 className="absolute inset-0 w-full h-full object-cover opacity-50 pointer-events-none"
             />
-
-            {/* Utility Buttons */}
-            <div className="hidden md:flex absolute top-0 right-0 m-15 gap-4">
-                {/* Information Button */}
-                <UtilityButton onClick={openInstructions}><IoInformation className="w-full h-auto p-1" /></UtilityButton>
-                {/* Sound Button */}
-                <UtilityButton onClick={toggleMute} hoverColor={muted ? "blue" : "red"}>
-                    {muted ? <IoVolumeMute className="w-full h-auto p-2" /> : <IoVolumeHigh className="w-full h-auto p-2" />}
-                </UtilityButton>
-            </div>
 
             {/* Game Title */}
             <div className="text-8xl pb-6 tracking-[-8px] pokemon-h1 select-none z-10">
@@ -64,7 +32,6 @@ export default function Home() {
                     <Button>Multiplayer</Button>
                 </Link>
             </div>
-            {showInstructions && <InstructionsPopup onClose={closeInstructions} />}
         </div>
     );
 }
