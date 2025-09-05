@@ -40,24 +40,24 @@ interface BattleDisplayPanelProps {
  * Maps types to background color.
  */
 const typeColorMap: Record<string, string> = {
-  normal: "bg-gray-400",
-  fire: "bg-red-300",
-  water: "bg-blue-300",
-  electric: "bg-yellow-200",
-  grass: "bg-green-300",
-  ice: "bg-blue-100",
-  fighting: "bg-orange-400",
-  poison: "bg-purple-300",
-  ground: "bg-yellow-500",
-  flying: "bg-indigo-300",
-  psychic: "bg-pink-500",
-  bug: "bg-lime-400",
-  rock: "bg-yellow-700",
-  ghost: "bg-violet-900",
-  dragon: "bg-indigo-500",
-  dark: "bg-gray-700",
-  steel: "bg-slate-400",
-  fairy: "bg-fuchsia-300",
+  normal: "bg-gray-300",
+  fire: "bg-orange-500",
+  water: "bg-sky-500",
+  electric: "bg-yellow-400",
+  grass: "bg-green-500",
+  ice: "bg-cyan-300",
+  fighting: "bg-red-700",
+  poison: "bg-purple-600",
+  ground: "bg-amber-600",
+  flying: "bg-indigo-400",
+  psychic: "bg-pink-600",
+  bug: "bg-lime-600",
+  rock: "bg-stone-600",
+  ghost: "bg-violet-800",
+  dragon: "bg-indigo-700",
+  dark: "bg-neutral-800",
+  steel: "bg-slate-500",
+  fairy: "bg-pink-300",
 };
 
 const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
@@ -74,7 +74,7 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
    * @returns
    */
   const renderMoves = () => (
-    <div className="grid grid-cols-2 gap-2 place-items-center justify-items-stretch">
+    <div className="grid grid-cols-2 gap-4 place-items-center justify-items-stretch">
       {moves.map((move, i) => {
         var bgColor = typeColorMap[move.type?.toLowerCase?.() || "normal"] || "bg-gray-200";
         var displayName = move.name.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
@@ -88,7 +88,7 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
               }
               onMoveSelect?.(i)
             }}
-            className={`p-2 mt-2 w-full border border-gray-700 rounded ${bgColor} text-white font-bold hover:brightness-110`}
+            className={`p-2 w-full shadow-lg rounded ${bgColor} text-white font-bold hover:brightness-110`}
           >
             <div className="flex flex-col">
               <div className="flex justify-start select-none">{displayName}</div>
