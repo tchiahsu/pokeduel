@@ -122,8 +122,8 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
             }
             onSwitchSelect?.(i);
           }}
-          className={`flex w-full items-center justify-between gap-5 p-3 border rounded-md flex-row ${
-            poke.hp <= 0 ? "bg-gray-200 text-gray-500" : "bg-green-100 border-green-400"
+          className={`flex w-full items-center justify-between gap-5 p-3 border rounded-md flex-row hover:scale-105 active:scale-90 shadow-lg ${
+            poke.hp <= 0 ? "bg-gray-200 text-gray-500" : "bg-white"
           }`}
         >
           {/* Button Content */}
