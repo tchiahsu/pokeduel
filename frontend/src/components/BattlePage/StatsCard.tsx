@@ -42,9 +42,11 @@ const StatsCard: React.FC<StatsCardProps> = ({ name, image, HP, maxHP }) => {
   return (
     <div className="bg-gray-300/80 rounded-lg p-4 flex-1 h-full shadow-lg select-none pointer-events-none">
       {/* For Name and Sprite of Current Pokemon */}
-      <div className="flex justify-between items-center">     
+      <div className="flex justify-between items-center">
         <span className="text-xl font-bold">{name}</span>
-        {isLoading && <div className="animate-spin rounded-full h-10 w-10 my-9 border-b-5 border-l-5 border-blue-500"></div>}   
+        {isLoading && (
+          <div className="animate-spin rounded-full h-10 w-10 my-9 border-b-5 border-l-5 border-blue-500"></div>
+        )}
         {!isLoading && <img src={image} alt={name} className="w-12 h-auto" />}
       </div>
       {/* For HP of Current Pokemon */}
@@ -54,6 +56,7 @@ const StatsCard: React.FC<StatsCardProps> = ({ name, image, HP, maxHP }) => {
         <div className="w-full h-4 bg-gray-400 rounded mt-1 overflow-hidden">
           <motion.div
             animate={{ width: `${HPPercentage}%` }}
+            style={displayHP === 0 ? { width: "0%" } : {}}
             className={`h-full ${getHPColor()}`}
             transition={{ ease: "easeOut" }}
           />
