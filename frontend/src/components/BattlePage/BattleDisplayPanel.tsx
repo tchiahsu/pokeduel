@@ -127,7 +127,7 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
           <div className="flex items-center gap-2">
             {poke.frontSprite && <img src={poke.frontSprite} alt={poke.name} className="h-full w-auto max-w-10" />}
           </div>
-          <span className="flex font-bold select-none">{removeHyphen(poke.name)}</span>
+          <span className="flex font-bold select-none overflow-hidden whitespace-nowrap">{removeHyphen(poke.name)}</span>
           <span className="text-sm">{poke.hp}/{poke.maxHP}</span>
         </button>
       ))}
@@ -138,8 +138,8 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
    * Renders a status message.
    */
   const renderStatus = () => (
-    <div className="text-gray-600 flex justify-left items-center h-full text-xl italic select-none pointer-events-none">
-      {status}
+    <div className="flex flex-col text-gray-600 justify-center items-start text-xl italic select-none pointer-events-none h-full">
+      {status?.split("\n").map((line) => <p key={line}>{line}</p>)}
     </div>
   );
 
