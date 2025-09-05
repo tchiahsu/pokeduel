@@ -88,7 +88,7 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
               }
               onMoveSelect?.(i)
             }}
-            className={`p-2 w-full shadow-lg rounded ${bgColor} text-white font-bold hover:brightness-1 cursor-pointer hover:scale-105 active:scale-90`}
+            className={`p-2 w-full shadow-lg rounded ${bgColor} text-white font-bold hover:brightness-110 cursor-pointer hover:scale-105 active:scale-90`}
           >
             <div className="flex flex-col">
               <div className="flex justify-start select-none">{displayName}</div>
