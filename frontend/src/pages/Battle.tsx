@@ -281,39 +281,36 @@ export default function Battle() {
   useEffect(() => {
     if (!currentEvent && eventQueue.length > 0) {
       const nextEvent = eventQueue[0];
+      setCurrentEvent(nextEvent);
+      setEventQueue((prev) => prev.slice(1));
       setStatus(nextEvent.message);
 
-      setTimeout(() => {
-        setCurrentEvent(nextEvent);
-        setEventQueue((prev) => prev.slice(1));
-
-        if (nextEvent.animation === "none") {
+      if (nextEvent.animation === "none") {
+        setTimeout(() => {
           setCurrentEvent(null);
           nextEvent.onComplete?.();
-        }
+        }, 1000);
+      } else if (nextEvent.animation === "switch") {
+        const newPokemonData = {
+          name: nextEvent.switchData.name,
+          hp: nextEvent.switchData.hp,
+          maxHP: nextEvent.switchData.maxHP,
+          backSprite: nextEvent.switchData.backSprite,
+          frontSprite: nextEvent.switchData.frontSprite,
+        };
 
-        if (nextEvent.animation === "switch") {
-          const newPokemonData = {
-            name: nextEvent.switchData.name,
-            hp: nextEvent.switchData.hp,
-            maxHP: nextEvent.switchData.maxHP,
-            backSprite: nextEvent.switchData.backSprite,
-            frontSprite: nextEvent.switchData.frontSprite,
-          };
-
-          nextEvent.user === "self" ? setSelfCurrent(newPokemonData) : setOpponentCurrent(newPokemonData);
-        } else if (nextEvent.animation === "attack") {
-          if (nextEvent.user === "self") {
-            setOpponentCurrent((prev) => {
-              return { ...prev, hp: nextEvent.attackData.newHP };
-            });
-          } else {
-            setSelfCurrent((prev) => {
-              return { ...prev, hp: nextEvent.attackData.newHP };
-            });
-          }
+        nextEvent.user === "self" ? setSelfCurrent(newPokemonData) : setOpponentCurrent(newPokemonData);
+      } else if (nextEvent.animation === "attack") {
+        if (nextEvent.user === "self") {
+          setOpponentCurrent((prev) => {
+            return { ...prev, hp: nextEvent.attackData.newHP };
+          });
+        } else {
+          setSelfCurrent((prev) => {
+            return { ...prev, hp: nextEvent.attackData.newHP };
+          });
         }
-      }, 1500);
+      }
     }
 
     if (battleStarted && !currentEvent && eventQueue.length === 0) {
@@ -330,7 +327,7 @@ export default function Battle() {
   };
   const cancelQuit = () => setShowQuitConfirm(false);
 
-  return isGameOver ? (
+  return isGameOver && !isAnimating ? (
     <EndGameBox
       message={gameOverMessage}
       team={winningTeam}
@@ -366,7 +363,7 @@ export default function Battle() {
         <StatsCard
           name={removeHyphen(opponentCurrent.name) || "Loading..."}
           image={opponentCurrent.frontSprite}
-          HP={opponentCurrent.hp || 0}
+          hp={opponentCurrent.hp || 0}
           maxHP={opponentCurrent.maxHP}
         />
       </div>
@@ -499,7 +496,7 @@ export default function Battle() {
               key={selfCurrent.name} // re-render
               name={removeHyphen(selfCurrent.name) || "Loading..."}
               image={selfCurrent.frontSprite}
-              HP={actionMode === "faint" ? 0 : selfCurrent.hp}
+              hp={actionMode === "faint" ? 0 : selfCurrent.hp}
               maxHP={selfCurrent.maxHP}
             />
           </div>
