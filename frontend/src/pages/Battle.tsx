@@ -381,15 +381,15 @@ export default function Battle() {
       {/* Top Section */}
       <div className="flex w-5/20 h-full justify-bottom items-end px-6 pt-6 z-100">
         {/* Opponent Pokemon Card */}
-        {opponentPrevious?.name === opponentCurrent.name ? (
-          <StatsCardAnimation
+        {currentEvent?.user === "opponent" && currentEvent.animation === "switch" ? (
+          <StatsCard
             name={removeHyphen(opponentCurrent.name) || "Loading..."}
             image={opponentCurrent.frontSprite}
             hp={opponentCurrent.hp || 0}
             maxHP={opponentCurrent.maxHP}
           />
         ) : (
-          <StatsCard
+          <StatsCardAnimation
             name={removeHyphen(opponentCurrent.name) || "Loading..."}
             image={opponentCurrent.frontSprite}
             hp={opponentCurrent.hp || 0}
