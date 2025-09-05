@@ -485,7 +485,7 @@ export default function Battle() {
             <BattleActionsPanel
               onSelect={(mode) => setActionMode(mode)}
               onQuit={handleQuit}
-              isFainted={actionMode === "faint"}
+              isFainted={selfCurrent.hp === 0}
               disabled={isAnimating}
             />
           </div>
