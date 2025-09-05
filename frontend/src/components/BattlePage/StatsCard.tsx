@@ -7,30 +7,30 @@ import { useEffect, useState } from "react";
 interface StatsCardProps {
   name: string | undefined;
   image: string | undefined;
-  HP: number;
+  hp: number;
   maxHP: number;
 }
 
-const StatsCard: React.FC<StatsCardProps> = ({ name, image, HP, maxHP }) => {
-  const [displayHP, setDisplayHP] = useState(HP);
+const StatsCard: React.FC<StatsCardProps> = ({ name, image, hp, maxHP }) => {
+  const [displayHP, setDisplayHP] = useState(hp);
   const HPPercentage = (displayHP / maxHP) * 100;
   const isLoading = name === "Loading...";
 
   useEffect(() => {
-    if (HP < displayHP) {
+    if (hp < displayHP) {
       const interval = setInterval(() => {
         setDisplayHP((prevHP) => {
-          if (prevHP > HP) return prevHP - 1;
+          if (prevHP > hp) return prevHP - 1;
           clearInterval(interval);
-          return HP;
+          return hp;
         });
       }, 75);
 
       return () => clearInterval(interval);
     } else {
-      setDisplayHP(HP);
+      setDisplayHP(hp);
     }
-  }, [HP]);
+  }, [hp]);
 
   // Gets the progress bar color based on HP
   const getHPColor = () => {
@@ -56,7 +56,7 @@ const StatsCard: React.FC<StatsCardProps> = ({ name, image, HP, maxHP }) => {
         <div className="w-full h-4 bg-gray-400 rounded mt-1 overflow-hidden">
           <motion.div
             animate={{ width: `${HPPercentage}%` }}
-            style={displayHP === 0 ? { width: "0%" } : {}}
+            style={displayHP === hp ? { width: "0%" } : {}}
             className={`h-full ${getHPColor()}`}
             transition={{ ease: "easeOut" }}
           />
