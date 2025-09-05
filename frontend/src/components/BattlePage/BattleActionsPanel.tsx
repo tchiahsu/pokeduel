@@ -27,7 +27,7 @@ const BattleActionsPanel: React.FC<BattleActionsPanelProps> = ({ onSelect, onQui
         <button
           ref={attackButtonRef}
           onClick={handleAttackClick}
-          className="w-full py-2 bg-[#FFA500] hover:bg-[#FFA500]/60 rounded-lg flex items-center justify-center hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-2 bg-[#FFA500] hover:bg-yellow-400 rounded-lg flex items-center justify-center hover:scale-105 active:scale-90 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={disabled}
         >
           ATTACK
@@ -36,7 +36,7 @@ const BattleActionsPanel: React.FC<BattleActionsPanelProps> = ({ onSelect, onQui
       {/* Switch Button */}
         <button
           onClick={() => onSelect("switch")}
-          className="w-full py-2 bg-[#3B4CCA] hover:bg-[#3B4CCA]/60 rounded-lg flex items-center justify-center hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-2 bg-[#3B4CCA] hover:bg-blue-500 rounded-lg flex items-center justify-center hover:scale-105 active:scale-90 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={disabled}
         >
           SWITCH
@@ -45,7 +45,7 @@ const BattleActionsPanel: React.FC<BattleActionsPanelProps> = ({ onSelect, onQui
       {/* Quit Button */}
         <button
           onClick={onQuit}
-          className="w-full py-2 bg-[#FF0000] hover:bg-[#FF0000]/60 rounded-lg flex items-center hover:scale-105 justify-center"
+          className="w-full py-2 bg-red-500 hover:bg-[#FF0000] rounded-lg flex items-center hover:scale-105 active:scale-90 justify-center"
         >
           QUIT
         </button>
