@@ -76,11 +76,11 @@ function App() {
         <Toaster position="top-center" />
         {!muted && <BackgroundMusic />}
         {/* Utility Buttons */}
-        <div className="hidden md:flex absolute top-0 right-0 m-15 gap-4 z-20">
+        <div className="hidden md:flex absolute top-0 right-0 m-10 gap-4 z-20">
             {/* Information Button */}
             <UtilityButton onClick={openInstructions}><IoInformation className="w-full h-auto p-1" /></UtilityButton>
             {/* Sound Button */}
-            <UtilityButton onClick={toggleMute} hoverColor={muted ? "yellow" : "red"}>
+            <UtilityButton onClick={toggleMute} hoverColor={muted ? "blue" : "red"}>
                 {muted ? <IoVolumeMute className="w-full h-auto p-2" /> : <IoVolumeHigh className="w-full h-auto p-2" />}
             </UtilityButton>
             {showInstructions && <InstructionsPopup onClose={closeInstructions} />}

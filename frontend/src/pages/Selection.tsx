@@ -247,7 +247,7 @@ export default function Selection({ list, loading }: SelectionProps) {
                 <h3 className="text-4xl pokemon-h3 m-10 text-left select-none flex justify-center items-center">
                     Team Selection:
                 </h3>
-                <div className='flex justify-center items-center mr-4 gap-3'>
+                <div className='flex justify-center items-center mr-40 gap-3'>
                     <span ref={backRef}>
                         <Button onClick={() => {handleDeleteRoom(roomId), navigate("/")}} size="xs" variant="red">
                             Quit
