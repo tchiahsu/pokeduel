@@ -354,7 +354,7 @@ export default function Battle() {
             isVisible={true}
             message={waitingMessage}
             onClick={() => {
-              handleDeleteRoom(roomId), navigate("/");
+              socket.emit("quitGame"), handleDeleteRoom(roomId), navigate("/");
             }}
           />
         </div>

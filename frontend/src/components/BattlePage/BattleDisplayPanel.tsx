@@ -138,8 +138,8 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
    * Renders a status message.
    */
   const renderStatus = () => (
-    <div className="text-gray-600 flex justify-left items-center h-full text-xl italic select-none pointer-events-none">
-      {status}
+    <div className="flex flex-col text-gray-600 justify-center items-start text-xl italic select-none pointer-events-none h-full">
+      {status?.split("\n").map((line) => <p key={line}>{line}</p>)}
     </div>
   );
 
