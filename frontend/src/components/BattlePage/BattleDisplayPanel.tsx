@@ -90,9 +90,12 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
             }}
             className={`p-2 mt-2 w-full border border-gray-700 rounded ${bgColor} text-white font-bold hover:brightness-110`}
           >
-            <div className="select-none">{displayName}</div>
-            <div className="text-sm select-none">
-              {move.pp}/{move.maxPP} PP
+            <div className="flex flex-col">
+              <div className="flex justify-start select-none">{displayName}</div>
+              <div className="flex flex-row justify-between">
+                <div className="flex">{move.type}</div>
+                <div className="flex text-sm select-none">{move.pp}/{move.maxPP} PP</div>
+              </div>
             </div>
           </button>
         );
