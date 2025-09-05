@@ -227,6 +227,7 @@ export default function Battle() {
     }
 
     function onWaitForFaintedSwitch(data: any) {
+      setOpponentPrevious(null);
       setOpponentCurrent({
         name: opponentCurrent.name,
         hp: opponentCurrent.hp,
@@ -235,7 +236,6 @@ export default function Battle() {
         frontSprite: "",
       });
       setStatus(data.message);
-      setOpponentPrevious(null);
     }
 
     /**
