@@ -13,6 +13,7 @@ export default function TakeDamageAnimation({ user, pokemon }: { user: string; p
         animate={{
           opacity: [1, 0, 1, 0, 1, 0, 1],
           filter: [
+            "brightness(1)",
             "brightness(1.5)",
             "brightness(1)",
             "brightness(1.5)",
@@ -21,7 +22,7 @@ export default function TakeDamageAnimation({ user, pokemon }: { user: string; p
             "brightness(1)",
           ],
         }}
-        transition={{ duration: 0.5, ease: easeInOut, delay: 0.2 }}
+        transition={{ delay: 1.7, duration: 0.5, ease: easeInOut }}
         className={positioning}
       />
     </>

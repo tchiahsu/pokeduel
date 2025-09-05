@@ -19,7 +19,7 @@ export default function FaintAnimation({
         alt={`${user}'s pokemon faints`}
         initial={{ opacity: 1 }}
         animate={{ y: [0, 50], opacity: 0 }}
-        transition={{ duration: 0.5, ease: easeInOut }}
+        transition={{ delay: 1.5, duration: 0.5, ease: easeInOut }}
         onAnimationComplete={onComplete}
         className={positioning}
       />
