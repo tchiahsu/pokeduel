@@ -199,6 +199,7 @@ export default function Battle() {
      * @param summary array of turn event messages from the server
      */
     function onTurnSummary(events: any[]) {
+      console.log("turnSummary", events);
       setEventQueue((prevEvents) => [...prevEvents, ...events]);
     }
 
@@ -227,15 +228,27 @@ export default function Battle() {
     }
 
     function onWaitForFaintedSwitch(data: any) {
-      setOpponentPrevious(null);
-      setOpponentCurrent({
-        name: opponentCurrent.name,
-        hp: opponentCurrent.hp,
-        maxHP: opponentCurrent.maxHP,
-        backSprite: "",
-        frontSprite: "",
-      });
-      setStatus(data.message);
+      setEventQueue((events) => [
+        ...events,
+        {
+          user: "opponent", // "self" | "opponent"
+          animation: "none", // "attack" | "switch" | "status" | "faint" | "none"
+          message: "The opponent's Pokemon has fainted! Wait for their next Pokemon!",
+          attackData: {} as attackData,
+          switchData: {} as switchData,
+          onComplete: () => {
+            setOpponentPrevious(null);
+            setOpponentCurrent({
+              name: opponentCurrent.name,
+              hp: opponentCurrent.hp,
+              maxHP: opponentCurrent.maxHP,
+              backSprite: "",
+              frontSprite: "",
+            });
+            setStatus(data.message);
+          },
+        },
+      ]);
     }
 
     /**
