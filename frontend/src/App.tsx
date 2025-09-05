@@ -13,6 +13,9 @@ import { SocketContext } from "./contexts/SocketContext";
 import "./App.css";
 import type { Pokemon } from "./types/pokemon";
 import BackgroundMusic from "./components/BackgroundMusic";
+import UtilityButton from "./components/UtilityButton";
+import InstructionsPopup from './components/InstructionPopUp';
+import { IoInformation, IoVolumeMute, IoVolumeHigh } from "react-icons/io5";
 
 import bg1 from "../src/assets/bg_3.webp";
 import bg2 from "../src/assets/bg_2.jpg";
@@ -33,6 +36,20 @@ const bgImages = [bg1, bg2, bg3, bg4, bg5, bg6, bg7, bg8, bg9];
 function App() {
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [muted, setMuted] = useState(true)
+  const [showInstructions, setShowInstructions] = useState(false); 
+
+  const openInstructions = () => {
+        setShowInstructions(true);
+  };
+
+  const closeInstructions = () => {
+        setShowInstructions(false);
+  };
+    
+  const toggleMute = () => {
+    setMuted(!muted);
+  }
 
   // Fetch the pokemon into the frontend
   useEffect(() => {
@@ -57,7 +74,18 @@ function App() {
     <SocketContext.Provider value={socket}>
       <HashRouter>
         <Toaster position="top-center" />
-        <BackgroundMusic />
+        {!muted && <BackgroundMusic />}
+        {/* Utility Buttons */}
+        <div className="hidden md:flex absolute top-0 right-0 m-15 gap-4 z-20">
+            {/* Information Button */}
+            <UtilityButton onClick={openInstructions}><IoInformation className="w-full h-auto p-1" /></UtilityButton>
+            {/* Sound Button */}
+            <UtilityButton onClick={toggleMute} hoverColor={muted ? "yellow" : "red"}>
+                {muted ? <IoVolumeMute className="w-full h-auto p-2" /> : <IoVolumeHigh className="w-full h-auto p-2" />}
+            </UtilityButton>
+            {showInstructions && <InstructionsPopup onClose={closeInstructions} />}
+        </div>
+
         <div>
           <Routes>
             <Route path="/" element={<Home />} />
