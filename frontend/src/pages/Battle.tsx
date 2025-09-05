@@ -261,11 +261,23 @@ export default function Battle() {
     }
 
     function onGameOver({ message, team }: any) {
-      setGameOverMessage(message);
-      setWinningTeam(team);
-      const winner = message.split(" ")[0];
-      setWinnerName(winner);
-      setIsGameOver(true);
+      setEventQueue((events) => [
+        ...events,
+        {
+          user: "self", // "self" | "opponent"
+          animation: "none", // "attack" | "switch" | "status" | "faint" | "none"
+          message: "Game Over!",
+          attackData: {} as attackData,
+          switchData: {} as switchData,
+          onComplete: () => {
+            setGameOverMessage(message);
+            setWinningTeam(team);
+            const winner = message.split(" ")[0];
+            setWinnerName(winner);
+            setIsGameOver(true);
+          },
+        },
+      ]);
     }
 
     socket.on("waitingForPlayer", onWaitingForPlayer);
