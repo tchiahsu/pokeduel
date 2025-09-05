@@ -50,7 +50,7 @@ const StatsCard: React.FC<StatsCardProps> = ({ name, image, hp, maxHP }) => {
       <div className="flex justify-between items-center">
         <span className="text-xl font-bold">{toTitleCase(name)}</span>
         {isLoading && (
-          <div className="animate-spin rounded-full h-10 w-10 my-9 border-b-5 border-l-5 border-blue-500"></div>
+          <div className="animate-spin rounded-full h-10 w-10 border-b-5 border-l-5 border-blue-500"></div>
         )}
         {!isLoading && <img src={image} alt={name} className="w-12 h-auto" />}
       </div>
