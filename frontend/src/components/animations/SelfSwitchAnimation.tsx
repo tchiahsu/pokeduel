@@ -21,7 +21,7 @@ export default function SelfSwitchAnimation({
           alt="recall pokemon"
           initial={{ x: 0, y: 0, filter: ["brightness(1)"], scale: 1 }}
           animate={{ x: -100, y: -100, filter: ["brightness(50)"], opacity: 0, scale: 0 }}
-          transition={{ duration: 0.4, ease: easeInOut }}
+          transition={{ delay: 1.5, duration: 0.4, ease: easeInOut }}
           onAnimationComplete={() => setPhase("throw")}
           className="w-3/4 h-auto select-none pointer-events-none"
         />
@@ -38,7 +38,7 @@ export default function SelfSwitchAnimation({
             scale: 0.07,
             rotate: -1500,
           }}
-          transition={{ duration: 0.9, ease: easeInOut }}
+          transition={{ delay: prevPokemon ? 0 : 1.5, duration: 0.9, ease: easeInOut }}
           onAnimationComplete={() => setPhase("summon")}
           className="w-3/4 h-auto select-none pointer-events-none"
         />

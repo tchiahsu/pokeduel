@@ -24,7 +24,7 @@ export default function OpponentSwitchAnimation({
           alt="recall pokemon"
           initial={{ x: 0, y: 0, filter: ["brightness(1)"], scale: 1 }}
           animate={{ x: 100, y: -100, filter: ["brightness(50)"], opacity: 0, scale: 0 }}
-          transition={{ duration: 0.4, ease: easeInOut }}
+          transition={{ delay: 1.5, duration: 0.4, ease: easeInOut }}
           onAnimationComplete={() => setPhase("closedBall")}
           className="w-2/4 h-auto select-none pointer-events-none"
         />
@@ -36,7 +36,7 @@ export default function OpponentSwitchAnimation({
           alt="closed pokeball"
           initial={{ opacity: 0.99, scale: 0.1 }}
           animate={{ opacity: 1, scale: 0.1 }}
-          transition={{ duration: 1, ease: easeInOut }}
+          transition={{ delay: prevPokemon ? 0 : 1.5, duration: 1, ease: easeInOut }}
           onAnimationComplete={() => setPhase("openingBall")}
           className="w-2/4 h-auto select-none pointer-events-none"
         />
