@@ -17,21 +17,15 @@ import UtilityButton from "./components/UtilityButton";
 import InstructionsPopup from './components/InstructionPopUp';
 import { IoInformation, IoVolumeMute, IoVolumeHigh } from "react-icons/io5";
 
-import bg1 from "../src/assets/bg_3.webp";
-import bg2 from "../src/assets/bg_2.jpg";
-import bg3 from "../src/assets/bg-battle.jpg";
-import bg4 from "../src/assets/bg-dark-forest.jpg";
-import bg5 from "../src/assets/bg-forrest.jpg";
-import bg6 from "../src/assets/bg-park2.jpg";
-import bg7 from "../src/assets/bg-path.jpg";
-import bg8 from "../src/assets/bg-snow.jpg";
-import bg9 from "../src/assets/bg-lava.jpg";
+import bg1 from "./assets/bg_3.webp";
+import bg2 from "./assets/bg_2.jpg";
+import bg3 from "./assets/bg-snow.jpg";
 
 
 const API_URL_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 const socket: Socket = io(API_URL_BASE);
 
-const bgImages = [bg1, bg2, bg3, bg4, bg5, bg6, bg7, bg8, bg9];
+const bgImages = [bg1, bg2, bg3];
 
 function App() {
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);

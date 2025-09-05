@@ -38,7 +38,7 @@ export const roomIdToNumber = (id: string | undefined) => {
         hash = (hash << 5) - hash + id.charCodeAt(i);
         hash |= 0;
     }
-    return Math.abs(hash) % 9
+    return Math.abs(hash) % 3
 }
 
 // Preload images
