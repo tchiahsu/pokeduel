@@ -237,7 +237,7 @@ export default function Battle() {
         {
           user: "opponent", // "self" | "opponent"
           animation: "none", // "attack" | "switch" | "status" | "faint" | "none"
-          message: "The opponent's Pokemon has fainted! Wait for their next Pokemon!",
+          message: "The opponent's Pokemon has fainted!\nWait for their next Pokemon!",
           attackData: {} as attackData,
           switchData: {} as switchData,
           onComplete: () => {
