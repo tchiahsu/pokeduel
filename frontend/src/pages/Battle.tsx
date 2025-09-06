@@ -196,8 +196,8 @@ export default function Battle() {
      */
     function onTurnSummary(events: any[]) {
       console.log("turnSummary", events);
-      setWaitForFaintedSwitch(false);
       setEventQueue((prevEvents) => [...prevEvents, ...events]);
+      setWaitForFaintedSwitch(false);
     }
 
     function onRequestFaintedSwitch() {
@@ -243,7 +243,7 @@ export default function Battle() {
               frontSprite: "",
             });
             setStatus(data.message);
-            setWaitForFaintedSwitch(true);
+            mode === "multiplayer" ? setWaitForFaintedSwitch(true) : setWaitForFaintedSwitch(false);
           },
         },
       ]);
