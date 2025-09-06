@@ -95,7 +95,7 @@ export default function Battle() {
   const loadingTimeoutRef = useRef<number | null>(null);
   const [showDisconnectPopup, setDisconnectPopUp] = useState(false);
   const [disconnectMessage, setDisconnectMessage] = useState("");
-  const [waitForFaintedSwitch, setWaitForFaintedSwitch] = useState(false);
+  const [isWaitForFaintedSwitch, setIsWaitForFaintedSwitch] = useState(false);
 
   const bgImages = [bg1, bg2, bg3];
 
@@ -203,7 +203,7 @@ export default function Battle() {
     function onTurnSummary(events: any[]) {
       console.log("turnSummary", events);
       setEventQueue((prevEvents) => [...prevEvents, ...events]);
-      setWaitForFaintedSwitch(false);
+      setIsWaitForFaintedSwitch(false);
     }
 
     function onRequestFaintedSwitch() {
@@ -226,6 +226,7 @@ export default function Battle() {
               frontSprite: "",
             });
             setActionMode("faint");
+            setIsWaitForFaintedSwitch(true);
           },
         },
       ]);
@@ -251,7 +252,7 @@ export default function Battle() {
               frontSprite: "",
             });
             setStatus(data.message);
-            mode === "multiplayer" ? setWaitForFaintedSwitch(true) : setWaitForFaintedSwitch(false);
+            mode === "multiplayer" ? setIsWaitForFaintedSwitch(true) : setIsWaitForFaintedSwitch(false);
           },
         },
       ]);
@@ -498,7 +499,7 @@ export default function Battle() {
               moves={nextMoves}
               team={nextTeam}
               status={status}
-              currentPokemon={removeHyphen(selfCurrent.name)}
+              currentPokemon={toTitleCase(removeHyphen(selfCurrent.name))}
               onMoveSelect={(index) => {
                 console.log("Selected move:", index);
                 setStatus(`You selected ${toTitleCase(removeHyphen(nextMoves[index].name))}\nWaiting for opponent...`);
@@ -527,7 +528,7 @@ export default function Battle() {
               onSelect={(mode) => setActionMode(mode)}
               onQuit={handleQuit}
               isFainted={selfCurrent.hp === 0}
-              disabled={isAnimating || waitForFaintedSwitch}
+              disabled={isAnimating || isWaitForFaintedSwitch}
             />
           </div>
 
