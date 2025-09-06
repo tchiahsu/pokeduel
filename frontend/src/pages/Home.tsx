@@ -35,7 +35,7 @@ export default function Home() {
 
             {/* Credits */}
             <div className="absolute bottom-5 text-xs text-gray-600">
-                Designed and Built by Harrison Pham, Bhoomika Gupta & Tony Hsu.
+                Designed and Built by Tony Hsu Tai, Bhoomika Gupta, Harrison Pham.
                 <br /><br/>
                 Powered by PokéAPI.
             </div>

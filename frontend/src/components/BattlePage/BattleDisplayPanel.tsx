@@ -125,7 +125,7 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
             }
             onSwitchSelect?.(i);
           }}
-          className={`flex w-full justify-between gap-5 p-3 rounded-md flex-row hover:scale-102 active:scale-98 shadow-lg overflow-x-hidden ${
+          className={`flex w-full justify-between gap-5 p-3 rounded-md flex-row hover:scale-102 active:scale-98 shadow-lg overflow-x-hidden
             poke.hp <= 0 ? "bg-red-300 text-gray-500" : "bg-green-100"
           }`}
         >
