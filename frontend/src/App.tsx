@@ -68,7 +68,7 @@ function App() {
     <SocketContext.Provider value={socket}>
       <HashRouter>
         <Toaster position="top-center" />
-        {!muted && <BackgroundMusic />}
+        {!muted && <BackgroundMusic unmute={setMuted}/>}
         {/* Utility Buttons */}
         <div className="hidden md:flex absolute top-0 right-0 m-10 gap-4 z-20">
             {/* Information Button */}

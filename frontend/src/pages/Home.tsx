@@ -32,6 +32,13 @@ export default function Home() {
                     <Button>Multiplayer</Button>
                 </Link>
             </div>
+
+            {/* Credits */}
+            <div className="absolute bottom-5 text-xs text-gray-600">
+                Designed and Built by Harrison Pham, Bhoomika Gupta & Tony Hsu.
+                <br /><br/>
+                Powered by PokéAPI.
+            </div>
         </div>
     );
 }

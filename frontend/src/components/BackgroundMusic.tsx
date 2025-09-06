@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import bgMusic from "../assets/battle_music.mp3";
 
-const BackgroundMusic = () => {
+type BackgroundMusicProps = {
+  unmute: (value: boolean) => void;
+}
+
+const BackgroundMusic = ({ unmute }: BackgroundMusicProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -12,6 +16,7 @@ const BackgroundMusic = () => {
       if (audio && !isPlaying) {
         audio.play().then(() => {
           setIsPlaying(true);
+          unmute(false);
         }).catch((err) => {
           console.warn("Autoplay prevented. Music will play after user interaction.", err);
         });
