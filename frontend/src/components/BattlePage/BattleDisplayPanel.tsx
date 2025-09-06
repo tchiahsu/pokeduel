@@ -133,7 +133,7 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
           {poke.frontSprite && <img src={poke.frontSprite} alt={poke.name} className="h-full w-auto max-w-10" />}
 
           {/* Right Side */}
-          <div className="flex flex-col w-full">
+          <div className="flex flex-col w-full gap-1">
             {/* Pokemon Name */}
             <div className="flex justify-start overflow-hidden whitespace-nowrap">
               {toTitleCase(removeHyphen(poke.name))}
@@ -142,10 +142,10 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
             {/* Pokemon Type and HP */}
             <div className="flex flex-row justify-between items-center">
               {/* Type */}
-              <div className="flex text-xs">{poke.types.length === 1 ? poke.types[0] : poke.types[0] + ", " + poke.types[1]}</div>
+              <div className="flex text-[10px]">{poke.types.length === 1 ? poke.types[0] : poke.types[0] + "/" + poke.types[1]}</div>
 
               {/* HP */}
-              <div className="flex">{poke.hp}/{poke.maxHP}</div>
+              <div className="flex text-[10px]">{poke.hp}/{poke.maxHP}</div>
             </div>
           </div>
         </button>

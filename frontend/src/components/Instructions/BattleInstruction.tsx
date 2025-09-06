@@ -110,7 +110,7 @@ const BattleInstruction: React.FC = () => {
           {`Engage in a turn-based battle using your selected team of up to 6 Pokémon. Choose moves, switch strategically and aim to defeat your opponent's team.`}
         </p>
         <p>
-          {`Note: Some Pokémon sprites may be unavailable, in which case a default image will be shown.`}
+          {`Note: Some Pokémon sprites may be unavailable, in which case a unknown Pokémon will be shown.`}
         </p>
       </div>
       {battleInstruction.map((section) => (
