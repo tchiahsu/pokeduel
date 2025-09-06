@@ -11,7 +11,7 @@ import teamPanel from '../../assets/selection_steps/Team_Panel.png';
 import topButtons from '../../assets/selection_steps/Top_Buttons.png';
 
 
-const selectionInstruction = [
+const mainInstruction = [
   {
     title: "Main Page",
     content: [
@@ -107,15 +107,15 @@ const selectionInstruction = [
   },
 ];
 
-const SelectionInstruction: React.FC = () => {
+const MainInstruction: React.FC = () => {
   return (
     
     <div className="flex flex-col gap-6 overflow-y-auto items-center">
-      <h2 className="text-2xl">Team Selection</h2>
+      <h2 className="text-2xl">Home Page</h2>
       <p className="text-[11px] -mt-4 text-gray-500">
         {`Build a battle-ready team of up to 6 Pokemon, each tuned with a moveset of up to 4 moves.`}
       </p>
-      {selectionInstruction.map((section) => (
+      {mainInstruction.map((section) => (
         <Section 
           title={section.title}
           content={section.content}
@@ -125,4 +125,4 @@ const SelectionInstruction: React.FC = () => {
   );
 };
 
-export default SelectionInstruction;
+export default MainInstruction;
