@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { handleDeleteRoom } from "../utils/handleSocket";
 import { useSocket } from "../contexts/SocketContext";
-import { removeHyphen, roomIdToNumber } from "../utils/helpers";
+import { removeHyphen, toTitleCase, roomIdToNumber } from "../utils/helpers";
 import type { Event, attackData, switchData } from "../types/data";
 
 import bg1 from "../assets/bg_3.webp";
@@ -492,7 +492,7 @@ export default function Battle() {
               currentPokemon={removeHyphen(selfCurrent.name)}
               onMoveSelect={(index) => {
                 console.log("Selected move:", index);
-                setStatus(`You selected ${nextMoves[index].name}\nWaiting for opponent...`);
+                setStatus(`You selected ${toTitleCase(removeHyphen(nextMoves[index].name))}\nWaiting for opponent...`);
                 setActionMode("none");
                 socket.emit("submitMove", { action: "attack", index: index });
               }}
