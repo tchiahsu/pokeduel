@@ -354,7 +354,7 @@ export default function Battle() {
   //Functions to handle quitting the battle
   const handleQuit = () => setShowQuitConfirm(true);
   const confirmQuit = () => {
-    socket.emit("quitGame"), handleDeleteRoom(roomId);
+    socket.emit("quitGame");
     navigate("/");
   };
   const cancelQuit = () => setShowQuitConfirm(false);

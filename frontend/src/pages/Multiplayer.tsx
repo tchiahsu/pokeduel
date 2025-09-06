@@ -3,6 +3,7 @@ import { useState, useRef } from "react";
 import homeBg from "../assets/bg-forrest.jpg";
 import Button from "../components/Button";
 import InputBox from "../components/InputBox";
+import { handleDeleteRoom } from "../utils/handleSocket";
 import { toast } from "sonner";
 import { shake } from "../utils/helpers";
 import { useNavigate } from "react-router-dom";
@@ -57,7 +58,7 @@ export default function Multiplayer() {
       return;
     }
     setMode("join");
-  }
+  };
 
   // Handles when a user clicks "START GAME"
   const handleStartGame = async () => {
@@ -85,11 +86,12 @@ export default function Multiplayer() {
     }
 
     socket.emit("joinRoom", roomID);
-    navigate(`/team-selection/${roomID}`, { state: { playerName, mode: 'multiplayer' } });
+    navigate(`/team-selection/${roomID}`, { state: { playerName, mode: "multiplayer" } });
   };
 
   // Handles when a user clicks Leave button in join mode
   const handleLeaveRoom = () => {
+    handleDeleteRoom(roomID);
     setRoomID("");
     setMode(null);
   };
@@ -97,17 +99,13 @@ export default function Multiplayer() {
   // Copy the text to system
   const copy = () => {
     navigator.clipboard.writeText(roomID);
-    toast.info("Room ID Copied!")
+    toast.info("Room ID Copied!");
   };
 
   return (
     <div className="relative min-h-screen min-w-screen flex flex-col items-center justify-center text-black">
-
       {/* Background Image */}
-      <img
-        src={homeBg}
-        className="absolute inset-0 w-full h-full object-cover opacity-50 pointer-events-none"
-      />
+      <img src={homeBg} className="absolute inset-0 w-full h-full object-cover opacity-50 pointer-events-none" />
 
       {/* Game Title */}
       <div className="flex flex-col gap-6 z-10">
@@ -157,11 +155,8 @@ export default function Multiplayer() {
 
           {/* Action Buttons */}
           <div className="flex flex-col w-2/5 justify-center items-center gap-4 z-10">
-
             <div className="flex items-center gap-2">
-              <span className="bg-gray-200 border-2 border-gray-400 rounded-lg py-2 px-20 text-gray-700">
-                {roomID}
-              </span>
+              <span className="bg-gray-200 border-2 border-gray-400 rounded-lg py-2 px-20 text-gray-700">{roomID}</span>
               <button
                 onClick={copy}
                 className="border-2 border-blue-600 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:border-blue"
@@ -169,11 +164,9 @@ export default function Multiplayer() {
                 Copy
               </button>
             </div>
-            
+
             <div className="flex gap-4">
-              <Button onClick={handleLeaveRoom}>
-                Back to Home
-              </Button>
+              <Button onClick={handleLeaveRoom}>Back to Home</Button>
               <span ref={startRef}>
                 <Button onClick={handleStartGame} disabled={!roomID}>
                   Start Game
@@ -193,11 +186,14 @@ export default function Multiplayer() {
 
           {/* Action Buttons */}
           <div className="flex flex-col w-2/5 justify-center items-center gap-4 z-10">
-            <InputBox placeholder="Enter Room ID" value={roomID} onChange={(e) => setRoomID(e.target.value)} onEnter={handleStartGame} />
+            <InputBox
+              placeholder="Enter Room ID"
+              value={roomID}
+              onChange={(e) => setRoomID(e.target.value)}
+              onEnter={handleStartGame}
+            />
             <div className="flex gap-4">
-              <Button onClick={handleLeaveRoom}>
-                Back to Home
-              </Button>
+              <Button onClick={handleLeaveRoom}>Back to Home</Button>
               <span ref={startRef}>
                 <Button onClick={handleStartGame} disabled={!roomID}>
                   Start Game

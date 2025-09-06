@@ -44,8 +44,11 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
       io.to(remainingPlayer).emit("endGame", {
         message: `Opponent has disconnected`,
       });
+      roomManager.deleteRoom(roomID);
+      console.log(`Room ${roomID} deleted`);
     } else if (roomManager.isWaitingRoomEmpty(roomID) || roomManager.isSinglePlayerRoom(roomID)) {
       roomManager.deleteRoom(roomID);
+      console.log(`Room ${roomID} deleted`);
     }
   }
 
