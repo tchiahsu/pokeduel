@@ -119,7 +119,7 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
               toast.warning(`${toTitleCase(removeHyphen(poke.name))} has fainted! Select another Pokemon`);
               return;
             }
-            if (poke.name === currentPokemon) {
+            if (toTitleCase(removeHyphen(poke.name)) === currentPokemon) {
               toast.error("Cannot switch to current Pokemon");
               return;
             }

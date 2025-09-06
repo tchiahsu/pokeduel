@@ -499,7 +499,7 @@ export default function Battle() {
               moves={nextMoves}
               team={nextTeam}
               status={status}
-              currentPokemon={removeHyphen(selfCurrent.name)}
+              currentPokemon={toTitleCase(removeHyphen(selfCurrent.name))}
               onMoveSelect={(index) => {
                 console.log("Selected move:", index);
                 setStatus(`You selected ${toTitleCase(removeHyphen(nextMoves[index].name))}\nWaiting for opponent...`);
