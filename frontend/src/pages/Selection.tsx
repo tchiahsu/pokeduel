@@ -249,7 +249,13 @@ export default function Selection({ list, loading }: SelectionProps) {
                 </h3>
                 <div className='flex justify-center items-center mr-40 gap-3'>
                     <span ref={backRef}>
-                        <Button onClick={() => {handleDeleteRoom(roomId), navigate("/")}} size="xs" variant="red">
+                        <Button onClick={() => {
+                                mode === "singleplayer" && handleDeleteRoom(roomId),
+                                navigate("/")}
+                            }
+                            size="xs"
+                            variant="red"
+                        >
                             Quit
                         </Button>
                     </span>
