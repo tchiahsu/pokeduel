@@ -56,8 +56,10 @@ export default class Pokemon {
     this.spDef = spDef;
     this.speed = speed;
     this.moves = moves;
-    this.frontSprite = frontSprite;
-    this.backSprite = backSprite;
+    this.frontSprite =
+      frontSprite ?? "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/201.png";
+    this.backSprite =
+      backSprite ?? "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/201.png";
     this.fainted = true;
     this.effectCounter = 0;
     this.status = "none";
