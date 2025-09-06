@@ -154,7 +154,11 @@ export default function registerSocketHandlers(io: Server, roomManager: RoomMana
                   checkGameOver(battleModel);
                 }
               } else {
+                const alivePlayer = battleModel.getOppositePlayer(faintedPlayer1);
                 io.to(faintedPlayer1).emit("requestFaintedSwitch", battleModel.getSwitchOptions(faintedPlayer1));
+                io.to(alivePlayer).emit("waitForFaintedSwitch", {
+                  message: `Waiting for other player to switch pokemon`,
+                });
               }
             }
             return;

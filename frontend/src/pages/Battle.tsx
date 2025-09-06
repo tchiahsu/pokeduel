@@ -236,7 +236,7 @@ export default function Battle() {
             setOpponentPrevious(null);
             setOpponentCurrent({
               name: opponentCurrent.name,
-              hp: opponentCurrent.hp,
+              hp: 0,
               maxHP: opponentCurrent.maxHP,
               backSprite: "",
               frontSprite: "",
