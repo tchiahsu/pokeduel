@@ -91,9 +91,7 @@ function App() {
         </div>
       </HashRouter>
     </SocketContext.Provider>
-    // <TestAnimation pokemon="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/330.png"></TestAnimation>
   );
 }
-//initial loading component
 
 export default App;
