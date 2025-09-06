@@ -284,7 +284,7 @@ export default function Selection({ list, loading }: SelectionProps) {
       {/* Pokemon Selection Screen */}
       <div className="flex max-h-[87vh]">
         {/* Left Panel */}
-        <div className="relative w-36 flex flex-col bg-gray-300 ml-6 mr-2 mb-6 rounded-lg opacity-80 items-center">
+        <div className="relative w-36 flex flex-col bg-gray-300 ml-6 mr-2 mb-6 rounded-lg opacity-80 items-center overflow-y-auto no-scrollbar">
           <h3 className="sticky top-0 z-10 text-lg font-bold bg-gray-300 pt-3">TEAM</h3>
 
           {/* LOADING ANIMATION WHILE FETCHING */}

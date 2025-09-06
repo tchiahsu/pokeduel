@@ -125,8 +125,10 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
             }
             onSwitchSelect?.(i);
           }}
-          className={`flex w-full gap-5 p-3 rounded-md flex-row hover:scale-102 active:scale-98 shadow-lg overflow-x-hidden
-            ${poke.hp <= 0 ? "bg-red-300 text-gray-500" : "bg-green-100"}
+          className={`flex w-full gap-5 p-3 rounded-md flex-row shadow-lg overflow-x-hidden 
+            ${
+              poke.hp <= 0 ? "bg-gray-300 text-gray-500" : "bg-green-100 cursor-pointer hover:scale-102 active:scale-98"
+            }
           }`}
         >
           {/* Pokemon Image */}
@@ -142,10 +144,14 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
             {/* Pokemon Type and HP */}
             <div className="flex flex-row justify-between items-center">
               {/* Type */}
-              <div className="flex text-[10px]">{poke.types.length === 1 ? poke.types[0] : poke.types[0] + "/" + poke.types[1]}</div>
+              <div className="flex text-[10px]">
+                {poke.types.length === 1 ? poke.types[0] : poke.types[0] + "/" + poke.types[1]}
+              </div>
 
               {/* HP */}
-              <div className="flex text-[10px]">{poke.hp}/{poke.maxHP}</div>
+              <div className="flex text-[10px]">
+                {poke.hp}/{poke.maxHP}
+              </div>
             </div>
           </div>
         </button>
