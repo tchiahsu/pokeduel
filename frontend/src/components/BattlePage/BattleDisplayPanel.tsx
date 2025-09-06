@@ -148,25 +148,6 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
               <div className="flex">{poke.hp}/{poke.maxHP}</div>
             </div>
           </div>
-
-            {/* <div className="flex flex-col justify-between pl-3">
-              <span className="flex font-bold select-none overflow-hidden whitespace-nowrap">
-                {toTitleCase(removeHyphen(poke.name))}
-              </span>
-              <div className="flex flex-row">
-                <div className="text-[9px] whitespace-nowrap">
-                  {poke.types.length === 1 ? poke.types[0] : poke.types[0] + ", " + poke.types[1]}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex">
-            <div className="flex text-xs items-baseline-last">
-              {poke.hp}/{poke.maxHP}
-            </div>
-          </div> */}
-
         </button>
       ))}
     </div>
