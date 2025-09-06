@@ -174,12 +174,3 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
 };
 
 export default BattleDisplayPanel;
-
-// Parent
-<div>
-  // LEFT
-  <div></div>
-
-  // right
-  <div></div>
-</div>
