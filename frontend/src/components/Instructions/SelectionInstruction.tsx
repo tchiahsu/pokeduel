@@ -1,5 +1,17 @@
 import React from 'react';
 
+import mainPage from '../../assets/selection_steps/main_page.png';
+import pokedexEmpty from '../../assets/selection_steps/pokedex_empty.png';
+import pokedexMoveStats from '../../assets/selection_steps/pokedex_move_details.png';
+import pokedexMoveMax from '../../assets/selection_steps/pokedex_move_max.png';
+import pokedexMoveSelected from '../../assets/selection_steps/pokedex_move_selected.png';
+import pokedex from '../../assets/selection_steps/pokedex.png';
+import searchBar from '../../assets/selection_steps/search_bar.png';
+import buttonActive from '../../assets/selection_steps/selection_buttons_active.png';
+import buttonInactive from '../../assets/selection_steps/selection_buttons.png';
+import teamEdit from '../../assets/selection_steps/team_edit.png';
+import teamStarter from '../../assets/selection_steps/team_starter.png';
+
 interface SelectionInstruction {
   imageSrc: string;
   altText: string;
@@ -9,7 +21,7 @@ interface SelectionInstruction {
 const selectionInstruction: SelectionInstruction[] = [
   {
     imageSrc: 'src/assets/selection_steps/main_page.png',
-    altText: 'Main Team Selection Page',
+    altText: 'Top Bar Controls',
     description: 'This is the team selection page where you can build a team of up to six Pokemon.',
   },
   {

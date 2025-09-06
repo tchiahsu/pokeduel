@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { IoClose } from 'react-icons/io5';
-import Button from './Button';
-import SelectionInstruction from './TeamSelection/SelectionInstruction';
+import InfoButton from './InfoButton';
+import SelectionInstruction from './Instructions/SelectionInstruction';
 
 interface InstructionsPopupProps {
   onClose: () => void;
@@ -12,42 +12,27 @@ const InstructionsPopup: React.FC<InstructionsPopupProps> = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm">
+
+      {/* Instruction Page */}
       <div className="relative flex flex-col bg-gray-300/80 rounded-xl p-8 shadow-xl w-12/13 max-w-3xl h-4/5 text-gray-700">
 
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-3xl text-gray-600 hover:text-gray-700"
+          className="absolute top-4 right-4 text-3xl rounded-full text-red-600 hover:scale-110 hover:bg-red-300 active:scale-105"
         >
           <IoClose />
         </button>
 
-        {/* Title */}
-        <h2 className="text-2xl h-15 font-bold mb-4 text-center text-[#2563eb]">How to...</h2>
+        {/* Page Title */}
+        <h2 className="text-2xl h-15 font-bold text-center text-[#2563eb]">How to Play PokeDuel</h2>
+        <span className="text-gray-500 -mt-4 mb-8 italic text-xs">Quick guide to becoming a Champion</span>
 
         {/* Tab Buttons */}
-        <div className="flex h-15 justify-center gap-4 mb-6 flex-wrap">
-          <Button
-            onClick={() => setActiveTab('start')}
-            size="sm"
-            variant={activeTab === 'start' ? 'yellow' : 'blue'}
-          >
-            Start Game
-          </Button>
-          <Button
-            onClick={() => setActiveTab('team')}
-            size="sm"
-            variant={activeTab === 'team' ? 'yellow' : 'blue'}
-          >
-            Build Team
-          </Button>
-          <Button
-            onClick={() => setActiveTab('battle')}
-            size="sm"
-            variant={activeTab === 'battle' ? 'yellow' : 'blue'}
-          >
-            Battle
-          </Button>
+        <div className="flex justify-center mb-6 bg-gray-300 rounded-lg">
+          <InfoButton onClick={() => setActiveTab('start')} active={activeTab === "start"}>Create Game</InfoButton>
+          <InfoButton onClick={() => setActiveTab('team')} active={activeTab === "team"}>Build Team</InfoButton>
+          <InfoButton onClick={() => setActiveTab('battle')} active={activeTab === "battle"}>Battles</InfoButton>
         </div>
 
         {/* Tab Content */}
