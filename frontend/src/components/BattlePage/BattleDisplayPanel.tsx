@@ -140,9 +140,9 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
             </div>
 
             {/* Pokemon Type and HP */}
-            <div className="flex flex-row justify-between">
+            <div className="flex flex-row justify-between items-center">
               {/* Type */}
-              <div className="flex">{poke.types.length === 1 ? poke.types[0] : poke.types[0] + ", " + poke.types[1]}</div>
+              <div className="flex text-xs">{poke.types.length === 1 ? poke.types[0] : poke.types[0] + ", " + poke.types[1]}</div>
 
               {/* HP */}
               <div className="flex">{poke.hp}/{poke.maxHP}</div>
@@ -174,3 +174,12 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
 };
 
 export default BattleDisplayPanel;
+
+// Parent
+<div>
+  // LEFT
+  <div></div>
+
+  // right
+  <div></div>
+</div>
