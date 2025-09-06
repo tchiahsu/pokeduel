@@ -75,7 +75,6 @@ export default function Battle() {
 
   const [selfPrevious, setSelfPrevious] = useState<TeamMember | null>(null);
   const [opponentPrevious, setOpponentPrevious] = useState<TeamMember | null>(null);
-
   const [selfTeamCount, setSelfTeamCount] = useState(0);
   const [selfRemaining, setSelfRemaining] = useState(0);
   const [opponentTeamCount, setOpponentTeamCount] = useState(0);
@@ -93,6 +92,7 @@ export default function Battle() {
   const loadingTimeoutRef = useRef<number | null>(null);
   const [showDisconnectPopup, setDisconnectPopUp] = useState(false);
   const [disconnectMessage, setDisconnectMessage] = useState("");
+  const [waitForFaintedSwitch, setWaitForFaintedSwitch] = useState(false);
 
   const bgImages = [bg1, bg2, bg3];
 
@@ -197,6 +197,7 @@ export default function Battle() {
     function onTurnSummary(events: any[]) {
       console.log("turnSummary", events);
       setEventQueue((prevEvents) => [...prevEvents, ...events]);
+      setWaitForFaintedSwitch(false);
     }
 
     function onRequestFaintedSwitch() {
@@ -242,6 +243,7 @@ export default function Battle() {
               frontSprite: "",
             });
             setStatus(data.message);
+            mode === "multiplayer" ? setWaitForFaintedSwitch(true) : setWaitForFaintedSwitch(false);
           },
         },
       ]);
@@ -516,7 +518,7 @@ export default function Battle() {
               onSelect={(mode) => setActionMode(mode)}
               onQuit={handleQuit}
               isFainted={selfCurrent.hp === 0}
-              disabled={isAnimating}
+              disabled={isAnimating || waitForFaintedSwitch}
             />
           </div>
 
