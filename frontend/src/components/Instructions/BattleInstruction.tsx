@@ -1,28 +1,58 @@
 import React from 'react';
 import Section from './Section';
 
-import mainDefault from '../../assets/selection_steps/Default.png';
-import mainPage from '../../assets/selection_steps/Main_page.png';
-import moveStats from '../../assets/selection_steps/Move_Stats.png';
-import pokedex from '../../assets/selection_steps/Pokedex.png';
-import search from '../../assets/selection_steps/Search.png';
-import selectedMoves from '../../assets/selection_steps/Selected_moves.png';
-import teamPanel from '../../assets/selection_steps/Team_Panel.png';
-import topButtons from '../../assets/selection_steps/Top_Buttons.png';
+// import mainDefault from '../../assets/selection_steps/Default.png';
+import switchPanel from '../../assets/battle_steps/Switch.png';
+import initialBattlePage from '../../assets/battle_steps/Initial_Battle_Page.png';
+import stats_card from '../../assets/battle_steps/Stats_card.png';
+import battleDisplayPanel from '../../assets/battle_steps/BattleDisplayPanel.png';
+import battleActionPanel from '../../assets/battle_steps/BattleActionPanel.png';
+import moves from '../../assets/battle_steps/Moves.png';
+
 
 
 const battleInstruction = [
   {
-    title: "Main Page",
+    title: "Battle Screen",
     content: [
       {
-        description: "Quick map of the screen:",
+        description: "This is the core battle page where all the action happens.",
         bullet: [
-          "Top: Action Buttons",
-          "Left: Your Pokemon Team",
-          "Right: Pokemon Selection Library"
+          "Top Left: Opponent’s active Pokémon stats and Opponent's team's Poké Balls.",
+          "Top Right: Opponent’s Pokémon sprite in the battlefield.",
+          "Bottom Right: Your current Pokémon’s stats and your team’s Poké Balls.",
+          "Bottom Left: Your active Pokémon sprite facing the opponent.",
+          "Bottom Center: Battle Display Panel shows prompts and battle updates.",
+          "Bottom Right Panel: Action buttons - Attack, Switch, or Quit the battle."
         ],
-        image: { src:mainPage, alt:"Main Page"}
+        image: { src:initialBattlePage, alt:"Main Battle Page"}
+      }
+    ]
+  },
+  {
+    title: "Stats Card",
+    content: [
+      {
+        description: "Your and your opponent’s current Pokémon each have a stats card displayed in the corners of the screen.",
+        bullet: [
+          "Each Pokémon’s name and HP are shown with a visual progress bar.",
+          "Poke Balls represent remaining team members: colored for active and grayed out for fainted.",
+          "When a Pokémon faints, its HP bar reaches zero and its Poké Ball turns gray."
+        ],
+        image: { src:stats_card, alt:"Stats Card"}
+      }
+    ]
+  },
+  {
+    title: "Battle Display Panel",
+    content: [
+      {
+        description: "This panel provides real-time updates during the battle.",
+        bullet: [
+          "Displays turn-by-turn messages such as attacks, damage, and Pokémon fainting.",
+          "Helpful for tracking the battle flow and reviewing recent actions."
+        ],
+        image: { src:battleDisplayPanel, alt:"Team Panel"}
       }
     ]
   },
@@ -30,81 +60,44 @@ const battleInstruction = [
     title: "Action Buttons",
     content: [
       {
-        description: "These control your session and kick things off when you’re ready.",
+        description: "These buttons let you choose your action each turn.",
         bullet: [
-          "Quit: Return to the Home page and end the current session.",
-          "Clear: Remove all Pokemon from your team (resets Randomize).",
-          "Randomize: Fill your team with a random selection (usable once until you Clear).",
-          "Start: Begin the battle. Becomes yellow and enabled once you have at least 1 Pokemon."
+          "Attack: Opens the Moves Panel to choose a move for your active Pokémon.",
+          "Switch: Opens the Switch Panel to change your active Pokémon.",
+          "Quit: Exit the battle and return to the Home page at any time."
         ],
-        image: { src:topButtons, alt:"Action Buttons"}
+        image: { src:battleActionPanel, alt:"Actions Button Panel"}
+      },
+    ]
+  },
+  {
+    title: "Moves Panel",
+    content: [
+      {
+        description: "Choose from your active Pokémon’s moves when you select ‘Attack’.",
+        bullet: [
+          "Each move card displays the move’s name, type and remaining PP.",
+          "Click a move to use it against the opponent’s Pokémon.",
+          "The result of the move appears in the Battle Display Panel.",
+        ],
+        image: { src:moves, alt:"Display Moves Panel"}
       }
     ]
   },
   {
-    title: "Pokemon Team",
+    title: "Switch Panel",
     content: [
       {
-        description: "Your chosen Pokemon appear here. A blue name marks your current Starter (the first to enter battle).",
+        description: "View your team and switch to another Pokémon mid-battle.",
         bullet: [
-          "Hover a team Pokemon to: Set Starter, Edit (opens Pokedex), or Remove.",
-          "Maximum team size is 6 Pokemon."
+          "Each card shows the Pokémon’s name, type and current HP.",
+          "Fainted Pokémon are grayed out and cannot be selected.",
+          "Switching uses your turn and brings out the chosen Pokémon next round.",
         ],
-        image: { src:teamPanel, alt:"Team Panel"}
+        image: { src: switchPanel, alt:"Switch Panel"}
       }
     ]
-  },
-  {
-    title: "Pokemon Selection",
-    content: [
-      {
-        description: "Browse the library to pick your fighters. By default, you’ll see the first 150 Pokemon.",
-        bullet: [
-          "Need later generations? Use the search bar to find them by name.",
-        ],
-        image: { src:mainDefault, alt:"Pokemon Library"}
-      },
-      {
-        description: "Search tips: enter the Pokemon’s name. If there’s a typo, you’ll see a ‘not found’ message.",
-        bullet: [],
-        image: { src:search, alt:"Search Bar"}
-      },
-      {
-        description: "Click any Pokemon card to open the Pokedex on the right.",
-        bullet: [],
-        image: { src:pokedex, alt:"Select Pokemon"}
-      }
-    ]
-  },
-  {
-    title: "Pokedex",
-    content: [
-      {
-        description: "Inspect stats and customize moves before adding a Pokemon to your team.",
-        bullet: [
-          "Click a move name to view its details (power, accuracy, etc.).",
-          "Click the + next to a move to select it for this Pokemon.",
-          "Each Pokemon must have at least 1 move and at most 4 moves."
-        ],
-        image: { src:pokedex, alt:"Pokedex"}
-      },
-      {
-        description: "Selected moves appear in the ‘Selected Moves’ area. Click − to remove a move.",
-        bullet: [],
-        image: { src:moveStats, alt:"Show Move Stats"}
-      },
-      {
-        description: "Pokedex Controls (bottom buttons): manage moves and finalize your pick.",
-        bullet: [
-          "Close: Exit the Pokedex.",
-          "Clear: Remove all selected moves for this Pokemon.",
-          "Random: Auto-assign 4 random moves (overwrites current selection).",
-          "Add: Add this Pokemon (with its selected moves) to your team."
-        ],
-        image: { src:selectedMoves, alt:"Select Moves"}
-      }
-    ]
-  },
+  }
 ];
 
 const BattleInstruction: React.FC = () => {
@@ -112,9 +105,14 @@ const BattleInstruction: React.FC = () => {
     
     <div className="flex flex-col gap-6 overflow-y-auto items-center">
       <h2 className="text-2xl">Pokemon Battle</h2>
-      <p className="text-[11px] -mt-4 text-gray-500">
-        {`Build a battle-ready team of up to 6 Pokemon, each tuned with a moveset of up to 4 moves.`}
-      </p>
+      <div className="flex flex-col items-center text-[11px] text-gray-500 -mt-4 gap-1">
+        <p>
+          {`Engage in a turn-based battle using your selected team of up to 6 Pokémon. Choose moves, switch strategically and aim to defeat your opponent's team.`}
+        </p>
+        <p>
+          {`Note: Some Pokémon sprites may be unavailable, in which case a default image will be shown.`}
+        </p>
+      </div>
       {battleInstruction.map((section) => (
         <Section 
           title={section.title}

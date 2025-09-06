@@ -8,7 +8,7 @@ import pokedex from '../../assets/selection_steps/Pokedex.png';
 import search from '../../assets/selection_steps/Search.png';
 import selectedMoves from '../../assets/selection_steps/Selected_moves.png';
 import teamPanel from '../../assets/selection_steps/Team_Panel.png';
-import topButtons from '../../assets/selection_steps/Top_Buttons.png';
+import topButtons from '../../assets/selection_steps/action_buttons.png';
 
 
 const selectionInstruction = [
