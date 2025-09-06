@@ -22,7 +22,7 @@ const EndGameBox: React.FC<EndGameBoxProps> = ({ message, team, onClose, backgro
       <div className="relative z-10 flex items-center justify-center h-full">
         <div className="bg-gray-300/80 rounded-lg p-20 m-20 max-h-[80vh] shadow-lg text-center space-y-4 overflow-auto">
           <h1 className="text-8xl tracking-[-8px] pokemon-h1 z-10 select-none pointer-events-none">{message}</h1>
-          <h2 className="text-xl font-bold pt-6 select-none pointer-events-none">{playerName}'s Championship Team:</h2>
+          <h2 className="text-xl text-gray-800 font-bold pt-6 select-none pointer-events-none">{playerName}'s Championship Team:</h2>
           <div className="flex justify-center gap-2  select-none pointer-events-none">
             {team.map((sprite, index) => (
               <img
