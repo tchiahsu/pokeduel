@@ -348,7 +348,7 @@ export default function Battle() {
 
     if (battleStarted && !currentEvent && eventQueue.length === 0) {
       setStatus("Select your next move...");
-      socket.emit("requestState");
+      if (!isGameOver) socket.emit("requestState");
     }
   }, [eventQueue, currentEvent, battleStarted, socket]);
 
@@ -366,7 +366,10 @@ export default function Battle() {
       team={winningTeam}
       playerName={winnerName}
       background={battleBg}
-      onClose={() => navigate("/")}
+      onClose={() => {
+        handleDeleteRoom(roomId);
+        navigate("/");
+      }}
     />
   ) : (
     <div className="relative w-screen h-screen overflow-hidden grid grid-rows-[1fr_4fr_1fr] text-gray-700">
@@ -384,7 +387,7 @@ export default function Battle() {
             isVisible={true}
             message={waitingMessage}
             onClick={() => {
-              socket.emit("quitGame"), handleDeleteRoom(roomId), navigate("/");
+              socket.emit("quitGame"), navigate("/");
             }}
           />
         </div>
