@@ -42,6 +42,7 @@ interface TeamMember {
   name: string;
   hp: number;
   maxHP: number;
+  types: string[];
   backSprite: string;
   frontSprite: string;
 }
@@ -61,6 +62,7 @@ export default function Battle() {
     name: "",
     hp: 0,
     maxHP: 0,
+    types: [],
     backSprite: "",
     frontSprite: "",
   });
@@ -69,6 +71,7 @@ export default function Battle() {
     name: "",
     hp: 0,
     maxHP: 0,
+    types: [],
     backSprite: "",
     frontSprite: "",
   });
@@ -151,6 +154,7 @@ export default function Battle() {
         name: selfData.name,
         hp: selfData.hp,
         maxHP: selfData.maxHP,
+        types: [],
         backSprite: selfData.backSprite,
         frontSprite: selfData.frontSprite,
       });
@@ -160,6 +164,7 @@ export default function Battle() {
         name: opponentData.name,
         hp: opponentData.hp,
         maxHP: opponentData.maxHP,
+        types: [],
         backSprite: opponentData.backSprite,
         frontSprite: opponentData.frontSprite,
       });
@@ -183,6 +188,7 @@ export default function Battle() {
         name: pokemon.name,
         hp: pokemon.hp,
         maxHP: pokemon.maxHP,
+        types: pokemon.types,
         frontSprite: pokemon.sprite,
         isCurrent: pokemon.isCurrent,
       }));
@@ -215,6 +221,7 @@ export default function Battle() {
               name: selfCurrent.name,
               hp: selfCurrent.hp,
               maxHP: selfCurrent.maxHP,
+              types: [],
               backSprite: "",
               frontSprite: "",
             });
@@ -239,6 +246,7 @@ export default function Battle() {
               name: opponentCurrent.name,
               hp: 0,
               maxHP: opponentCurrent.maxHP,
+              types: [],
               backSprite: "",
               frontSprite: "",
             });
@@ -318,6 +326,7 @@ export default function Battle() {
           name: nextEvent.switchData.name,
           hp: nextEvent.switchData.hp,
           maxHP: nextEvent.switchData.maxHP,
+          types: [],
           backSprite: nextEvent.switchData.backSprite,
           frontSprite: nextEvent.switchData.frontSprite,
         };
