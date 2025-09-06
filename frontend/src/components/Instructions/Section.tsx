@@ -24,7 +24,7 @@ const Section = ({ title, content }: SectionProps) => {
         {content.map((content, index) => {
             return (
                 <div className="flex flex-col w-full">
-                    <div key={index} className="grid grid-cols-1 mb-8">
+                    <div key={index} className="grid grid-cols-1 mb-8 mt-4">
                         <figure className="flex flex-col items-center">
                         <img
                             src={content.image.src}
