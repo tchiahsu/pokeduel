@@ -70,7 +70,7 @@ function App() {
         <Toaster position="top-center" />
         {!muted && <BackgroundMusic unmute={setMuted}/>}
         {/* Utility Buttons */}
-        <div className="hidden md:flex absolute top-0 right-0 m-10 gap-4 z-20">
+        <div className="hidden md:flex absolute top-0 right-0 m-10 gap-4 z-200">
             {/* Information Button */}
             <UtilityButton onClick={openInstructions}><IoInformation className="w-full h-auto p-1" /></UtilityButton>
             {/* Sound Button */}

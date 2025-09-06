@@ -13,7 +13,7 @@ const InstructionsPopup: React.FC<InstructionsPopupProps> = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState<'start' | 'team' | 'battle'>('start');
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm">
+    <div className="fixed inset-0 bg-black/50 z-200 flex items-center justify-center backdrop-blur-sm">
 
       {/* Instruction Page */}
       <div className="relative flex flex-col bg-gray-300/80 rounded-xl p-8 shadow-xl w-3/4 h-7/8 text-gray-700 justify-center items-center">
@@ -21,7 +21,7 @@ const InstructionsPopup: React.FC<InstructionsPopupProps> = ({ onClose }) => {
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-3xl rounded-full text-red-600 hover:scale-110 hover:bg-red-300 active:scale-105"
+          className="absolute top-4 right-4 text-3xl rounded-full text-grat-600 hover:scale-110 hover:bg-gray-300 active:scale-105"
         >
           <IoClose />
         </button>
