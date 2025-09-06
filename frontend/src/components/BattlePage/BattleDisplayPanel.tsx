@@ -1,6 +1,6 @@
 import React from "react";
 import { toast } from "sonner";
-import { removeHyphen } from "../../utils/helpers";
+import { removeHyphen, toTitleCase } from "../../utils/helpers";
 
 /**
  * Represents a Pokemon in the Player's Team.
@@ -124,12 +124,12 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
             }
             onSwitchSelect?.(i);
           }}
-          className={`flex w-full items-center justify-between gap-5 p-3 rounded-md flex-row hover:scale-102 active:scale-98 shadow-lg ${
-            poke.hp <= 0 ? "bg-gray-300 text-gray-500" : "bg-green-100"
+          className={`flex w-full justify-between gap-5 p-3 rounded-md flex-row hover:scale-102 active:scale-98 shadow-lg overflow-x-hidden ${
+            poke.hp <= 0 ? "bg-red-300 text-gray-500" : "bg-green-100"
           }`}
         >
           {/* Button Content */}
-          <div className="flex items-center gap-2">
+          {/* <div className="flex items-center gap-2">
             {poke.frontSprite && <img src={poke.frontSprite} alt={poke.name} className="h-full w-auto max-w-10" />}
           </div>
           <span className="flex font-bold select-none overflow-hidden whitespace-nowrap">
@@ -137,7 +137,27 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
           </span>
           <span className="text-sm">
             {poke.hp}/{poke.maxHP}
-          </span>
+          </span> */}
+
+          {/* left div */}
+          <div className="flex flex-1">
+            {poke.frontSprite && <img src={poke.frontSprite} alt={poke.name} className="h-full w-auto max-w-10" />}
+
+            <div className="flex flex-col justify-between pl-3">
+              <span className="flex font-bold select-none overflow-hidden whitespace-nowrap">
+                {toTitleCase(removeHyphen(poke.name))}
+              </span>
+              <div className="flex flex-row">
+                <div className="text-xs">poison</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex">
+            <div className="flex text-xs items-baseline-last">
+              {poke.hp}/{poke.maxHP}
+            </div>
+          </div>
         </button>
       ))}
     </div>
