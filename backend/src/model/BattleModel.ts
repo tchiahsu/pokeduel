@@ -73,6 +73,7 @@ type PokemonOptions = {
   name: string;
   hp: number;
   maxHP: number;
+  types: string[];
   sprite: string;
   isCurrent: boolean;
 };
@@ -564,6 +565,7 @@ export default class BattleModel {
         name: pokemon.getName(),
         hp: pokemon.getHP(),
         maxHP: pokemon.getMaxHP(),
+        types: pokemon.getTypes(),
         sprite: pokemon.getFrontSprite(),
         isCurrent: pokemon === player.getCurrentPokemon(),
       };

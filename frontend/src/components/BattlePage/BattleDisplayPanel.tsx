@@ -9,6 +9,7 @@ interface Pokemon {
   name: string;
   hp: number;
   maxHP: number;
+  types: string[];
   backSprite: string;
   frontSprite: string;
 }
@@ -129,17 +130,6 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
           }`}
         >
           {/* Button Content */}
-          {/* <div className="flex items-center gap-2">
-            {poke.frontSprite && <img src={poke.frontSprite} alt={poke.name} className="h-full w-auto max-w-10" />}
-          </div>
-          <span className="flex font-bold select-none overflow-hidden whitespace-nowrap">
-            {removeHyphen(poke.name)}
-          </span>
-          <span className="text-sm">
-            {poke.hp}/{poke.maxHP}
-          </span> */}
-
-          {/* left div */}
           <div className="flex flex-1">
             {poke.frontSprite && <img src={poke.frontSprite} alt={poke.name} className="h-full w-auto max-w-10" />}
 
@@ -148,11 +138,12 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
                 {toTitleCase(removeHyphen(poke.name))}
               </span>
               <div className="flex flex-row">
-                <div className="text-xs">poison</div>
+                <div className="text-[10px] whitespace-nowrap">
+                  {poke.types.length === 1 ? poke.types[0] : poke.types[0] + ", " + poke.types[1]}
+                </div>
               </div>
             </div>
           </div>
-
           <div className="flex">
             <div className="flex text-xs items-baseline-last">
               {poke.hp}/{poke.maxHP}

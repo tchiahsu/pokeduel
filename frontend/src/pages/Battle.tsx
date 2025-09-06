@@ -183,6 +183,7 @@ export default function Battle() {
         name: pokemon.name,
         hp: pokemon.hp,
         maxHP: pokemon.maxHP,
+        types: pokemon.types,
         frontSprite: pokemon.sprite,
         isCurrent: pokemon.isCurrent,
       }));
