@@ -84,7 +84,7 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
             key={i}
             onClick={() => {
               if (move.pp === 0) {
-                toast.warning(`You can't use this ability anymore! You have ran out of power points for this move!`);
+                toast.warning(`You can't use this ability anymore! You have run out of PP for this move!`);
                 return;
               }
               onMoveSelect?.(i);
@@ -116,7 +116,7 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
           key={i}
           onClick={() => {
             if (poke.hp <= 0) {
-              toast.warning(`${poke.name} has fainted! Select another Pokemon`);
+              toast.warning(`${toTitleCase(removeHyphen(poke.name))} has fainted! Select another Pokemon`);
               return;
             }
             if (poke.name === currentPokemon) {
@@ -138,7 +138,7 @@ const BattleDisplayPanel: React.FC<BattleDisplayPanelProps> = ({
                 {toTitleCase(removeHyphen(poke.name))}
               </span>
               <div className="flex flex-row">
-                <div className="text-[10px] whitespace-nowrap">
+                <div className="text-[9px] whitespace-nowrap">
                   {poke.types.length === 1 ? poke.types[0] : poke.types[0] + ", " + poke.types[1]}
                 </div>
               </div>
