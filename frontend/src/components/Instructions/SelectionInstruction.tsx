@@ -2,7 +2,7 @@ import React from 'react';
 import Section from './Section';
 
 import mainDefault from '../../assets/selection_steps/Default.png';
-import mainPage from '../../assets/selection_steps/Main_page.png';
+import mainPage from '../../assets/selection_steps/main_page.png';
 import moveStats from '../../assets/selection_steps/Move_Stats.png';
 import pokedex from '../../assets/selection_steps/Pokedex.png';
 import search from '../../assets/selection_steps/Search.png';
