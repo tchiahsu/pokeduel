@@ -61,11 +61,16 @@ const Pokedex = ({ pokemon, close, initialMoves, onConfirm, team }: PokedexProps
 
     const addPokemonToTeam = () => {
         if (!pokemon) return;
-        if (Object.keys(team).length === 6) {
+
+        const isFull = Object.keys(team).length >= 6;
+        const isUpdating = isSelected;
+
+        if (!isUpdating && isFull) {
             shake(addButtonRef.current);
             toast.error("You've reached the maximum of 6 Pokemon per team");
             return;
         }
+        
         if (moves.length < 1) {
             shake(addButtonRef.current);
             toast.error("Select at least 1 move before adding this Pokemon.");
