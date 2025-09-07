@@ -7,6 +7,7 @@ import type { Pokemon } from "../types/pokemon";
 import { toast } from "sonner";
 import { handleDeleteRoom } from "../utils/handleSocket";
 import { motion, AnimatePresence } from "framer-motion";
+import { IoIosArrowDown } from 'react-icons/io';
 
 import SearchBar from "../components/TeamSelection/SearchBar";
 import Button from "../components/Button";
@@ -56,7 +57,9 @@ export default function Selection({ list, loading }: SelectionProps) {
 
   const fetchRandomTeam = async () => {
     try {
-      if (randomUsed) {
+      const teamSize = Object.keys(pokemonTeam).length;
+      
+      if (randomUsed && teamSize > 0) {
         shake(randomRef.current);
         toast.error("You have a team already selected. Clear current team to randomize again!");
         return;
@@ -268,7 +271,7 @@ export default function Selection({ list, loading }: SelectionProps) {
           </Button>
 
           <span ref={randomRef}>
-            <Button onClick={fetchRandomTeam} disabled={randomUsed} size="xs">
+            <Button onClick={fetchRandomTeam} disabled={randomUsed && Object.keys(pokemonTeam).length > 0} size="xs">
               Randomize
             </Button>
           </span>
@@ -345,6 +348,11 @@ export default function Selection({ list, loading }: SelectionProps) {
               </AnimatePresence>
             </div>
           )}
+
+          <div className="z-20 pointer-events-none absolute bottom-0 left-0 w-full flex justify-center bg-gradient-to-t from-gray-300/80 to-transparent">
+            <IoIosArrowDown className="text-gray-700 bg-gray-400 rounded-full animate-bounce mb-1" size={30} />
+          </div>
+
         </div>
 
         {/* Right Panel */}

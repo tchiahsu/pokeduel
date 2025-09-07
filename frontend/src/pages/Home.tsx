@@ -1,9 +1,14 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import homeBg from '../assets/bg-forrest.jpg';
 import Button from '../components/Button';
+import { IoWarningOutline } from "react-icons/io5";
+
 
 // Home Screen
 export default function Home() {
+    const [active, setActive] = useState(false);
+
     return (
         <div className="relative min-h-screen min-w-screen flex flex-col items-center justify-center">
             
@@ -12,6 +17,17 @@ export default function Home() {
                 src={homeBg}
                 className="absolute inset-0 w-full h-full object-cover opacity-50 pointer-events-none"
             />
+
+            {/* Server Warning */}
+            <div className="absolute top-10 left-10 text-red-700 flex flex-row items-center gap-3 z-10">
+                <button onClick={() => setActive(!active)} className="animate-pulse cursor-pointer"><IoWarningOutline size={64} /></button>
+                {active && 
+                    (<div className="text-xs flex flex-col justify-start items-start duration-200 ease-in">
+                        <p>The server may be asleep due to inactivity and</p>
+                        <p> could take up to a minute to wake.</p>
+                    </div>)
+                }
+            </div>
 
             {/* Game Title */}
             <div className="text-8xl pb-6 tracking-[-8px] pokemon-h1 select-none z-10">
@@ -35,7 +51,7 @@ export default function Home() {
 
             {/* Credits */}
             <div className="absolute bottom-5 text-xs text-gray-600">
-                Designed and Built by Tony Hsu Tai, Bhoomika Gupta, Harrison Pham.
+                Designed and Built by Tony Hsu Tai, Bhoomika Gupta, and Harrison Pham.
                 <br /><br/>
                 Powered by PokéAPI.
             </div>
