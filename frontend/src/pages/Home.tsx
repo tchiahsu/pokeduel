@@ -20,13 +20,8 @@ export default function Home() {
                 className="absolute inset-0 w-full h-full object-cover opacity-50 pointer-events-none"
             />
 
-            {/* Warmup Message */}
-            {!serverReady && (
-                <div className="text-sm opacity-70">Warming up server...Please read instruction while waiting.</div>
-            )}
-
             {/* Server Warning */}
-            <div className="absolute top-10 left-10 text-red-700 flex flex-row items-center gap-3 z-10">
+            {/* <div className="absolute top-10 left-10 text-red-700 flex flex-row items-center gap-3 z-10">
                 <button onClick={() => setActive(!active)} className="animate-pulse cursor-pointer"><IoWarningOutline size={64} /></button>
                 {active && 
                     (<div className="text-xs flex flex-col justify-start items-start duration-200 ease-in">
@@ -34,7 +29,7 @@ export default function Home() {
                         <p> could take up to a minute to wake.</p>
                     </div>)
                 }
-            </div>
+            </div> */}
 
             {/* Game Title */}
             <div className="text-8xl pb-6 tracking-[-8px] pokemon-h1 select-none z-10">
@@ -55,6 +50,17 @@ export default function Home() {
                     <Button disabled={!serverReady}>Multiplayer</Button>
                 </Link>
             </div>
+
+            {/* Warmup Message */}
+            {!serverReady && (
+                <div className="flex flex-col text-red-700 justify-center items-center mt-15 gap-2">
+                    <button onClick={() => setActive(!active)} className="animate-pulse cursor-pointer"><IoWarningOutline size={48} /></button>
+                    <div className="flex flex-col items-center gap-2 text-sm opacity-70">
+                        <p>Warming up server...This may take up to 1 minute.</p>
+                        <p>Read game instruction while you wait!</p>
+                    </div>
+                </div>
+            )}
 
             {/* Credits */}
             <div className="absolute bottom-5 text-xs text-gray-600">
