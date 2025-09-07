@@ -93,7 +93,7 @@ export default function Battle() {
   const [winnerName, setWinnerName] = useState("");
   const [battleStarted, setBattleStarted] = useState(false);
   const loadingTimeoutRef = useRef<number | null>(null);
-  const [showDisconnectPopup, setDisconnectPopUp] = useState(false);
+  const [opponentDisconnect, setOpponentDisconnect] = useState(false);
   const [disconnectMessage, setDisconnectMessage] = useState("");
   const [isWaitForFaintedSwitch, setIsWaitForFaintedSwitch] = useState(false);
 
@@ -263,8 +263,8 @@ export default function Battle() {
      * @param data containing the game over message
      */
     function onEndGame(data: any) {
+      setOpponentDisconnect(true);
       setDisconnectMessage(data.message);
-      setDisconnectPopUp(true);
     }
 
     function onGameOver({ message, team }: any) {
@@ -321,7 +321,7 @@ export default function Battle() {
         setTimeout(() => {
           setCurrentEvent(null);
           nextEvent.onComplete?.();
-        }, 1000);
+        }, 1500);
       } else if (nextEvent.animation === "switch") {
         const newPokemonData = {
           name: nextEvent.switchData.name,
@@ -348,7 +348,7 @@ export default function Battle() {
 
     if (battleStarted && !currentEvent && eventQueue.length === 0) {
       setStatus("Select your next move...");
-      if (!isGameOver) socket.emit("requestState");
+      if (!isGameOver && !opponentDisconnect) socket.emit("requestState");
     }
   }, [eventQueue, currentEvent, battleStarted, socket]);
 
@@ -550,10 +550,10 @@ export default function Battle() {
 
       {/* Quit Message */}
       {showQuitConfirm && <QuitBattleBox onConfirm={confirmQuit} onCancel={cancelQuit} />}
-      {showDisconnectPopup && (
+      {opponentDisconnect && (
         <DisconnectPopUp
           onExit={() => {
-            setDisconnectPopUp(false);
+            setOpponentDisconnect(false);
             navigate("/");
           }}
           message={disconnectMessage}
