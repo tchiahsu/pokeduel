@@ -37,6 +37,7 @@ const Button = ({ children, onClick, size="sm", variant="blue", disabled=false }
                                 "bg-gray-300 text-gray-500 hover:bg-red-300 hover:text-red-600 cursor-pointer": variant === "red",
                             }
                         )}
+            disabled={disabled}
         >
             {children}
         </button>
