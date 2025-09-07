@@ -21,6 +21,11 @@ app.use("/room", createRoomRouter(roomManager));
 app.use("/pokemon", pokemonRouter);
 app.use("/moves", moveRouter);
 
+app.get("/health", (_req, res) => res.status(200).send("ok"));
+app.post("/warmup", async (_req, res) => {
+  res.status(200).send("warm");
+})
+
 server.listen(PORT, () => {
   console.log(`Server running on Render at port ${PORT}`);
 });

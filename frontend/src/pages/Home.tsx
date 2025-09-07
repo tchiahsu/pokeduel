@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import homeBg from '../assets/bg-forrest.jpg';
 import Button from '../components/Button';
+import { useServerWarmup } from '../utils/useServerWarmup';
 import { IoWarningOutline } from "react-icons/io5";
 
 
 // Home Screen
 export default function Home() {
     const [active, setActive] = useState(false);
+    const serverReady = useServerWarmup();
 
     return (
         <div className="relative min-h-screen min-w-screen flex flex-col items-center justify-center">
@@ -17,6 +19,11 @@ export default function Home() {
                 src={homeBg}
                 className="absolute inset-0 w-full h-full object-cover opacity-50 pointer-events-none"
             />
+
+            {/* Warmup Message */}
+            {!serverReady && (
+                <div className="text-sm opacity-70">Warming up server...Please read instruction while waiting.</div>
+            )}
 
             {/* Server Warning */}
             <div className="absolute top-10 left-10 text-red-700 flex flex-row items-center gap-3 z-10">
@@ -42,10 +49,10 @@ export default function Home() {
             {/* Action Buttons */}
             <div className="flex flex-row w-1/3 justify-center items-center gap-4 z-10">
                 <Link to='/single-player'>
-                    <Button>Solo Battle</Button>
+                    <Button disabled={!serverReady}>Solo Battle</Button>
                 </Link>
                 <Link to='/multiplayer'>
-                    <Button>Multiplayer</Button>
+                    <Button disabled={!serverReady}>Multiplayer</Button>
                 </Link>
             </div>
 
